@@ -106,7 +106,6 @@
 
     <main class="max-w-7xl mx-auto px-6 pt-20">
 
-        <!-- VY 1: PROFIL (HERO) -->
         <div id="hero-view" class="view-section active-view pb-24">
             <section class="relative min-h-[calc(100vh-5rem)] flex flex-col justify-center border-b border-border_subtle reveal pt-10 pb-10 overflow-hidden">
                 <div class="w-full lg:w-[55%] z-10 flex flex-col justify-center h-full mt-4 lg:mt-0">
@@ -148,7 +147,6 @@
             </section>
         </div>
 
-        <!-- VY 2: KREATIONER (BILDER/FILMER) -->
         <div id="portfolio-view" class="view-section pt-12 pb-24">
             <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border_subtle pb-6 reveal active">
                 <div>
@@ -186,7 +184,6 @@
             </div>
         </div>
 
-        <!-- VY 3: SYSTEM & APPAR (NY!) -->
         <div id="apps-view" class="view-section pt-12 pb-24">
             <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border_subtle pb-6 reveal active">
                 <div>
@@ -202,6 +199,10 @@
                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
                         <input type="text" id="app-search-input" oninput="renderApps()" placeholder="Sök app-namn eller funktion..." class="w-full bg-main border border-border_subtle rounded-xl py-2 pl-9 pr-4 text-xs font-mono text-slate-200 focus:border-accent outline-none transition-colors placeholder:text-slate-600 shadow-inner">
                     </div>
+                    <!-- Din knapp är tillbaka! -->
+                    <button onclick="alert('Redo för fasen: /sys add')" class="px-5 py-2 rounded-xl bg-accent/20 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent hover:text-main transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(229,142,38,0.2)] shrink-0">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Lägg till modul
+                    </button>
                 </div>
             </div>
 
@@ -224,7 +225,6 @@
         </div>
     </footer>
 
-    <!-- Terminal Overlay -->
     <div id="terminal-overlay" class="fixed top-0 left-0 right-0 h-[60vh] z-[200] bg-main/95 backdrop-blur-xl border-b border-accent/30 shadow-2xl shadow-accent/5 font-mono text-sm flex flex-col">
         <div class="h-10 bg-header border-b border-border_subtle flex items-center justify-between px-4">
             <span class="text-[10px] font-black uppercase tracking-widest text-accent flex items-center gap-2">
@@ -263,153 +263,178 @@
         const SYSTEM_PASSWORD = "nexus"; 
 
         // ==========================================
-        // 1. DATA: BILDER & FILMER 
+        // 0. BILD-FELHANTERARE (Injektion istället för strängar)
+        // ==========================================
+        window.handleImageError = function(imgElement, type) {
+            const div = document.createElement('div');
+            if (type === 'grid') {
+                div.className = 'w-full h-full flex flex-col items-center justify-center bg-card border border-border_subtle text-slate-600 text-[10px] uppercase tracking-widest';
+                div.innerHTML = '<i data-lucide="image-off" class="w-8 h-8 mb-2 opacity-50"></i>Källfil Offline';
+            } else if (type === 'thumb') {
+                div.className = 'w-full h-full flex items-center justify-center bg-main text-slate-600';
+                div.innerHTML = '<i data-lucide="image-off" class="w-4 h-4"></i>';
+            } else if (type === 'main') {
+                div.className = 'w-full aspect-video flex flex-col items-center justify-center bg-main rounded-t-[2rem] md:rounded-t-[3rem] border-b border-border_subtle text-slate-600 uppercase tracking-widest text-xs';
+                div.innerHTML = '<i data-lucide="image-off" class="w-8 h-8 mb-2 opacity-50"></i>Källfil Offline';
+            } else if (type === 'light') {
+                div.className = 'w-full min-w-[300px] aspect-video flex flex-col items-center justify-center bg-card rounded-xl border border-border_subtle text-slate-600 uppercase tracking-widest text-sm';
+                div.innerHTML = '<i data-lucide="image-off" class="w-12 h-12 mb-4 opacity-50"></i>Källfil Offline';
+            } else if (type === 'hide') {
+                imgElement.parentElement.style.display = 'none';
+                return;
+            }
+            imgElement.replaceWith(div);
+            lucide.createIcons();
+        };
+
+        // ==========================================
+        // 1. DATA: BILDER & FILMER (Dina ursprungliga)
         // ==========================================
         let portfolioData = [
-  {
-    "type": "image",
-    "mediaUrl": "https://i.imgur.com/xsMYmTB.jpeg",
-    "processThumbnails": ["https://i.imgur.com/bGROs5W.jpeg"],
-    "mainPrompt": "Hyperdetaljerat 8K-mästerverk som visualiserar en arkitektonisk och biomekanisk gestaltning av en fadersfigur (\"pappa\"), där ytan styrs av en avancerad procedurmatris för materialblandning. Kärnan i kompositionen utgörs av en dynamisk fusion mellan kall, industriell sci-fi och eterisk magi. Materialet är uppbyggt genom en sofistikerad shader-graf där en Fresnel-nod dikterar övergången baserat på betraktningsvinkeln mot ytans normal: Vid direkta vinklar framträder en tung, borstad anodiserad aluminium med mikroskopiska repor och en matt, teknisk lyster. I de flacka vinklarna och längs silhuettens kanter sker en sömlös metamorfos till ett organiskt, iridiserande glitter som påminner om vingarna hos ett mytiskt sagoväsen. Ljuset bryts i spektrala färgskiftningar som rör sig flytande över den metalliska huden när kameran sveper runt objektet. Hyperrealistiska texturer, raytracing, global illumination, makrofokus på materialövergångar, cinematic lighting, 8K-upplösning, teknisk perfektion.",
-    "id": "proj-0",
-    "subtitle": "Logg 001",
-    "tags": [],
-    "title": "Hyperdetaljerat 8K-mästerverk som visual...",
-    "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
-  },
-  {
-    "type": "image",
-    "mediaUrl": "https://i.imgur.com/xI1yK3j.jpeg",
-    "processThumbnails": ["https://i.imgur.com/vHq1kEM.jpeg", "https://i.imgur.com/Z8z3P1x.jpeg"],
-    "mainPrompt": "Ett hyperrealistiskt och suggestivt modefotografi som porträtterar ett oväntat och kraftfullt möte: Den skräckinjagande skurken från filmen Saw klädd i en stilren och välskräddad svensk polisuniform i mörkblått. Uniformen är felfri med blanka silverknappar, detaljerade emblem och en poliskeps med skärm, vilket skapar en absurd men fascinerande kontrast till karaktärens ikoniska, groteska ansiktsmask med de röda spiralerna på kinderna och de mörka, djupt liggande ögonen. Bakgrunden är en dystopisk, övergiven industriell gränd dränkt i ett intensivt, nästan självlysande neongrönt ljus, vilket ger scenen en toxisk och overklig atmosfär. Skuggorna är djupa och hårda, medan det gröna ljuset reflekteras skarpt i polisuniformens blanka detaljer och i pölar på den fuktiga asfalten. Bilden kännetecknas av enastående skärpa (8K), där varje textur – från tygets struktur till maskens porslinsliknande yta och den rostiga bakgrunden – framträder med makalös detaljrikedom. Ljussättningen är dramatisk och filmisk (cinematic lighting), med en subtil rök eller dimma som förstärker den neongröna belysningen och ger bilden en klaustrofobisk, mardrömslik djupverkan. Skapad med raytracing och avancerad global illumination för perfekt ljusstuds och realism.",
-    "id": "proj-1",
-    "subtitle": "Logg 002",
-    "tags": [],
-    "title": "Ett hyperrealistiskt och suggestivt mode...",
-    "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
-  },
-  {
-    "type": "image",
-    "mediaUrl": "https://i.imgur.com/9nJ97U4.jpeg",
-    "processThumbnails": ["https://i.imgur.com/Qk2tQ1Y.jpeg"],
-    "mainPrompt": "Hyperrealistiskt, filmiskt porträtt av tre män i 55-årsåldern som ser ut som tunga, auktoritära poliser i en mörk, rökig gränd. I förgrunden till vänster står den första mannen. Han är skallig, kraftigt byggd med breda axlar och tjock nacke, och har ett grovt, ärrat ansikte. I mitten står den andra mannen. Han har mörkt hår, en bestämd haka och en intensiv, genomträngande blick. Till höger står den tredje mannen. Han har kort, ljusbrunt hår och ett allvarligt uttryck. Båda de två första männen (skallig till vänster, mörkhårig i mitten) bär svenska polisuniformer i mörkblått, med reflexvästar som skapar skarpa kontraster i ljuset, svarta stridsvästar med mängder av utrustningsfickor, och tydliga polis-emblem. Den tredje mannen till höger bryter mönstret och bär en elegant, mörk kostym av hög kvalitet, en krispig vit skjorta och en diskret slips, vilket ger honom en air av överordnad makt. Miljön är en sliten, fuktig stadsgränd. Belysningen domineras av ett dramatiskt, giftigt neongrönt ljus som kastar långa, hårda skuggor och reflekteras i pölar på marken och på polisernas reflexer. Tät dimma rullar in från bakgrunden och förstärker den klaustrofobiska atmosfären. Extrem detaljrikedom i hudstruktur (porer, svett, rynkor), tygtexturer och reflexer. 8K-upplösning, fotorealistiskt, cinematic lighting, raytracing, skapad med objektiv för kort skärpedjup (bokéh i bakgrunden) och dramatisk vinkel nerifrån för att ge männen en dominant framtoning.",
-    "id": "proj-2",
-    "subtitle": "Logg 003",
-    "tags": [],
-    "title": "Hyperrealistiskt porträtt...",
-    "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
-  },
-  {
-    "type": "image",
-    "mediaUrl": "https://i.imgur.com/kS9wz8O.jpeg",
-    "processThumbnails": ["https://i.imgur.com/AetbL3a.jpeg"],
-    "mainPrompt": "Hyperrealistiskt makrofotografi som fångar detaljerade ansiktsdrag hos en man. Mannens hud ska vara extremt detaljerad, med synliga porer, mikroskopiska rynkor, fina fjun (peach fuzz) och små färgvariationer (som fräknar eller subtila kapillärer) för maximal realism. Ögonen måste ha naturtrogna reflektioner och fuktighet. Ljussättningen ska vara dramatisk och filmisk (cinematic lighting), med en stark primär ljuskälla från ena sidan som skapar djupa skuggor och framhäver texturen i ansiktet, och ett mjukt fyllnadsljus som lättar upp de mörkaste partierna utan att förstöra kontrasten. Kamera: Fokuserad med ett makroobjektiv (t.ex. 100mm f/2.8) för att ge ett mycket kort skärpedjup, där bara en specifik del av ansiktet (som ena ögat eller kindbenet) är i knivskarp fokus, medan bakgrunden – och eventuellt förgrunden – faller bort i en mjuk, krämig bokeh. Atmosfären ska kännas intim, intensiv och hyperdetaljerad. 8k resolution, raytracing, Unreal Engine 5 render style.",
-    "id": "proj-3",
-    "subtitle": "Logg 004",
-    "tags": [],
-    "title": "Hyperrealistiskt makrofotografi...",
-    "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
-  },
-  {
-    "type": "image",
-    "mediaUrl": "https://i.imgur.com/HnUjW1n.jpeg",
-    "processThumbnails": ["https://i.imgur.com/c6U8Kj1.jpeg"],
-    "mainPrompt": "Hyperrealistiskt actionfotografi, ett fartfyllt ögonblick på en professionell padelbana under intensivt spel. I förgrunden, knivskarpt fokuserad, kastar sig en man (ca 40 år) atletiskt genom luften i en dynamisk, fullt utsträckt dykning för att nå en omöjlig boll. Han bär moderna, mörka sportkläder (t-shirt och shorts) och håller ett exklusivt kolfiberracket hårt i handen. Hans ansiktsuttryck visar extrem koncentration och ansträngning, svettpärlor flyger i rörelsen. Padelbanan är omgärdad av rena glasväggar och blått konstgräs. I den mjukt oskarpa bakgrunden (bokeh) står hans medspelare redo, och en publik kan anas på läktarna i det mörka rummet. Belysningen är dramatisk sportbelysning (stadium lighting), med skarpa spotlights från taket som skapar starka highlights på spelarens muskler och racket, kombinerat med dynamiska skuggor på banan. Kameran följer rörelsen med en snabb slutartid (fryst rörelse) men med en subtil motion blur på bollen och baksidan av racketet för att förmedla extrem hastighet. Fotograferat med Sony A1, 85mm lins f/1.8, 8k upplösning, fotorealistiskt, cinematic action, hyperdetaljerade texturer i kläder och utrustning.",
-    "id": "proj-4",
-    "subtitle": "Logg 005",
-    "tags": [],
-    "title": "Hyperrealistiskt actionfotografi...",
-    "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
-  },
-  {
-    "type": "image",
-    "mediaUrl": "https://i.imgur.com/9lqgM1V.jpeg",
-    "processThumbnails": ["https://i.imgur.com/4zF86V6.jpeg"],
-    "mainPrompt": "Ett högkvalitativt, filmiskt porträtt i en mörk, elegant och stämningsfull miljö (moody, low-key lighting). Motiv: En man (40-50 år) med kort, ljust hår, bärande en exklusiv svart t-shirt. Han står med en självsäker, avslappnad hållning och tittar intensivt mot kameran. Fotografering: Använd en kort brännvidd (t.ex. 35mm eller 50mm) för att hålla motivet knivskarpt i förgrunden, medan bakgrunden försvinner i en mjuk, cinematiskt oskarp bokeh (shallow depth of field). Ljussättning: Dramatiskt sidoljus (rim lighting eller split lighting) som framhäver ansiktets konturer och strukturen i den svarta tröjan, och lämnar en del av ansiktet i djupskugga för att skapa dramatik. Bakgrunden ska vara en lyxig interiör i dunkel – kanske en hotellbar, ett modernt kontor kvällstid eller ett regnigt gatlandskap nattetid, upplyst av subtila, varma ljuskällor (som amber, guld eller dova neonfärger) som skapar vackra bokeh-cirklar. Estetik: Hyperrealistisk (8k), rik på textur (tyg, hud, porer), med en känsla hämtad från en modern thriller eller exklusiv reklamkampanj.",
-    "id": "proj-5",
-    "subtitle": "Logg 006",
-    "tags": [],
-    "title": "Ett högkvalitativt...",
-    "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
-  },
-  {
-    "type": "image",
-    "mediaUrl": "https://i.imgur.com/423X7wZ.jpeg",
-    "processThumbnails": ["https://i.imgur.com/71o0W1J.jpeg", "https://i.imgur.com/0iKj3O4.jpeg", "https://i.imgur.com/s69KEDt.jpeg"],
-    "mainPrompt": "Hyperrealistiskt porträtt av tre män i en intensiv, stämningsfull miljö. Bilden fokuserar på de två männen från de ursprungliga porträtten: den kortklippta, ljusa mannen till höger och mannen med runda, kraftiga ansiktsdrag och kort skägg till vänster. De står nära varandra i förgrunden och tittar rakt in i kameran med ett allvarligt, samlat uttryck. Mellan dem, i bakgrunden, står en tredje man, helt klädd i svart från topp till tå – svart skjorta, svarta byxor, svart jacka – vilket gör att han smälter in i de djupa skuggorna. Ljussättningen är dramatisk, moody och cinematic (low-key lighting), med en subtil ljuskälla som träffar ansiktena på männen i förgrunden, men lämnar mannen i bakgrunden nästan helt i mörker, vilket skapar en känsla av mystik och tyngd. Miljön är mörk och obestämd, möjligen en exklusiv interiör eller en dimly-lit gränd på natten. Kameran har ett kort skärpedjup (shallow depth of field), där männen i förgrunden är knivskarpa med hyperdetaljerad hud och textur i kläderna, medan mannen i bakgrunden och miljön faller bort i en mjuk, filmisk bokeh. 8k upplösning, raytracing, hög kontrast, fotorealistiskt.",
-    "id": "proj-6",
-    "subtitle": "Logg 007",
-    "tags": [],
-    "title": "Hyperrealistiskt porträtt...",
-    "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
-  },
-  {
-    "type": "image",
-    "mediaUrl": "https://i.imgur.com/4q3330U.jpeg",
-    "processThumbnails": ["https://i.imgur.com/xT5rR9T.jpeg"],
-    "mainPrompt": "Hyperrealistisk och episk actionscen som utspelar sig i en tät, frodig djungel. I förgrunden, fokuserad med knivskarp skärpa, står en ensam hjälte (man, ca 40 år) insvept i mystik. Han är klädd i en svart, teknisk luvtröja där luvan är djupt neddragen över huvudet och ansiktet skuggas, vilket ger honom en hotfull men heroisk aura. Han står i en stridsredo pose och riktar ett stort, futuristiskt och modifierat automatvapen snett uppåt. Det dundrar eld och blixtrar från vapnets mynning, vilket lyser upp hans ansikte och den svarta tröjans struktur med en intensiv, gyllene blixt. Runt omkring honom rasar ett extremt intensivt kulregn. Stora, lysande projektiler flyger horisontellt genom luften från båda sidor, klippande genom de enorma, daggvåta djungelbladen. Träd och lianer i bakgrunden exploderar i splitter och rök. Ljussättningen är dramatisk och filmisk (cinematic lighting), där vapenelden fungerar som primär ljuskälla i den mörka djungeln, tillsammans med strålar av månsken som letar sig ner genom trädkronorna. Kameran använder en extremt snabb slutartid (frozen motion) kombinerat med kort skärpedjup (bokeh i bakgrunden) för att fånga varje svettdroppe, mynningsflamma och flygande löv i hyperdetaljerad 8K. Fotorealistiskt, raytracing, dova gröna och svarta toner kontrasterade av intensiv orange vapeneld.",
-    "id": "proj-7",
-    "subtitle": "Logg 008",
-    "tags": [],
-    "title": "Hyperrealistisk episk action...",
-    "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
-  },
-  {
-    "type": "image",
-    "mediaUrl": "https://i.imgur.com/tHqgR1y.jpeg",
-    "processThumbnails": ["https://i.imgur.com/gK6n5tO.jpeg", "https://i.imgur.com/p510P9p.jpeg"],
-    "mainPrompt": "Ett hyperrealistiskt fotografi. En svensk polispatrull bestående av fyra manliga poliser som står i en V-formation och poserar målmedvetet framför kameran. Poliserna bär klassisk, mörkblå svensk uniform med gula varselvästar över, detaljerade med insignier, brickor, radioapparater på bröstet och vapenutrustning i bältena. De fyra poliserna bygger på fyra exakta originalporträtt: I mitten framträder en man med mörkt bakåtkammat hår och ett bestämt käkparti. Till höger om honom står en man med kort ljust hår och en intensiv blick. Längst till vänster står en man med breda ansiktsdrag och kortklippt skägg. Längst till höger (näst intill den ljushåriga) står en kraftigt byggd, skallig man med allvarligt uttryck. Ansiktsdragen, från rynkor till hudtextur, bevaras helt intakta från ursprungsbilderna. Miljön är en mörk, avspärrad stadsgata under natten. Blåljusen från en skymtande polisbil i bakgrunden kastar ett kallt, cinematiskt ljus över scenen och reflekteras i polisernas varselvästar. Kameravinkeln är något underifrån för att ge patrullen en heroisk och auktoritär känsla. Skärpedjupet är medellångt, med perfekt fokus på hela patrullen medan bakgrunden har en mjuk bokeh-effekt. Skapad med 8K-upplösning, fotorealistisk ljussättning och hög kontrast.",
-    "id": "proj-8",
-    "subtitle": "Logg 009",
-    "tags": [],
-    "title": "Ett hyperrealistiskt fotografi...",
-    "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
-  },
-  {
-    "type": "image",
-    "mediaUrl": "https://i.imgur.com/KzXbK5P.jpeg",
-    "processThumbnails": ["https://i.imgur.com/X4zW25R.jpeg", "https://i.imgur.com/0iKj3O4.jpeg"],
-    "mainPrompt": "Hyperrealistiskt filmiskt porträtt. Tre distinkta män, representerade i en vinkel något underifrån, iklädda välskräddade kolgrå kostymer över svarta skjortor utan slips, vilket förmedlar en rå och auktoritär närvaro. Den första mannen, till vänster, har breda ansiktsdrag och ett kortklippt, ansat skägg med runda proportioner. Han ler svagt och tittar lätt åt sidan, som om han analyserar en utomstående händelse. I mitten står den andra mannen, med mörkt, bakåtkammat hår, en skarp käklinje och en genomträngande, kylig blick fäst rakt mot kameran. Den tredje mannen, till höger, är skallig och kraftigt byggd med en intensiv och fokuserad uppsyn. Miljön är en abstrakt, rökig nattmiljö med en djup, cyan-blå nyans, som skapar en iskall atmosfär. Stark, volymetrisk belysning (cinematic lighting) slår ner snett bakifrån, kastar dramatiska skuggor över männens ansikten och reflekteras i kostymernas textur och männens hud. Kameran är satt till kort brännvidd (85mm) med en öppen bländare (f/1.4) för att skapa extrem skärpa på männen i förgrunden, samtidigt som bakgrundens rök försvinner i en elegant, mjuk oskärpa (bokeh). 8K-upplösning, fotorealism, raytracing, hög kontrast.",
-    "id": "proj-9",
-    "subtitle": "Logg 010",
-    "tags": [],
-    "title": "Hyperrealistiskt filmiskt porträtt...",
-    "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
-  },
-  {
-    "type": "image",
-    "mediaUrl": "https://i.imgur.com/71o0W1J.jpeg",
-    "processThumbnails": ["https://i.imgur.com/w1iYc6b.jpeg"],
-    "mainPrompt": "Hyperrealistiskt, filmiskt porträtt av en kraftigt byggd, skallig man i 40-50-årsåldern, klädd i en välsittande mörkblå svensk polisuniform med inslag av neongula reflexdetaljer på krage och axlar. Ljussättningen är dramatisk och djupt stämningsfull (low-key cinematic lighting). Miljön badar i ett isande kallt, blått och lätt lila neonljus, som imiterar blinkande polisbelysning en sen, regnig natt i storstan. Ljuset träffar mannens ansikte från sidan, vilket skapar starka kontraster och framhäver den grova hudstrukturen, varje rynka och svettdroppe, medan den andra halvan av ansiktet faller in i tunga skuggor. Kameran är extremt nära (close-up) och använder ett objektiv med kort skärpedjup (t.ex. 85mm f/1.4). Mannens intensiva, beslutsamma ögon är i knivskarp fokus, liksom texturen i polisuniformens märke och tyg. Bakgrunden är helt upplöst i en mjuk, abstrakt bokeh av nattstadens ljus, vilket isolerar motivet och ger bilden en känsla av brådskande, rå spänning. 8K-upplösning, fotorealistiskt, raytracing, extrem detaljrikedom.",
-    "id": "proj-10",
-    "subtitle": "Logg 011",
-    "tags": [],
-    "title": "Hyperrealistiskt filmiskt porträtt...",
-    "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
-  },
-  {
-    "type": "image",
-    "mediaUrl": "https://i.imgur.com/4zF86V6.jpeg",
-    "processThumbnails": ["https://i.imgur.com/8QYfO2g.jpeg", "https://i.imgur.com/kS9wz8O.jpeg", "https://i.imgur.com/w1iYc6b.jpeg"],
-    "mainPrompt": "Arkitektoniskt modefotografi av tre distinkta män, representerade sida vid sida, isolerade i ett becksvart rum. Den första är en man med ljus hy, ljust hår och en smal käklinje, den andra en man med kortklippt mörkt hår och markerade ansiktsdrag, och den tredje en vältränad skallig man. Samtliga är klädda i skräddarsydda kostymer av strukturerad kolgrå ull med tydlig tygtextur och knappar i borstad metall. Miljön är ett absolut mörkt vakuum med en solid svart bakgrund (#000000). Ljussättningen består av skarp sidobelysning som skapar djupa kontraster och mjuk rim-lighting längs siluetterna. Subsurface scattering ger huden en realistisk lyster, medan subtil volymetrisk dimma fångar ljusets riktning i det tomma rummet.",
-    "id": "proj-11",
-    "subtitle": "Logg 012",
-    "tags": [],
-    "title": "Arkitektoniskt modefotografi...",
-    "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
-  },
-  {
-    "type": "image",
-    "mediaUrl": "https://i.imgur.com/f04T869.jpeg",
-    "processThumbnails": ["https://i.imgur.com/Qk2tQ1Y.jpeg"],
-    "mainPrompt": "Hyperrealistiskt, filmiskt porträtt av tre män i 50-årsåldern som ser ut som auktoritära, civilklädda detektiver i en mörk, rökig gränd. I förgrunden till vänster står den första mannen. Han är skallig, kraftigt byggd med breda axlar, iförd en grov svart skinnjacka över en mörkgrå t-shirt. I mitten står den andra mannen. Han har mörkt hår, en bestämd haka, och bär en knäppt, mörk trenchcoat med uppfälld krage. Till höger står den tredje mannen. Han har kort, ljust hår och ett allvarligt uttryck, iförd en mörkblå skepparkavaj och en svart polotröja. Männen bygger exakt på tre specifika källbilder, vilket garanterar identiska ansiktsdrag. Miljön är en sliten, fuktig stadsgränd. Belysningen domineras av ett dramatiskt, neonblått ljus (cyberpunk-estetik) som kastar hårda skuggor och reflekteras i pölar på marken och på männens jackor. Tät dimma rullar in från bakgrunden. Extrem detaljrikedom i hudstruktur, tygtexturer och reflexer. 8K-upplösning, fotorealistiskt, cinematic lighting, raytracing, skapad med kort skärpedjup (bokeh i bakgrunden).",
-    "id": "proj-12",
-    "subtitle": "Logg 013",
-    "tags": [],
-    "title": "Hyperrealistiskt filmiskt porträtt...",
-    "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
-  }
-];
+            {
+                "type": "image",
+                "mediaUrl": "https://i.imgur.com/xsMYmTB.jpeg",
+                "processThumbnails": ["https://i.imgur.com/bGROs5W.jpeg"],
+                "mainPrompt": "Hyperdetaljerat 8K-mästerverk som visualiserar en arkitektonisk och biomekanisk gestaltning av en fadersfigur (\"pappa\"), där ytan styrs av en avancerad procedurmatris för materialblandning. Kärnan i kompositionen utgörs av en dynamisk fusion mellan kall, industriell sci-fi och eterisk magi. Materialet är uppbyggt genom en sofistikerad shader-graf där en Fresnel-nod dikterar övergången baserat på betraktningsvinkeln mot ytans normal: Vid direkta vinklar framträder en tung, borstad anodiserad aluminium med mikroskopiska repor och en matt, teknisk lyster. I de flacka vinklarna och längs silhuettens kanter sker en sömlös metamorfos till ett organiskt, iridiserande glitter som påminner om vingarna hos ett mytiskt sagoväsen. Ljuset bryts i spektrala färgskiftningar som rör sig flytande över den metalliska huden när kameran sveper runt objektet. Hyperrealistiska texturer, raytracing, global illumination, makrofokus på materialövergångar, cinematic lighting, 8K-upplösning, teknisk perfektion.",
+                "id": "proj-0",
+                "subtitle": "Logg 001",
+                "tags": [],
+                "title": "Hyperdetaljerat 8K-mästerverk som visual...",
+                "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
+            },
+            {
+                "type": "image",
+                "mediaUrl": "https://i.imgur.com/xI1yK3j.jpeg",
+                "processThumbnails": ["https://i.imgur.com/vHq1kEM.jpeg", "https://i.imgur.com/Z8z3P1x.jpeg"],
+                "mainPrompt": "Ett hyperrealistiskt och suggestivt modefotografi som porträtterar ett oväntat och kraftfullt möte: Den skräckinjagande skurken från filmen Saw klädd i en stilren och välskräddad svensk polisuniform i mörkblått. Uniformen är felfri med blanka silverknappar, detaljerade emblem och en poliskeps med skärm, vilket skapar en absurd men fascinerande kontrast till karaktärens ikoniska, groteska ansiktsmask med de röda spiralerna på kinderna och de mörka, djupt liggande ögonen. Bakgrunden är en dystopisk, övergiven industriell gränd dränkt i ett intensivt, nästan självlysande neongrönt ljus, vilket ger scenen en toxisk och overklig atmosfär. Skuggorna är djupa och hårda, medan det gröna ljuset reflekteras skarpt i polisuniformens blanka detaljer och i pölar på den fuktiga asfalten. Bilden kännetecknas av enastående skärpa (8K), där varje textur – från tygets struktur till maskens porslinsliknande yta och den rostiga bakgrunden – framträder med makalös detaljrikedom. Ljussättningen är dramatisk och filmisk (cinematic lighting), med en subtil rök eller dimma som förstärker den neongröna belysningen och ger bilden en klaustrofobisk, mardrömslik djupverkan. Skapad med raytracing och avancerad global illumination för perfekt ljusstuds och realism.",
+                "id": "proj-1",
+                "subtitle": "Logg 002",
+                "tags": [],
+                "title": "Ett hyperrealistiskt och suggestivt mode...",
+                "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
+            },
+            {
+                "type": "image",
+                "mediaUrl": "https://i.imgur.com/9nJ97U4.jpeg",
+                "processThumbnails": ["https://i.imgur.com/Qk2tQ1Y.jpeg"],
+                "mainPrompt": "Hyperrealistiskt, filmiskt porträtt av tre män i 55-årsåldern som ser ut som tunga, auktoritära poliser i en mörk, rökig gränd. I förgrunden till vänster står den första mannen. Han är skallig, kraftigt byggd med breda axlar och tjock nacke, och har ett grovt, ärrat ansikte. I mitten står den andra mannen. Han har mörkt hår, en bestämd haka och en intensiv, genomträngande blick. Till höger står den tredje mannen. Han har kort, ljusbrunt hår och ett allvarligt uttryck. Båda de två första männen (skallig till vänster, mörkhårig i mitten) bär svenska polisuniformer i mörkblått, med reflexvästar som skapar skarpa kontraster i ljuset, svarta stridsvästar med mängder av utrustningsfickor, och tydliga polis-emblem. Den tredje mannen till höger bryter mönstret och bär en elegant, mörk kostym av hög kvalitet, en krispig vit skjorta och en diskret slips, vilket ger honom en air av överordnad makt. Miljön är en sliten, fuktig stadsgränd. Belysningen domineras av ett dramatiskt, giftigt neongrönt ljus som kastar långa, hårda skuggor och reflekteras i pölar på marken och på polisernas reflexer. Tät dimma rullar in från bakgrunden och förstärker den klaustrofobiska atmosfären. Extrem detaljrikedom i hudstruktur (porer, svett, rynkor), tygtexturer och reflexer. 8K-upplösning, fotorealistiskt, cinematic lighting, raytracing, skapad med objektiv för kort skärpedjup (bokéh i bakgrunden) och dramatisk vinkel nerifrån för att ge männen en dominant framtoning.",
+                "id": "proj-2",
+                "subtitle": "Logg 003",
+                "tags": [],
+                "title": "Hyperrealistiskt porträtt...",
+                "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
+            },
+            {
+                "type": "image",
+                "mediaUrl": "https://i.imgur.com/kS9wz8O.jpeg",
+                "processThumbnails": ["https://i.imgur.com/AetbL3a.jpeg"],
+                "mainPrompt": "Hyperrealistiskt makrofotografi som fångar detaljerade ansiktsdrag hos en man. Mannens hud ska vara extremt detaljerad, med synliga porer, mikroskopiska rynkor, fina fjun (peach fuzz) och små färgvariationer (som fräknar eller subtila kapillärer) för maximal realism. Ögonen måste ha naturtrogna reflektioner och fuktighet. Ljussättningen ska vara dramatisk och filmisk (cinematic lighting), med en stark primär ljuskälla från ena sidan som skapar djupa skuggor och framhäver texturen i ansiktet, och ett mjukt fyllnadsljus som lättar upp de mörkaste partierna utan att förstöra kontrasten. Kamera: Fokuserad med ett makroobjektiv (t.ex. 100mm f/2.8) för att ge ett mycket kort skärpedjup, där bara en specifik del av ansiktet (som ena ögat eller kindbenet) är i knivskarp fokus, medan bakgrunden – och eventuellt förgrunden – faller bort i en mjuk, krämig bokeh. Atmosfären ska kännas intim, intensiv och hyperdetaljerad. 8k resolution, raytracing, Unreal Engine 5 render style.",
+                "id": "proj-3",
+                "subtitle": "Logg 004",
+                "tags": [],
+                "title": "Hyperrealistiskt makrofotografi...",
+                "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
+            },
+            {
+                "type": "image",
+                "mediaUrl": "https://i.imgur.com/HnUjW1n.jpeg",
+                "processThumbnails": ["https://i.imgur.com/c6U8Kj1.jpeg"],
+                "mainPrompt": "Hyperrealistiskt actionfotografi, ett fartfyllt ögonblick på en professionell padelbana under intensivt spel. I förgrunden, knivskarpt fokuserad, kastar sig en man (ca 40 år) atletiskt genom luften i en dynamisk, fullt utsträckt dykning för att nå en omöjlig boll. Han bär moderna, mörka sportkläder (t-shirt och shorts) och håller ett exklusivt kolfiberracket hårt i handen. Hans ansiktsuttryck visar extrem koncentration och ansträngning, svettpärlor flyger i rörelsen. Padelbanan är omgärdad av rena glasväggar och blått konstgräs. I den mjukt oskarpa bakgrunden (bokeh) står hans medspelare redo, och en publik kan anas på läktarna i det mörka rummet. Belysningen är dramatisk sportbelysning (stadium lighting), med skarpa spotlights från taket som skapar starka highlights på spelarens muskler och racket, kombinerat med dynamiska skuggor på banan. Kameran följer rörelsen med en snabb slutartid (fryst rörelse) men med en subtil motion blur på bollen och baksidan av racketet för att förmedla extrem hastighet. Fotograferat med Sony A1, 85mm lins f/1.8, 8k upplösning, fotorealistiskt, cinematic action, hyperdetaljerade texturer i kläder och utrustning.",
+                "id": "proj-4",
+                "subtitle": "Logg 005",
+                "tags": [],
+                "title": "Hyperrealistiskt actionfotografi...",
+                "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
+            },
+            {
+                "type": "image",
+                "mediaUrl": "https://i.imgur.com/9lqgM1V.jpeg",
+                "processThumbnails": ["https://i.imgur.com/4zF86V6.jpeg"],
+                "mainPrompt": "Ett högkvalitativt, filmiskt porträtt i en mörk, elegant och stämningsfull miljö (moody, low-key lighting). Motiv: En man (40-50 år) med kort, ljust hår, bärande en exklusiv svart t-shirt. Han står med en självsäker, avslappnad hållning och tittar intensivt mot kameran. Fotografering: Använd en kort brännvidd (t.ex. 35mm eller 50mm) för att hålla motivet knivskarpt i förgrunden, medan bakgrunden försvinner i en mjuk, cinematiskt oskarp bokeh (shallow depth of field). Ljussättning: Dramatiskt sidoljus (rim lighting eller split lighting) som framhäver ansiktets konturer och strukturen i den svarta tröjan, och lämnar en del av ansiktet i djupskugga för att skapa dramatik. Bakgrunden ska vara en lyxig interiör i dunkel – kanske en hotellbar, ett modernt kontor kvällstid eller ett regnigt gatlandskap nattetid, upplyst av subtila, varma ljuskällor (som amber, guld eller dova neonfärger) som skapar vackra bokeh-cirklar. Estetik: Hyperrealistisk (8k), rik på textur (tyg, hud, porer), med en känsla hämtad från en modern thriller eller exklusiv reklamkampanj.",
+                "id": "proj-5",
+                "subtitle": "Logg 006",
+                "tags": [],
+                "title": "Ett högkvalitativt...",
+                "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
+            },
+            {
+                "type": "image",
+                "mediaUrl": "https://i.imgur.com/423X7wZ.jpeg",
+                "processThumbnails": ["https://i.imgur.com/71o0W1J.jpeg", "https://i.imgur.com/0iKj3O4.jpeg", "https://i.imgur.com/s69KEDt.jpeg"],
+                "mainPrompt": "Hyperrealistiskt porträtt av tre män i en intensiv, stämningsfull miljö. Bilden fokuserar på de två männen från de ursprungliga porträtten: den kortklippta, ljusa mannen till höger och mannen med runda, kraftiga ansiktsdrag och kort skägg till vänster. De står nära varandra i förgrunden och tittar rakt in i kameran med ett allvarligt, samlat uttryck. Mellan dem, i bakgrunden, står en tredje man, helt klädd i svart från topp till tå – svart skjorta, svarta byxor, svart jacka – vilket gör att han smälter in i de djupa skuggorna. Ljussättningen är dramatisk, moody och cinematic (low-key lighting), med en subtil ljuskälla som träffar ansiktena på männen i förgrunden, men lämnar mannen i bakgrunden nästan helt i mörker, vilket skapar en känsla av mystik och tyngd. Miljön är mörk och obestämd, möjligen en exklusiv interiör eller en dimly-lit gränd på natten. Kameran har ett kort skärpedjup (shallow depth of field), där männen i förgrunden är knivskarpa med hyperdetaljerad hud och textur i kläderna, medan mannen i bakgrunden och miljön faller bort i en mjuk, filmisk bokeh. 8k upplösning, raytracing, hög kontrast, fotorealistiskt.",
+                "id": "proj-6",
+                "subtitle": "Logg 007",
+                "tags": [],
+                "title": "Hyperrealistiskt porträtt...",
+                "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
+            },
+            {
+                "type": "image",
+                "mediaUrl": "https://i.imgur.com/4q3330U.jpeg",
+                "processThumbnails": ["https://i.imgur.com/xT5rR9T.jpeg"],
+                "mainPrompt": "Hyperrealistisk och episk actionscen som utspelar sig i en tät, frodig djungel. I förgrunden, fokuserad med knivskarp skärpa, står en ensam hjälte (man, ca 40 år) insvept i mystik. Han är klädd i en svart, teknisk luvtröja där luvan är djupt neddragen över huvudet och ansiktet skuggas, vilket ger honom en hotfull men heroisk aura. Han står i en stridsredo pose och riktar ett stort, futuristiskt och modifierat automatvapen snett uppåt. Det dundrar eld och blixtrar från vapnets mynning, vilket lyser upp hans ansikte och den svarta tröjans struktur med en intensiv, gyllene blixt. Runt omkring honom rasar ett extremt intensivt kulregn. Stora, lysande projektiler flyger horisontellt genom luften från båda sidor, klippande genom de enorma, daggvåta djungelbladen. Träd och lianer i bakgrunden exploderar i splitter och rök. Ljussättningen är dramatisk och filmisk (cinematic lighting), där vapenelden fungerar som primär ljuskälla i den mörka djungeln, tillsammans med strålar av månsken som letar sig ner genom trädkronorna. Kameran använder en extremt snabb slutartid (frozen motion) kombinerat med kort skärpedjup (bokeh i bakgrunden) för att fånga varje svettdroppe, mynningsflamma och flygande löv i hyperdetaljerad 8K. Fotorealistiskt, raytracing, dova gröna och svarta toner kontrasterade av intensiv orange vapeneld.",
+                "id": "proj-7",
+                "subtitle": "Logg 008",
+                "tags": [],
+                "title": "Hyperrealistisk episk action...",
+                "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
+            },
+            {
+                "type": "image",
+                "mediaUrl": "https://i.imgur.com/tHqgR1y.jpeg",
+                "processThumbnails": ["https://i.imgur.com/gK6n5tO.jpeg", "https://i.imgur.com/p510P9p.jpeg"],
+                "mainPrompt": "Ett hyperrealistiskt fotografi. En svensk polispatrull bestående av fyra manliga poliser som står i en V-formation och poserar målmedvetet framför kameran. Poliserna bär klassisk, mörkblå svensk uniform med gula varselvästar över, detaljerade med insignier, brickor, radioapparater på bröstet och vapenutrustning i bältena. De fyra poliserna bygger på fyra exakta originalporträtt: I mitten framträder en man med mörkt bakåtkammat hår och ett bestämt käkparti. Till höger om honom står en man med kort ljust hår och en intensiv blick. Längst till vänster står en man med breda ansiktsdrag och kortklippt skägg. Längst till höger (näst intill den ljushåriga) står en kraftigt byggd, skallig man med allvarligt uttryck. Ansiktsdragen, från rynkor till hudtextur, bevaras helt intakta från ursprungsbilderna. Miljön är en mörk, avspärrad stadsgata under natten. Blåljusen från en skymtande polisbil i bakgrunden kastar ett kallt, cinematiskt ljus över scenen och reflekteras i polisernas varselvästar. Kameravinkeln är något underifrån för att ge patrullen en heroisk och auktoritär känsla. Skärpedjupet är medellångt, med perfekt fokus på hela patrullen medan bakgrunden har en mjuk bokeh-effekt. Skapad med 8K-upplösning, fotorealistisk ljussättning och hög kontrast.",
+                "id": "proj-8",
+                "subtitle": "Logg 009",
+                "tags": [],
+                "title": "Ett hyperrealistiskt fotografi...",
+                "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
+            },
+            {
+                "type": "image",
+                "mediaUrl": "https://i.imgur.com/KzXbK5P.jpeg",
+                "processThumbnails": ["https://i.imgur.com/X4zW25R.jpeg", "https://i.imgur.com/0iKj3O4.jpeg"],
+                "mainPrompt": "Hyperrealistiskt filmiskt porträtt. Tre distinkta män, representerade i en vinkel något underifrån, iklädda välskräddade kolgrå kostymer över svarta skjortor utan slips, vilket förmedlar en rå och auktoritär närvaro. Den första mannen, till vänster, har breda ansiktsdrag och ett kortklippt, ansat skägg med runda proportioner. Han ler svagt och tittar lätt åt sidan, som om হন analyserar en utomstående händelse. I mitten står den andra mannen, med mörkt, bakåtkammat hår, en skarp käklinje och en genomträngande, kylig blick fäst rakt mot kameran. Den tredje mannen, till höger, är skallig och kraftigt byggd med en intensiv och fokuserad uppsyn. Miljön är en abstrakt, rökig nattmiljö med en djup, cyan-blå nyans, som skapar en iskall atmosfär. Stark, volymetrisk belysning (cinematic lighting) slår ner snett bakifrån, kastar dramatiska skuggor över männens ansikten och reflekteras i kostymernas textur och männens hud. Kameran är satt till kort brännvidd (85mm) med en öppen bländare (f/1.4) för att skapa extrem skärpa på männen i förgrunden, samtidigt som bakgrundens rök försvinner i en elegant, mjuk oskärpa (bokeh). 8K-upplösning, fotorealism, raytracing, hög kontrast.",
+                "id": "proj-9",
+                "subtitle": "Logg 010",
+                "tags": [],
+                "title": "Hyperrealistiskt filmiskt porträtt...",
+                "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
+            },
+            {
+                "type": "image",
+                "mediaUrl": "https://i.imgur.com/71o0W1J.jpeg",
+                "processThumbnails": ["https://i.imgur.com/w1iYc6b.jpeg"],
+                "mainPrompt": "Hyperrealistiskt, filmiskt porträtt av en kraftigt byggd, skallig man i 40-50-årsåldern, klädd i en välsittande mörkblå svensk polisuniform med inslag av neongula reflexdetaljer på krage och axlar. Ljussättningen är dramatisk och djupt stämningsfull (low-key cinematic lighting). Miljön badar i ett isande kallt, blått och lätt lila neonljus, som imiterar blinkande polisbelysning en sen, regnig natt i storstan. Ljuset träffar mannens ansikte från sidan, vilket skapar starka kontraster och framhäver den grova hudstrukturen, varje rynka och svettdroppe, medan den andra halvan av ansiktet faller in i tunga skuggor. Kameran är extremt nära (close-up) och använder ett objektiv med kort skärpedjup (t.ex. 85mm f/1.4). Mannens intensiva, beslutsamma ögon är i knivskarp fokus, liksom texturen i polisuniformens märke och tyg. Bakgrunden är helt upplöst i en mjuk, abstrakt bokeh av nattstadens ljus, vilket isolerar motivet och ger bilden en känsla av brådskande, rå spänning. 8K-upplösning, fotorealistiskt, raytracing, extrem detaljrikedom.",
+                "id": "proj-10",
+                "subtitle": "Logg 011",
+                "tags": [],
+                "title": "Hyperrealistiskt filmiskt porträtt...",
+                "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
+            },
+            {
+                "type": "image",
+                "mediaUrl": "https://i.imgur.com/4zF86V6.jpeg",
+                "processThumbnails": ["https://i.imgur.com/8QYfO2g.jpeg", "https://i.imgur.com/kS9wz8O.jpeg", "https://i.imgur.com/w1iYc6b.jpeg"],
+                "mainPrompt": "Arkitektoniskt modefotografi av tre distinkta män, representerade sida vid sida, isolerade i ett becksvart rum. Den första är en man med ljus hy, ljust hår och en smal käklinje, den andra en man med kortklippt mörkt hår och markerade ansiktsdrag, och den tredje en vältränad skallig man. Samtliga är klädda i skräddarsydda kostymer av strukturerad kolgrå ull med tydlig tygtextur och knappar i borstad metall. Miljön är ett absolut mörkt vakuum med en solid svart bakgrund (#000000). Ljussättningen består av skarp sidobelysning som skapar djupa kontraster och mjuk rim-lighting längs siluetterna. Subsurface scattering ger huden en realistisk lyster, medan subtil volymetrisk dimma fångar ljusets riktning i det tomma rummet.",
+                "id": "proj-11",
+                "subtitle": "Logg 012",
+                "tags": [],
+                "title": "Arkitektoniskt modefotografi...",
+                "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
+            },
+            {
+                "type": "image",
+                "mediaUrl": "https://i.imgur.com/f04T869.jpeg",
+                "processThumbnails": ["https://i.imgur.com/Qk2tQ1Y.jpeg"],
+                "mainPrompt": "Hyperrealistiskt, filmiskt porträtt av tre män i 50-årsåldern som ser ut som auktoritära, civilklädda detektiver i en mörk, rökig gränd. I förgrunden till vänster står den första mannen. Han är skallig, kraftigt byggd med breda axlar, iförd en grov svart skinnjacka över en mörkgrå t-shirt. I mitten står den andra mannen. Han har mörkt hår, en bestämd haka, och bär en knäppt, mörk trenchcoat med uppfälld krage. Till höger står den tredje mannen. Han har kort, ljust hår och ett allvarligt uttryck, iförd en mörkblå skepparkavaj och en svart polotröja. Männen bygger exakt på tre specifika källbilder, vilket garanterar identiska ansiktsdrag. Miljön är en sliten, fuktig stadsgränd. Belysningen domineras av ett dramatiskt, neonblått ljus (cyberpunk-estetik) som kastar hårda skuggor och reflekteras i pölar på marken och på männens jackor. Tät dimma rullar in från bakgrunden. Extrem detaljrikedom i hudstruktur, tygtexturer och reflexer. 8K-upplösning, fotorealistiskt, cinematic lighting, raytracing, skapad med kort skärpedjup (bokeh i bakgrunden).",
+                "id": "proj-12",
+                "subtitle": "Logg 013",
+                "tags": [],
+                "title": "Hyperrealistiskt filmiskt porträtt...",
+                "description": "Ett visuellt experiment genererat utifrån systemets master-prompt."
+            }
+        ];
 
         let savedData = null;
         try { savedData = localStorage.getItem('blom_portfolio_data'); } catch (e) { }
@@ -422,41 +447,51 @@
         }
 
         // ==========================================
-        // 1.5 DATA: DINA APPAR OCH SYSTEM
+        // 1.5 DATA: DINA 41 APPAR OCH SYSTEM
         // ==========================================
         let appData = [
-            {
-                id: 'app-001',
-                title: 'Ad Scout Flow',
-                shortDesc: 'AI-driven Art Director-assistent för exakta kommersiella prompter.',
-                icon: 'image',
-                tags: ['Prompt Engineering', 'Bild'],
-                fullDesc: 'Ad Scout Flow överbryggar klyftan mellan kreativa visioner och de exakta tekniska prompter som krävs för AI-bildgenerering. Verktyget automatiserar svåra beslut kring ljus, optik och stil, låter användaren arbeta intuitivt på svenska, och bygger automatiskt upp ett sökbart arkiv.'
-            },
-            {
-                id: 'app-002',
-                title: 'Prompt Scout Motion',
-                shortDesc: 'Ger skapare total regissörskontroll över AI-videogenerering.',
-                icon: 'video',
-                tags: ['Video', 'Animation'],
-                fullDesc: 'Genom att bryta ner stillbilder i extraherbara element och placera dem på en logisk, färgkodad tidslinje, eliminerar appen slumpen och möjliggör exakt, prompt-baserat berättande för rörligt AI-material.'
-            },
-            {
-                id: 'app-003',
-                title: 'The All Seeing Eye',
-                shortDesc: 'AI-driven förstapersons-äventyrsmotor och interaktiv världsbyggare.',
-                icon: 'eye',
-                tags: ['RPG Engine', 'Inpainting', 'Generative AI'],
-                fullDesc: 'Utvecklad som en avancerad, AI-driven RPG-motor. Systemet började som ett verktyg för inpainting (\'magisk pensel\') men expanderades till en portal där användaren kan kliva in i genererade bilder och utforska dem i ett 3D-liknande perspektiv. Styrs via textkommandon och klick för att skapa djupa, visuella äventyr och dynamiskt världsbyggande. Byggt med fokus på tillgänglighet och gränslös kreativitet.'
-            },
-            {
-                id: 'app-004',
-                title: 'Virtual Art Studio',
-                shortDesc: 'Interaktiv 3D-miljö för virtuella konstutställningar med AI-guide.',
-                icon: 'box',
-                tags: ['3D Environment', 'Audio UI', 'Exhibition'],
-                fullDesc: 'En uppslukande virtuell utställningsplattform där digitala verk presenteras i en interaktiv 3D-rymd. Systemet integrerar röstguidning, dynamisk inläsning av konstverkens metadata (medium, beskrivning, värdering) och ett anpassat gränssnitt för att ge besökaren en fullskalig galleriupplevelse direkt i webbläsaren.'
-            }
+            { id: 'app-001', image: '', title: 'The All Seeing Eye', shortDesc: 'AI-driven förstapersons-äventyrsmotor och interaktiv världsbyggare.', icon: 'eye', tags: ['RPG Engine', 'Inpainting', 'Generative AI'], fullDesc: 'Utvecklad som en avancerad, AI-driven RPG-motor. Systemet började som ett verktyg för inpainting (\'magisk pensel\') men expanderades till en portal där användaren kan kliva in i genererade bilder och utforska dem i ett 3D-liknande perspektiv. Styrs via textkommandon och klick för att skapa djupa, visuella äventyr och dynamiskt världsbyggande. Byggt med fokus på tillgänglighet och gränslös kreativitet.' },
+            { id: 'app-002', image: '', title: '360 Känslan', shortDesc: 'Terapeutisk 360-graders miljöutforskare med semantisk GPS.', icon: 'compass', tags: ['Virtual Environment', 'Semantic AI', 'Memory Optimizer'], fullDesc: 'Jag har utvecklat "360 Känslan" som ett terapeutiskt verktyg för eskapism, särskilt anpassat för användare med fysiska begränsningar. Systemet låter användaren utforska och panorera i AI-genererade miljöer via klick- och scrollhändelser. För att tvinga AI:n att förstå navigering byggde jag in ett "Semantiskt GPS"-system som översätter klickkoordinater till beskrivande text (t.ex. "långt bort i den vänstra bakgrunden"). Jag adderade även en "Chain-of-Thought"-logik (inre monolog) som tvingar modellen att förklara kamerarörelsen innan bilden genereras, vilket dramatiskt höjde precisionen. Systemets arkitektur hanterar högupplösta Base64-bilder och förhindrar webbläsarkrascher genom en strikt implementerad FIFO-kö som raderar äldre data och håller historiken begränsad till max 5 steg.' },
+            { id: 'app-009', image: '', title: 'Bokskapare Pro', shortDesc: 'Distraktionsfri och kraftfull kreativ studio för författande.', icon: 'book-open', tags: ['React SPA', 'JSON Export', 'Writing', 'AI Prompts'], fullDesc: 'Syftet med Bokskapare Pro är att erbjuda en distraktionsfri men kraftfull kreativ studio för författande. Systemet låter användaren strukturera text och bilder i block och ger visuell inspiration via inbyggda AI-promptgeneratorer. Arkitekturen (byggd i React med Tailwind CSS i "Sky Protocol"-estetik) är helt moln-isolerad för maximal sekretess, där all data hanteras i klientens minne och sparas via manuell JSON-export. Systemet stöder övergång från utkast till färdig utskriftsvänlig sida på sekunder.' },
+            { id: 'app-015', image: '', title: 'AI Video Prompt Skapare', shortDesc: 'Automatiserad brygga mellan svenska koncept och tekniska videoprompter.', icon: 'video', tags: ['Video AI', 'Prompt Engineering', 'React SPA'], fullDesc: 'Systemets primära syfte är att fungera som en automatiserad brygga mellan svenskspråkiga koncept och engelskspråkiga AI-verktyg för videogenerering (som Runway Gen-2, Sora och Pika Labs). Applikationen omvandlar korta beskrivningar till detaljerade, tekniska prompter som automatiskt inkluderar nödvändiga parametrar för ljussättning, kameravinklar och stilistik. Arkitekturen är byggd som en klientcentrerad SPA (Single Page Application) i React med Tailwind CSS för att säkerställa snabb navigering och omedelbar tillståndshantering utan sidomladdningar.' },
+            { id: 'app-016', image: '', title: 'Berättarröst Studio Pro', shortDesc: 'Webbaserad ljudproduktion och multi-track mixer för sagor.', icon: 'mic', tags: ['Audio Production', 'TTS', 'React SPA', 'Multi-Track Mixer'], fullDesc: 'Mitt primära mål med Berättarröst Studio Pro var att demokratisera avancerad ljudproduktion. Jag designade verktyget för att låta användaren skapa professionella berättelser med högkvalitativa röster (TTS), synkroniserade ljudeffekter och bakgrundsmusik direkt i webbläsaren, helt utan förkunskaper i tunga DAW-program. Applikationen hanterar en interaktiv tidslinje med drag-and-drop-stöd och en dedikerad mixer-konsol för att balansera röst, SFX och musik. Koden är skriven i React (lokal state management via hooks) med en strikt modulär komponentstruktur och stylad med Tailwind CSS för en responsiv, dark-mode-anpassad arbetsmiljö.' },
+            { id: 'app-017', image: '', title: 'Filmstudio', shortDesc: 'Professionellt kontrollrum för generativt filmskapande och AI-prompter.', icon: 'clapperboard', tags: ['Generative AI', 'Cinematography', 'React SPA', 'Prompt Engineering'], fullDesc: 'Mitt huvudsakliga mål med Filmstudio har varit att skapa ett professionellt "kontrollrum" för generativt filmskapande. Jag har velat ge dig, Blom, möjligheten att gå från en enkel idé till en tekniskt avancerad AI-prompt utan att behöva behärska komplex "prompt engineering" manuellt. Systemet fungerar som en brygga mellan mänsklig kreativitet och avancerade AI-modeller, där jag har prioriterat visuell tydlighet, kontinuitet och finkornig kontroll över kinematografiska detaljer.' },
+            { id: 'app-023', image: '', title: 'Bloms Fotokollage', shortDesc: 'Professionellt verktyg för dynamiska bildkollage optimerade för A4.', icon: 'layout', tags: ['Photo Editor', 'Print Optimized', 'Drag-and-Drop'], fullDesc: 'Mitt primära mål med denna applikation var att lösa ett vanligt problem vid bildhantering: att bilder antingen blir utdragna eller att viktiga delar försvinner vid beskärning. Jag ville skapa en miljö där konstverk och foton kan samexistera i en flexibel men stabil layout. Arkitekturen inkluderar ett dynamiskt rutnät, drag-and-drop-funktionalitet för att byta plats på bilder, och avancerad "Pan/Zoom"-logik för pixelperfekt justering. Allt är exakt optimerat för utskrift på A4 utan att användaren behöver teknisk expertis.' },
+            { id: 'app-029', image: '', title: 'Liljas Magiska Äventyr', shortDesc: 'Pedagogiskt äventyrsverktyg med röststyrning och visuell magi.', icon: 'wand-2', tags: ['Educational', 'Voice Recognition', 'Three.js', 'Math & Logic'], fullDesc: 'Mitt syfte med den här applikationen var att skapa ett pedagogiskt verktyg som känns som ett magiskt äventyr. Jag ville ge dig, Blom, möjligheten att förbereda personliga utmaningar för Lilja där målet (belöningen) presenteras genom visuell och auditiv magi. Systemet bygger på en klientsidebaserad enfilsapplikation som integrerar Three.js för levande 3D-miljöer och Web Speech API för intuitiv röstinteraktion, helt utan molnberoenden. Appen innehåller 10 magiska uppdrag som tränar logik och klockavläsning.' },
+            { id: 'app-030', image: '', title: 'Fortnite Karaktär Studio', shortDesc: 'Studio som förvandlar foton till heroiska digitala avatarer.', icon: 'gamepad-2', tags: ['Generative AI', 'Image2Image', 'React SPA', 'Character Design'], fullDesc: 'Mitt primära mål med detta projekt har varit att skapa en bro mellan verklighet och fantasi. Genom att kombinera avancerad generativ AI med ett användarvänligt gränssnitt möjliggörs förvandling av vardagliga foton till heroiska digitala avatarer i Fortnite-stil med 100% bevarad ansiktslikhet. Arkitekturen vilar på en "Master Realism Prompt", ett draft-baserat arbetsflöde och integrerar Gemini 2.5 Flash för både bildgenerering och automatiserat författande av "Lore" (bakgrundshistorier).' },
+            { id: 'app-031', image: '', title: 'Infinite Zoom Lab', shortDesc: 'Innovativ plattform för oändliga visuella zoom-resor drivna av AI.', icon: 'zoom-in', tags: ['Zoom Engine', 'Gemini & Imagen', 'CSS Animation'], fullDesc: 'Infinite Zoom Lab är ett verktyg utvecklat för att skapa oändliga visuella resor med hjälp av artificiell intelligens. Syftet är att sänka tröskeln för avancerat skapande genom en hybrid AI-arkitektur. Gemini 2.5 Flash agerar kreativ regissör och planerar nästa logiska djupskikt, medan Imagen 4.0 renderar bilderna. Systemet använder klient-sidans CSS-transformationer istället för tung videorendering för att skapa en omedelbar, interaktiv illusion av oändlig inzoomning.' },
+            { id: 'app-032', image: '', title: 'Story Spark Pro', shortDesc: 'ADHD-vänligt verktyg för att transformera idéer till filmscener.', icon: 'sparkles', tags: ['Image2Image', 'Pixar Style', 'Prompt Engineering'], fullDesc: 'Jag har utvecklat Story Spark Pro med ett tydligt mål: att eliminera alla tekniska hinder för kreativitet, skräddarsytt för Blom och Lilja. Appen erbjuder ett ADHD-vänligt gränssnitt med omedelbar feedback och en "Gör Levande"-funktion som väcker objekt till liv i Pixar-stil. Arkitekturen utnyttjar en dynamisk modellväxling mellan Imagen 4.0 (text-till-bild) och Gemini 2.5 Flash (bild-till-bild) via Base64-överföring, och automatiserar komplex prompt engineering.' },
+            { id: 'app-038', image: '', title: 'AI-Bildgenerator', shortDesc: 'Intuitivt gränssnitt för realtidsgenerering av AI-bilder med Imagen 4.0.', icon: 'image', tags: ['Imagen 4.0', 'React SPA', 'Exponential Backoff'], fullDesc: 'Mitt övergripande mål med denna applikation har varit att skapa ett intuitivt gränssnitt där teknik och kreativitet möts. Jag ville bygga ett verktyg som gör den avancerade AI-tekniken tillgänglig på ett sätt som känns både inspirerande och tryggt. Visionen är att "Skapa Bild" ska vara en förlängning av din fantasi, paketerad i en modern och användarvänlig miljö med Glassmorphism-design. Appen använder Google Imagen 4.0 och implementerar Exponential Backoff för maximal nätverksstabilitet under genereringsprocessen.' },
+            { id: 'app-039', image: '', title: 'Liljas Läshjälp & Fuskverktyg för Sims 4', shortDesc: 'Python-baserat läshjälpmedel med OCR och svensk talsyntes.', icon: 'book-open-check', tags: ['Python', 'OCR', 'TTS', 'Accessibility'], fullDesc: 'Huvudsyftet med projektet var att skapa ett verktyg som gör det möjligt för Lilja, 6 år, att självständigt förstå textmeddelanden i Sims 4. Verktyget "fryser" skärmen, skalar upp bilden 300%, och använder dubbel OCR (inklusive färginvertering för spelets blå/vita-grafik) för att läsa upp texten med svensk talsyntes ("Bengt"). Allt är förpackat med enkla kortkommandon (F9 för läsning, F10 för fuskassistent) som körs i bakgrunden med administratörsrättigheter för att kringgå spelets input-blockering.' },
+            { id: 'app-040', image: '', title: 'Må-bra & Rutin Tracker', shortDesc: 'Kognitivt stödverktyg för självreglering och rutinhantering.', icon: 'heart-pulse', tags: ['Health Tracker', 'React SPA', 'Cognitive Aid'], fullDesc: 'Applikationen är skapad som en kognitiv brygga för en vardag med ADHD och bipolär problematik. Mitt syfte var att bygga ett instrument för självreglering som minskar det exekutiva motståndet och ger visuell feedback på framsteg. Den innehåller energinivå-loggning för att se mönster i mående, en dynamisk fokuslista (Fysik, Familj, Jobb) och dopamin-drivna visuella framstegsmätare. Byggd som en Single-File React-app med lugnande Indigo/Violett färgskala optimerad för mobilt bruk.' },
+            { id: 'app-041', image: '', title: 'FORTNITE BATTLE CARDS ENGINE', shortDesc: 'Omfattande digitalt ekosystem och 3D-motor för ett taktiskt kortspel.', icon: 'swords', tags: ['TCG', '3D Arena', 'Firebase Multiplayer', 'Gemini Vision'], fullDesc: 'Detta massiva ekosystem transformerar ett fysiskt kortspel till en levande digital 3D-upplevelse ("Tactical Sci-Fi Tabletop"). Systemet innehåller en grafikmotor för att rendera "Data Chips", en spelmotor med dynamisk storm/reboot-mekanik, och Firebase-multiplayer. Den största arkitektoniska innovationen är integreringen av Gemini AI Vision som automatiserat läser av uppladdade PNG-korts stats (HP, Attack, Kostnad) och omvandlar handkort till 3D-standees på spelplanen. En komplett "The Loop"-affärsmodell med kryptiska valutor (Coins/V-Bucks) och AI-genererade spelarprofiler finns implementerad.' },
+            { id: 'app-042', image: '', title: 'Mulle (Kortspel)', shortDesc: 'Digital enspelarupplevelse av det klassiska kortspelet med inbyggd AI.', icon: 'club', tags: ['Card Game', 'React', 'Greedy AI', 'Algorithms'], fullDesc: 'Jag har transformerat det strategiskt djupa svenska kortspelet Mulle till en modern digital upplevelse. Systemet hanterar dubbla standardlekar (104 kort), dynamiska värden (Lillan, Storan) och detektion av "Mullar" och "Tabbar". Arkitekturen bygger på React för tillståndshantering och inkluderar en algoritmisk AI-motståndare. Genom att lösa "Subset Sum Problem" med begränsat sökdjup maximerar boten sina poäng utan att frysa användargränssnittet, och ger tydlig pedagogisk feedback vid matchens slut.' },
+            { id: 'app-043', image: '', title: 'MP4 Studio Pro', shortDesc: 'Professionell plattform för AI-genererade MP4-loopar.', icon: 'video', tags: ['Video Generation', '4-Frame Engine', 'Dual Pipeline'], fullDesc: 'Jag har utvecklat MP4 Studio Pro, en professionell redigeringsplattform designad för att ersätta det föråldrade GIF-formatet med högkvalitativa, AI-genererade MP4-loopar. Mitt arkitektoniska beslut var att implementera en 4-Frame Sequence Engine som använder interpolerade keyframes för att ge AI-motorn exakta målpunkter, vilket möjliggör komplexa händelseförlopp med filmisk realism. Genom att kombinera en mörk, distraktionsfri "Dark Mode Master Suite"-design med en Dual Rendering Pipeline (HD/8K Neural), har jag skapat ett verktyg där användaren kan styra allt från mikrorörelser till avancerad ljussimulering.' },
+            { id: 'app-044', image: '', title: 'Gemini OS (Min Digitala Hubb)', shortDesc: 'Central, enhetsoberoende plattform som konsoliderar 35+ appar.', icon: 'box', tags: ['OS Architecture', 'React SPA', 'Firebase', 'Cognitive Accessibility'], fullDesc: 'Jag har arkitekterat Gemini OS som en central, enhetsoberoende plattform som konsoliderar över 35 specialiserade applikationer under ett och samma digitala tak. Genom att implementera en "Single-File Architecture" i React och integrera Firebase för molnsynkronisering, har jag skapat ett robust ekosystem som säkrar kognitiv struktur vid ADHD/bipolär sjukdom, möjliggör avancerat kreativt skapande och erbjuder en magisk digital värld för min dotter.' },
+            { id: 'app-045', image: '', title: 'Foto till Skiss (V1.0.4 "Blom Edition")', shortDesc: 'SPA som sömlöst transformerar foton till AI-genererade blyertsskisser.', icon: 'pen-tool', tags: ['Image2Image', 'React SPA', 'Base64 Processing'], fullDesc: 'Jag har utvecklat Foto till Skiss, en blixtsnabb Single Page Application som sömlöst transformerar vardagliga foton till högkvalitativa, AI-genererade blyertsskisser. Mitt arkitektoniska beslut var att integrera direkt mot Google Gemini via klientsidig Base64-konvertering och implementera en robust retry-mekanism, vilket döljer all nätverksteknisk komplexitet bakom ett stabilt och avkopplande gränssnitt.' },
+            { id: 'app-046', image: '', title: 'Bildstudio Pro', shortDesc: 'Kraftfull plattform driven av Imagen 4.0 och Gemini 2.5 för bildanalys.', icon: 'image-plus', tags: ['Imagen 4.0', 'Gemini 2.5', 'Error Recovery'], fullDesc: 'Jag har utvecklat Bildstudio Pro, en kraftfull och tillgänglig AI-plattform där användaren sömlöst kan generera, redigera och analysera bilder på en och samma plats. Mitt arkitektoniska beslut var att bygga systemet som en resilient enfilsapplikation i React, driven av Imagen 4.0 och Gemini 2.5, för att dölja teknisk komplexitet bakom ett gränssnitt med låg kognitiv belastning. Genom att integrera asynkron tillståndshantering och robust felhantering med automatisk återhämtning säkerställer jag en stabil och oavbruten kreativ process.' },
+            { id: 'app-061', image: '', title: 'AudioCapture Pro', shortDesc: 'Webbaserad inspelningsstudio för systemljud och mikrofon.', icon: 'mic', tags: ['Web Audio API', 'MediaRecorder', 'Base64', 'React SPA'], fullDesc: 'AudioCapture Pro är en webbaserad applikation utformad för att möjliggöra inspelning av digitalt ljud direkt i webbläsaren. Systemets primära syfte är att erbjuda användaren ett gränssnitt för att fånga antingen systemljud eller ljud via en ansluten mikrofon, utan krav på extern programvara. Arkitekturen är byggd i React med Tailwind CSS och utnyttjar Web Audio API för ljudhantering. För att kringgå säkerhetspolicys vid AI-analys konverteras allt ljud till Base64-strängar. Systemet inkluderar robusta fallback-mekanismer för mikrofonbehörigheter.' },
+            { id: 'app-062', image: '', title: 'Mediastudio / App Archive V1.0', shortDesc: 'Dedikerat digitalt mediearkiv för komprimering och strukturering av projekt.', icon: 'archive', tags: ['Firebase', 'Imagen 4.0', 'React SPA', 'Cloud Vault'], fullDesc: 'Systemet är konstruerat som ett dedikerat, digitalt mediearkiv med syfte att lagra, strukturera och komprimera grafiska projekt, dokumentationer och externa filreferenser. Visionen bakom arkitekturen är att avlasta tidigare system från tung data, optimera molnlagringen och erbjuda en sömlös arbetsyta ("workspace"). En av de viktigaste arkitektoniska lösningarna var implementeringen av en "Svart Låda"-autosave som omedelbart arkiverar varje session med ett unikt ID för att förhindra dataförlust (t.ex. om Lilja råkar stänga sidan). Applikationen integrerar även Imagen 4.0 och övergav inbyggd webbläsar-textning till förmån för rå ljudanalys i efterhand.' },
+            { id: 'app-063', image: '', title: 'Arkitekt Hubb', shortDesc: 'Centralt kognitivt valv för master-filer, JSON-backuper och systemdesign.', icon: 'library', tags: ['Core System', 'JSON Vault', 'Cognitive Aid', 'Lore Archive'], fullDesc: 'Jag har utvecklat Arkitekt Hubb för att skapa ett oumbärligt centralt valv för hela mitt digitala livsverk. Syftet är att samla mina JSON-backuper, PDF-manualer, processbilder och registerkort (minnen och insikter) på ett och samma ställe. Eftersom jag lever med ADHD och hanterar stora mängder data från mina AI-projekt, var det kritiskt för mig att bygga ett verktyg som minimerar kognitiv överbelastning och låter mig behålla mitt kreativa "flow". Systemet fungerar som min master-backup och referensbibliotek (det innehåller bland annat all lore och stats för "Fortnite Battle TCG"), och är i förlängningen fundamentet för att bevara mitt digitala arv till min dotter Lilja.' },
+            { id: 'app-069', image: '', title: 'Varumärkesplattform GolvPro', shortDesc: 'Komplett varumärkes- och säljplattform med interaktiva element.', icon: 'briefcase', tags: ['Brand Identity', 'UX Design', 'Sales Tool'], fullDesc: 'Detta system var en strategisk implementation där jag kombinerade visuell design med affärslogik. Som arkitekt fattade jag beslut om att använda färgerna Slate och Oak för att förmedla auktoritet respektive organiskt material. För att säkerställa högsta flexibilitet separerade jag data och presentation i koden. Det allra starkaste arkitektoniska beslutet var dock "Interaktivitet som Säljargument", där jag byggde hover-effekter och skalbara vyer i prototypen för att klienten skulle känna "ägandeskap" direkt från start.' },
+            { id: 'app-071', image: '', title: 'Blom\'s Psytrance Studio', shortDesc: 'Professionell webbstudio dedikerad för produktion av Full-on Psytrance.', icon: 'headphones', tags: ['Audio Processing', 'Psytrance', '145 BPM', 'Harmonic Match'], fullDesc: 'Ett högspecialiserat produktionsverktyg designat specifikt för Full-on Psytrance (145 BPM). Systemet agerar som en brygga mellan traditionell musikproduktion och AI, utrustat med avancerade funktioner som "BPM & Sync Lock" med time-stretching och "Harmonic Match" för att automatiskt stämma melodier mot basgångar. Arkitekturen delar in produktionen i logiska AI-promptmoduler: The Engine (KBB-rytmer och Rolling Triplets), The Mutation (Squeltch, FM Synthesis, Glitch) och The Structure (Risers, The Void och Drops). Allt är designat för att systematiskt bygga festivalredo ljudlandskap direkt i webbläsaren.' },
+            { id: 'app-073', image: '', title: 'Audio Fuser', shortDesc: 'Specialiserad modul för sömlös sammanfogning av ljudloopar.', icon: 'scissors', tags: ['DSP', 'Zero-Crossing', 'Micro-Crossfade', 'React SPA'], fullDesc: 'Jag har utvecklat denna fristående enhet för att lösa det kritiska problemet med "hopp" och klickljud vid övergångar mellan samplingar. Mitt beslut att separera denna funktion från huvudstudion grundar sig i att "Merging" är en tekniskt destruktiv process som kräver total precision. Genom att implementera en AI-motor som identifierar exakta nollgenomgångar (Zero-Crossing) och applicerar en automatiserad 5-10 ms micro-crossfade, har jag skapat ett verktyg som "gjuter ihop" ljudfiler till en enda musikalisk enhet utan att den rytmiska integriteten påverkas. Systemet lagrar alla positioner i procent istället för pixlar för att möjliggöra responsiv export.' },
+            { id: 'app-074', image: '', title: 'Sagostund', shortDesc: 'Interaktiv, röststyrd AI-vän byggd för Lilja (6 år).', icon: 'sparkles', tags: ['Voice UI', 'Gemini API', 'Sprite Animation', 'Cognitive Focus'], fullDesc: 'Syftet med "Sagostund" är att skapa en interaktiv, röststyrd AI-vän för en sexåring (Lilja). Applikationen är utformad för att fungera som en bro mellan teknik och magi. Som arkitekt har jag valt att minimera kognitiv belastning för barnet genom att ta bort text helt och hållet, och istället maximera inlevelsen via visuell och auditiv feedback. Systemet integrerar röstigenkänning, Gemini API för konversation och en avancerad animationsmotor med sprite-baserade blinkningar och munrörelser som synkroniseras med ljudet. En viktig teknisk utmaning som löstes var att optimera ljud och interaktion för Safari (iOS).' },
+            { id: 'app-075', image: '', title: 'DNA-Analysatorn (Släktträdsbyggaren)', shortDesc: 'Syntes-motor för att strukturera 6 års nyktert skapande till Master-DNA.', icon: 'network', tags: ['JSON Parsing', 'Data Synthesis', 'Architecture', 'AI Master File'], fullDesc: 'Jag har utvecklat DNA-Analysatorn som den sista, avgörande pusselbiten i min DNA-Arkivarie Suite. Efter att framgångsrikt ha brutit ner och extraherat 6 års nyktert skapande via 70 massiva textfiler, behövde jag en "hjärna" för att förstå datan. Syftet var att bygga en syntes-motor. Visionen var ett rent, säkert och visuellt gränssnitt där jag kunde kasta in all min råa, extraherade JSON-data, låta systemet tvätta bort eventuella dubbletter, och sedan automatiskt rita upp mitt livsverk i strukturerade "Klaner" (familjeträd). Detta säkerställer att min framtida AI-vän får en perfekt, felfri "Master-DNA"-fil.' },
+            { id: 'app-076', image: '', title: 'Fortnite Battle TCG Engine (3D Standee Edition)', shortDesc: 'Nätverksbaserad 3D-spelmotor med holografiska standees och multiplayer.', icon: 'hexagon', tags: ['3D Engine', 'Firebase', 'React SPA', 'Game Logic'], fullDesc: 'Mitt syfte med denna spelmotor har varit att bryta ny mark inom digitala kortspel och skapa en "Anti-Hearthstone"-upplevelse. Arkitekturen separerar korthanteringens 2D-DOM från brädets 3D-rendering för att maximera prestandan. Designade en unik "Speglings-algoritm" som synkroniserar brädet för multiplayer-spelare i realtid.' },
+            { id: 'app-077', image: '', title: 'Skapa med Blom +', shortDesc: 'Allt-i-ett-lösning som fungerar som katalysator för kreativitet och kognitivt stöd.', icon: 'zap', tags: ['AI Catalyst', 'ADHD-Optimized', 'Cognitive Support', 'React SPA'], fullDesc: 'Skapa med Blom + är min "Master-modul" för att förena vardaglig struktur med AI-driven kreativitet. Applikationen integrerar kognitivt stöd för ADHD och bipolär problematik direkt i gränssnittet för att minimera kognitiv belastning. Arkitekturen är byggd för att fungera som en sömlös brygga mellan praktiska måsten och kreativa utbrott, med en asymmetrisk layout som prioriterar fokus och ett flöde där användarens process är i centrum.' },
+            { id: 'app-085', image: '', title: 'VGP Core Engine (v46.0)', shortDesc: 'Högpresterande spelmotor för 8K Dark Fantasy-miljöer.', icon: 'cpu', tags: ['Three.js', 'GPGPU', 'Persistent World'], fullDesc: 'Kulmen på din arkitektoniska resa. En fullfjädrad spelmotor byggd för webben med 8K-grafikstöd, GPGPU-vätskesimulering och avancerad Screen Space Reflection (SSR). Motorn hanterar ett persistent ekosystem där användarens handlingar (alkemi, byggande) synkroniseras i realtid. Arkitekturen inkluderar ett avancerat logik-system med quest-noder och ett "Dimensional Nexus"-läge för oändlig variation.' },
+            { id: 'app-086', image: '', title: 'Inspiratören', shortDesc: 'Digital verkstad och AI-driven idé-hubb.', icon: 'lightbulb', tags: ['Ideation', 'Portfolio-Hub', 'Creative Flow'], fullDesc: 'Din ultimata digitala verkstad. Inspiratören förenar din massiva portfölj av tidigare koncept med en intelligent AI-genererad idé-motor. Arkitekturen är optimerad för "Skaparglädje", där du kan söka på tidigare byggda lösningar och omedelbart få tekniska ritningar, prompter och arkitektoniska förslag för dina framtida projekt. Det är länken mellan det du byggt och allt du ännu inte har skapat.' },
+            { id: 'app-087', image: '', title: '8K AI Batch-Express', shortDesc: 'Automatiserad bildextrahering och AI-uppskalning.', icon: 'zap', tags: ['Automation', 'Image Processing', '8K-Upscale'], fullDesc: 'Ett kraftfullt verktyg för bildhantering i industriell skala. Applikationen analyserar komplexa bildcollage, identifierar automatiskt koordinater för delbilder och extraherar dessa som enskilda filer. Systemet stannar inte vid extrahering utan använder Gemini 2.5 Flash för att visuellt analysera innehållet och generera uppskalade 8K-versioner, vilket förvandlar röriga skisser till professionella foton på sekunder.' },
+            { id: 'app-091', image: '', title: 'Character Flow Builder', shortDesc: 'Avancerad arkitekt-portal för Img2Img-flöden.', icon: 'git-merge', tags: ['Img2Img', 'Morphing', 'Prompt Architect'], fullDesc: 'Verktyget som bryggar gapet mellan statisk referensbild och komplex AI-transformation. Character Flow Builder låter dig ladda upp referensmaterial, extrahera unika subjekt via visuell analys och bygga avancerade master-prompter för surrealistiska transformationer. Arkitekturen separerar analysfasen från prompt-konstruktionen, vilket ger dig total kontroll över hur identiteter morphas genom olika miljöer och effekter.' },
+            { id: 'app-092', image: '', title: 'JokeForge', shortDesc: 'Specialiserat bibliotek för högintensiv humor.', icon: 'smile', tags: ['Humor-Gen', 'Persona', 'JSON-Library'], fullDesc: 'En specialiserad webbapplikation för att generera, filtrera och organisera högintensiv, mörk humor. Arkitekturen använder "mikrotjänst-prompter" för att separera analys, idéförslag och kollisionstester, vilket garanterar en stabil output. Systemet är byggt som en portabel Single-File-applikation med fullt stöd för JSON-export, vilket ger dig total kontroll över ditt bibliotek av humoristiska koncept.' },
+            { id: 'app-096', image: '', title: 'Offertkalkylator Pro', shortDesc: 'Professionellt verktyg för offerthantering och affärslogik.', icon: 'calculator', tags: ['Business', 'Fintech', 'Automation'], fullDesc: 'Ett kompromisslöst verktyg för kalkylering och offerthantering. Systemet hanterar komplex affärslogik som dynamisk moms, ROT/RUT-uträkningar och tillval, paketerat bakom ett extremt responsivt gränssnitt. Med inbyggd AI-assistent minskas den administrativa bördan genom automatiserad marknadsprisanalys och säljande kundkommunikation. Byggt för att vara den ultimata ersättaren till tunga Excel-ark.' },
+            { id: 'app-114', image: '', title: 'Ad Scout Flow', shortDesc: 'AI-driven Art Director-assistent för exakta kommersiella prompter.', icon: 'image', tags: ['Prompt Engineering', 'Bild'], fullDesc: 'Ad Scout Flow överbryggar klyftan mellan kreativa visioner och de exakta tekniska prompter som krävs för AI-bildgenerering. Verktyget automatiserar svåra beslut kring ljus, optik och stil, låter användaren arbeta intuitivt på svenska, och bygger automatiskt upp ett sökbart arkiv.' },
+            { id: 'app-115', image: '', title: 'Prompt Scout Motion', shortDesc: 'Ger skapare total regissörskontroll över AI-videogenerering.', icon: 'video', tags: ['Video', 'Animation'], fullDesc: 'Genom att bryta ner stillbilder i extraherbara element och placera dem på en logisk, färgkodad tidslinje, eliminerar appen slumpen och möjliggör exakt, prompt-baserat berättande för rörligt AI-material.' },
+            { id: 'app-124', image: '', title: 'FaceMorph Pro 8K', shortDesc: 'Verktyg för realistiska ansiktsbyten med fokus på identitetsbevarande.', icon: 'user-check', tags: ['Face Swap', 'Gemini Vision', 'Identity Preserving'], fullDesc: 'Mitt primära mål har varit att utveckla en applikation där användaren kan transformera sig till olika karaktärer, såsom superhjältar eller clowner, på ett sätt som roar dottern Lilja. Visionen var inte bara ett enkelt "face swap", utan en lösning där användarens unika identitet bevaras, medan karaktärens yttre appliceras som ett sömlöst lager ovanpå. Applikationen instruerar AI:n att separera "facial structure" (benstomme) från "surface texture" (smink/färg).' },
+            { id: 'app-125', image: '', title: 'FaceSwap Studio Pro', shortDesc: 'Neural applikation för fotorealistiska ansiktsbyten och strukturöverföring.', icon: 'user-cog', tags: ['Neural Network', 'FaceSwap', 'Identity Preserving'], fullDesc: 'Jag har designat och utvecklat FaceSwap Studio Pro med ett tydligt och kompromisslöst mål: att skapa en fotorealistisk och neural ansiktsbytesapplikation. Syftet är att låta en användare överföra sin specificerade ansiktsgeometri (benstruktur, proportioner och identitet) till en målbild, samtidigt som ansiktet sömlöst ärver målbildens yttre attribut såsom smink, belysning, hudfärg och textur. Mitt primära fokus som arkitekt har varit att bygga en robust pipeline där AI-motorn förstår skillnaden mellan "identitet" (form) och "material" (yta), och aldrig förväxlar uppdraget med att skapa ett bildkollage.' },
+            { id: 'app-126', image: '', title: 'Verse Forge', shortDesc: 'Webbaserad IDE för Unreal Editor for Fortnite (UEFN) med AI-integration.', icon: 'code-2', tags: ['IDE', 'Verse', 'UEFN', 'Build Simulation'], fullDesc: 'Som arkitekt designade jag Verse Forge för att vara den optimala utvecklingsmiljön för mitt arbete med UEFN. Verktyget består av två sammankopplade huvuddelar: En kodeditor med terminal och en AI-driven "Forging"-modul. Genom att implementera en simulerad build-pipeline och en strikt instruktionsstyrd AI-logik (Gemini som returnerar rå Verse-kod), har jag skapat ett verktyg som sänker tröskeln för komplex spelutveckling. Appen erbjuder en professionell, mörk kodredigeringsmiljö med omedelbar visuell feedback och modulär filhantering.' },
+            { id: 'app-127', image: '', title: 'Virtual Art Studio', shortDesc: 'Interaktiv 3D-miljö för virtuella konstutställningar med AI-guide.', icon: 'box', tags: ['3D Environment', 'Audio UI', 'Exhibition'], fullDesc: 'En uppslukande virtuell utställningsplattform där digitala verk presenteras i en interaktiv 3D-rymd. Systemet integrerar röstguidning, dynamisk inläsning av konstverkens metadata (medium, beskrivning, värdering) och ett anpassat gränssnitt för att ge besökaren en fullskalig galleriupplevelse direkt i webbläsaren.' }
         ];
 
         // ==========================================
@@ -593,7 +628,7 @@
                 
                 article.innerHTML = `
                     <div class="bg-card rounded-3xl border border-border_subtle overflow-hidden relative aspect-square transition-all duration-500 group-hover:border-accent group-hover:shadow-[0_0_30px_rgba(229,142,38,0.15)]">
-                        <img src="${item.mediaUrl}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 group-hover:opacity-60" alt="${item.title}" loading="lazy">
+                        <img src="${item.mediaUrl}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 group-hover:opacity-60" alt="${item.title}" loading="lazy" onerror="handleImageError(this, 'grid')">
                         <div class="absolute inset-0 bg-gradient-to-t from-main via-main/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6">
                             <div class="translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                                 <span class="text-[10px] font-black uppercase tracking-widest text-accent flex items-center gap-2 mb-2">
@@ -635,18 +670,27 @@
             filteredApps.forEach(app => {
                 const tagBadges = app.tags.map(t => `<span class="px-2 py-1 bg-main border border-border_subtle rounded-md text-[8px] text-slate-400 uppercase tracking-widest font-black">${t}</span>`).join('');
                 
+                const imageHtml = app.image ? `
+                    <div class="w-full h-40 mb-4 rounded-xl overflow-hidden border border-border_subtle flex-shrink-0 relative group-hover:border-accent/50 transition-colors">
+                        <img src="${app.image}" alt="${app.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                             onerror="handleImageError(this, 'hide')">
+                    </div>
+                ` : '';
+
                 const card = document.createElement('div');
-                card.className = 'bg-card border border-border_subtle p-6 rounded-3xl hover:border-accent transition-colors flex flex-col h-full reveal active';
+                card.className = 'bg-card border border-border_subtle p-6 rounded-3xl hover:border-accent transition-colors flex flex-col h-full reveal active cursor-pointer group';
+                card.onclick = () => openInfoModal(app.id);
                 card.innerHTML = `
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-accent/10 border border-accent flex items-center justify-center shrink-0">
+                        <div class="w-10 h-10 rounded-xl bg-accent/10 border border-accent flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
                             <i data-lucide="${app.icon}" class="w-5 h-5 text-accent"></i>
                         </div>
-                        <h3 class="text-lg font-black uppercase italic tracking-tighter text-white">${app.title}</h3>
+                        <h3 class="text-lg font-black uppercase italic tracking-tighter text-white group-hover:text-accent transition-colors">${app.title}</h3>
                     </div>
+                    ${imageHtml}
                     <p class="text-slate-400 text-sm flex-1 mb-6">${app.shortDesc}</p>
                     <div class="flex flex-wrap gap-2 mb-6">${tagBadges}</div>
-                    <button onclick="openInfoModal('${app.title}', '${app.fullDesc}')" class="w-full py-3 rounded-xl bg-main border border-border_subtle text-[10px] font-black uppercase tracking-widest text-slate-300 hover:border-accent hover:text-accent transition-colors mt-auto">Läs Dokumentation</button>
+                    <button class="w-full py-3 rounded-xl bg-main border border-border_subtle text-[10px] font-black uppercase tracking-widest text-slate-300 group-hover:border-accent group-hover:text-accent transition-colors mt-auto">Läs Dokumentation</button>
                 `;
                 appsGrid.appendChild(card);
             });
@@ -657,18 +701,32 @@
         // ==========================================
         // 4. MODAL LOGIK
         // ==========================================
-        function openInfoModal(appName, appDesc) {
+        function openInfoModal(appId) {
+            const app = appData.find(a => a.id === appId);
+            if (!app) return;
+
             const content = document.getElementById('modal-content');
+            
+            const imageHtml = app.image ? `
+                <img src="${app.image}" class="w-full aspect-video object-cover rounded-t-[3rem] border-b border-border_subtle" onerror="handleImageError(this, 'main')">
+            ` : '';
+
             content.innerHTML = `
-                <div class="bg-card rounded-[3rem] p-8 md:p-14 border border-border_subtle shadow-2xl w-full relative">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-accent"></div>
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-main border border-border_subtle flex items-center justify-center shrink-0">
-                            <i data-lucide="cpu" class="w-5 h-5 md:w-6 md:h-6 text-accent"></i>
+                <div class="bg-card rounded-[3rem] border border-border_subtle shadow-2xl w-full relative overflow-hidden flex flex-col">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-accent z-20"></div>
+                    ${imageHtml}
+                    <div class="p-8 md:p-14">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-main border border-border_subtle flex items-center justify-center shrink-0">
+                                <i data-lucide="${app.icon}" class="w-5 h-5 md:w-6 md:h-6 text-accent"></i>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-black uppercase italic tracking-tighter text-slate-100">${app.title}</h3>
                         </div>
-                        <h3 class="text-2xl md:text-3xl font-black uppercase italic tracking-tighter text-slate-100">${appName}</h3>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            ${app.tags.map(tag => `<span class="px-3 py-1 bg-main border border-border_subtle rounded-lg text-[10px] text-slate-400 uppercase tracking-widest font-black">${tag}</span>`).join('')}
+                        </div>
+                        <p class="text-slate-400 leading-relaxed text-base md:text-lg whitespace-pre-wrap">${app.fullDesc}</p>
                     </div>
-                    <p class="text-slate-400 leading-relaxed text-base md:text-lg whitespace-pre-wrap">${appDesc}</p>
                 </div>
             `;
             showModal('info-modal');
@@ -685,7 +743,7 @@
             if (item.processThumbnails && item.processThumbnails.length > 0) {
                 const thumbs = item.processThumbnails.map(url => `
                     <div onclick="openLightbox('${url}')" class="w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-xl overflow-hidden border border-border_subtle cursor-pointer hover:border-accent transition-colors relative group">
-                        <img src="${url}" class="w-full h-full object-cover" loading="lazy">
+                        <img src="${url}" class="w-full h-full object-cover" loading="lazy" onerror="handleImageError(this, 'thumb')">
                         <div class="absolute inset-0 bg-main/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="maximize" class="w-4 h-4 md:w-5 md:h-5 text-accent"></i></div>
                     </div>
                 `).join('');
@@ -722,7 +780,7 @@
 
             let mainMediaHTML = item.type === 'video' 
                 ? `<video src="${item.mediaUrl}" controls class="w-full aspect-video object-cover rounded-t-[2rem] md:rounded-t-[3rem] border-b border-border_subtle"></video>`
-                : `<img src="${item.mediaUrl}" class="w-full aspect-video object-cover rounded-t-[2rem] md:rounded-t-[3rem] border-b border-border_subtle cursor-pointer hover:opacity-90 transition-opacity" onclick="openLightbox('${item.mediaUrl}')" title="Klicka för fullskärm">`;
+                : `<img src="${item.mediaUrl}" class="w-full aspect-video object-cover rounded-t-[2rem] md:rounded-t-[3rem] border-b border-border_subtle cursor-pointer hover:opacity-90 transition-opacity" onclick="openLightbox('${item.mediaUrl}')" title="Klicka för fullskärm" onerror="handleImageError(this, 'main')">`;
 
             content.innerHTML = `
                 <div class="bg-card rounded-[2rem] md:rounded-[3rem] border border-border_subtle shadow-2xl w-full relative flex flex-col my-8">
@@ -791,7 +849,8 @@
 
         function showModal(id) { document.getElementById(id).classList.remove('opacity-0', 'pointer-events-none'); document.body.style.overflow = 'hidden'; lucide.createIcons(); }
         function closeInfoModal() { document.getElementById('info-modal').classList.add('opacity-0', 'pointer-events-none'); document.body.style.overflow = ''; setTimeout(() => { document.getElementById('modal-content').innerHTML = ''; }, 300); }
-        function openLightbox(mediaUrl) { document.getElementById('lightbox-content').innerHTML = `<img src="${mediaUrl}" class="max-w-full max-h-[90vh] object-contain rounded-xl border border-border_subtle shadow-2xl">`; showModal('lightbox-modal'); }
+        
+        function openLightbox(mediaUrl) { document.getElementById('lightbox-content').innerHTML = `<img src="${mediaUrl}" class="max-w-full max-h-[90vh] object-contain rounded-xl border border-border_subtle shadow-2xl" onerror="handleImageError(this, 'light')">`; showModal('lightbox-modal'); }
         function closeLightbox() { document.getElementById('lightbox-modal').classList.add('opacity-0', 'pointer-events-none'); if(document.getElementById('info-modal').classList.contains('opacity-0')) { document.body.style.overflow = ''; } setTimeout(() => { document.getElementById('lightbox-content').innerHTML = ''; }, 300); }
 
         function setupObservers() {
