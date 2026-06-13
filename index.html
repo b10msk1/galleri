@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blom | AI Portfolio & Systemdesign</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        main: '#0a0f1a',
+                        header: '#0f172a',
+                        card: '#161d2b',
+                        accent: '#e58e26',
+                        border_subtle: '#1e293b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0f1a; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #e58e26; }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #terminal-overlay {
+            transform: translateY(-100%);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #terminal-overlay.open {
+            transform: translateY(0);
+        }
+
+        .prompt-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            opacity: 0;
+        }
+        .prompt-container.open {
+            max-height: 500px;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-main text-slate-100 font-sans antialiased min-h-screen selection:bg-accent selection:text-main overflow-x-hidden">
+
+    <div id="boot-sequence" class="fixed inset-0 z-[9999] bg-main flex flex-col justify-center items-start p-10 md:p-24 font-mono text-sm sm:text-base pointer-events-auto transition-opacity duration-1000">
+        <div id="boot-text" class="text-green-500 space-y-2"></div>
+    </div>
+
+    <header class="fixed top-0 left-0 right-0 z-50 bg-header/80 backdrop-blur-md border-b border-border_subtle">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
+                <i data-lucide="cpu" class="w-6 h-6 text-accent"></i>
+                <h1 class="text-xl font-black uppercase italic tracking-tighter">Blom<span class="text-accent">.AI</span></h1>
+            </div>
+            <nav class="hidden md:flex gap-8">
+                <a href="#about" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2">
+                    <i data-lucide="user" class="w-3 h-3"></i> Profil
+                </a>
+                <a href="#portfolio" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2">
+                    <i data-lucide="image" class="w-3 h-3"></i> Kreationer
+                </a>
+            </nav>
+            <button class="md:hidden text-slate-400 hover:text-accent">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 space-y-24">
+
+        <!-- Sektion: Om Mig (Hero) -->
+        <!-- FIX: min-h-screen garanterar att sektionen växer på mobilen så inget hamnar utanför -->
+        <section id="about" class="relative min-h-screen flex flex-col justify-center border-b border-border_subtle reveal pt-32 lg:pt-20 pb-32 lg:pb-0 overflow-hidden">
+            
+            <div class="w-full lg:w-[55%] z-10 flex flex-col justify-center h-full mt-4 lg:mt-0">
+                <div class="text-center lg:text-left w-full mb-10">
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-black uppercase italic tracking-tighter leading-tight text-slate-100">
+                        Arkitekt av <span class="text-accent">Digitala Världar</span>
+                    </h2>
+                </div>
+
+                <div class="text-left max-w-lg mx-auto lg:mx-0 space-y-6 bg-main/40 lg:bg-transparent backdrop-blur-sm lg:backdrop-blur-none p-4 lg:p-0 rounded-2xl relative z-20">
+                    <div class="border-b border-border_subtle pb-4">
+                        <div class="flex items-end gap-6">
+                            <span class="font-['Caveat'] text-5xl md:text-6xl text-slate-200 leading-none">Jonas Blomquist</span>
+                        </div>
+                        <div id="system-stats" class="text-[10px] font-black uppercase tracking-widest text-accent mt-3 flex items-center gap-2">
+                            <i data-lucide="database" class="w-3 h-3"></i> <span id="stats-count">Laddar...</span>
+                        </div>
+                    </div>
+                    
+                    <p class="text-slate-400 text-base md:text-lg leading-relaxed">
+                        Denna plattform fungerar som min visuella logg och portfölj. Här dokumenterar jag redovisningen av mina bilder och filmer som jag skapat med hjälp av AI, från grundidé och prompt till färdigt verk.
+                    </p>
+
+                    <div class="pt-4 space-y-4">
+                        <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-2 mb-4">
+                            <i data-lucide="cpu" class="w-3 h-3"></i> Taktiska Verktyg
+                        </h3>
+                        
+                        <ul class="space-y-4 relative">
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-3 group border-l-2 border-border_subtle pl-4 hover:border-accent transition-colors">
+                                <button onclick="openInfoModal('Ad Scout Flow', 'Ad Scout Flow är en AI-driven Art Director-assistent som överbryggar klyftan mellan kreativa visioner och de exakta tekniska prompter som krävs för AI-bildgenerering. Verktyget automatiserar svåra beslut kring ljus, optik och stil, låter användaren arbeta intuitivt på svenska, och bygger automatiskt upp ett sökbart arkiv av professionella, kommersiella master-prompts och storyboard-sekvenser.')" class="px-4 py-2 rounded-xl bg-accent/10 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent/20 transition-all flex items-center gap-2 shrink-0 shadow-lg shadow-accent/10">
+                                    <i data-lucide="image" class="w-4 h-4"></i> Ad Scout Flow
+                                </button>
+                                <span class="text-sm text-slate-500 cursor-default">Skapar bild-promptar</span>
+                            </li>
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-3 group border-l-2 border-border_subtle pl-4 hover:border-accent transition-colors">
+                                <button onclick="openInfoModal('Prompt Scout Flow', 'Prompt Scout Flow är ett avancerat verktyg som fungerar som en intelligent mellanhand för att skapa tekniskt perfekta och fotorealistiska bildprompter för system som Gemini Flow. Dess primära värde ligger i förmågan att guida användaren genom komplexa förvandlingar av karaktärer och miljöer, samtidigt som systemet strikt bevarar individernas ursprungliga ansiktsdrag och identitet via automatiserade säkerhetslager.')" class="px-4 py-2 rounded-xl bg-accent/10 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent/20 transition-all flex items-center gap-2 shrink-0 shadow-lg shadow-accent/10">
+                                    <i data-lucide="user-check" class="w-4 h-4"></i> Prompt Scout Flow
+                                </button>
+                                <span class="text-sm text-slate-500 cursor-default">Skapar bild-promptar med karaktärer</span>
+                            </li>
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-3 group border-l-2 border-border_subtle pl-4 hover:border-accent transition-colors">
+                                <button onclick="openInfoModal('Prompt Scout Motion', 'Prompt Scout Motion ger skapare total regissörskontroll över AI-videogenerering genom att bryta ner stillbilder i extraherbara element och placera dem på en logisk, färgkodad tidslinje (0-8 sekunder). Genom att säkerställa kontinuitet och erbjuda serie-läge, eliminerar appen slumpen och möjliggör exakt, prompt-baserat berättande för rörligt AI-material.')" class="px-4 py-2 rounded-xl bg-accent/10 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent/20 transition-all flex items-center gap-2 shrink-0 shadow-lg shadow-accent/10">
+                                    <i data-lucide="video" class="w-4 h-4"></i> Prompt Scout Motion
+                                </button>
+                                <span class="text-sm text-slate-500 cursor-default">Skapar filmpromptar</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- FIX: Bilden har högre opacity på mobilen och är fast förankrad i botten. -->
+            <div class="absolute bottom-0 right-0 w-full lg:w-[45%] h-[60vh] lg:h-[80vh] flex justify-center lg:justify-end items-end z-0 pointer-events-none">
+                <img src="https://i.imgur.com/SkZObbh.png" alt="Jonas Blomquist Profil" class="max-h-full max-w-full object-contain object-bottom mix-blend-screen opacity-50 md:opacity-70 lg:opacity-90 drop-shadow-2xl transition-transform duration-1000 hover:scale-[1.02]">
+                <div class="absolute bottom-0 w-full h-40 lg:h-48 bg-gradient-to-t from-main via-main/80 to-transparent z-10"></div>
+            </div>
+
+            <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 opacity-50 animate-bounce cursor-pointer" onclick="document.getElementById('portfolio').scrollIntoView({ behavior: 'smooth' });">
+                <span class="text-[8px] font-black uppercase tracking-widest text-accent">Scrolla för logg</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 text-accent"></i>
+            </div>
+        </section>
+
+        <!-- Sektion: Portfolio / Kreationer -->
+        <section id="portfolio" class="space-y-12 pt-12 pb-24">
+            
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border_subtle pb-6 reveal">
+                <div>
+                    <h2 class="text-4xl font-black uppercase italic tracking-tighter flex items-center gap-4">
+                        <i data-lucide="aperture" class="w-8 h-8 text-accent"></i>
+                        Databas: Kreationer
+                    </h2>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-start md:items-center gap-4 w-full lg:w-auto">
+                    <div class="relative w-full md:w-64">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                        <input type="text" id="search-input" oninput="handleSearch()" placeholder="Sök prompt, tagg eller titel..." class="w-full bg-main border border-border_subtle rounded-xl py-2 pl-9 pr-4 text-xs font-mono text-slate-200 focus:border-accent outline-none transition-colors placeholder:text-slate-600 shadow-inner">
+                    </div>
+
+                    <div class="flex gap-2 shrink-0 flex-wrap" id="filter-buttons">
+                        <button onclick="setFilter('all')" id="btn-filter-all" class="px-4 py-2 rounded-xl bg-card border border-accent text-accent text-[10px] font-black uppercase tracking-widest transition-all">Alla</button>
+                        <button onclick="setFilter('image')" id="btn-filter-image" class="px-4 py-2 rounded-xl bg-card border border-border_subtle text-slate-400 hover:border-accent hover:text-accent transition-all text-[10px] font-black uppercase tracking-widest">Bilder</button>
+                        <button onclick="setFilter('video')" id="btn-filter-video" class="px-4 py-2 rounded-xl bg-card border border-border_subtle text-slate-400 hover:border-accent hover:text-accent transition-all text-[10px] font-black uppercase tracking-widest">Film</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="active-tag-container" class="hidden items-center gap-2 mb-4">
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Aktiv Tagg:</span>
+                <button onclick="clearTagFilter()" class="flex items-center gap-2 px-3 py-1 rounded-xl bg-accent/10 border border-accent text-accent text-[10px] font-black uppercase tracking-widest hover:bg-accent/20 transition-all">
+                    <span id="active-tag-text"></span>
+                    <i data-lucide="x" class="w-3 h-3"></i>
+                </button>
+            </div>
+
+            <div id="portfolio-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Genereras dynamiskt -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-border_subtle bg-header py-12">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center opacity-50">
+            <div class="flex items-center gap-3">
+                <i data-lucide="cpu" class="w-5 h-5"></i>
+                <span class="text-sm font-black uppercase italic tracking-tighter">Blom.AI © 2026</span>
+            </div>
+            <button onclick="toggleTerminal()" class="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-accent transition-colors flex items-center gap-2">
+                <i data-lucide="terminal-square" class="w-4 h-4"></i> [SYS]
+            </button>
+        </div>
+    </footer>
+
+    <!-- Terminal Overlay -->
+    <div id="terminal-overlay" class="fixed top-0 left-0 right-0 h-[60vh] z-[200] bg-main/95 backdrop-blur-xl border-b border-accent/30 shadow-2xl shadow-accent/5 font-mono text-sm flex flex-col">
+        <div class="h-10 bg-header border-b border-border_subtle flex items-center justify-between px-4">
+            <span class="text-[10px] font-black uppercase tracking-widest text-accent flex items-center gap-2">
+                <i data-lucide="terminal" class="w-3 h-3"></i> N.E.X.U.S. Command Line
+            </span>
+            <button onclick="toggleTerminal()" class="text-slate-500 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+        <div id="terminal-output" class="flex-1 p-4 overflow-y-auto text-slate-300 space-y-2">
+            <div class="text-accent">Welcome to Blom.AI Terminal. Type '/help' for a list of commands.</div>
+        </div>
+        <div class="h-12 border-t border-border_subtle flex items-center px-4 gap-2 bg-main">
+            <span class="text-accent">root@blom:~#</span>
+            <input type="text" id="terminal-input" class="flex-1 bg-transparent border-none outline-none text-slate-100 placeholder-slate-700 font-mono" placeholder="Enter command..." autocomplete="off">
+        </div>
+    </div>
+
+    <!-- Info/Project Modal -->
+    <div id="info-modal" class="fixed inset-0 z-[100] bg-main/95 backdrop-blur-xl flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4 md:p-6 overflow-y-auto">
+        <button onclick="closeInfoModal()" class="fixed top-4 right-4 md:top-6 md:right-6 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-card border border-border_subtle text-slate-400 hover:text-accent hover:border-accent transition-all z-[110]">
+            <i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i>
+        </button>
+        <div class="max-w-4xl w-full my-auto flex flex-col justify-center relative pt-12 md:pt-0" id="modal-content">
+            <!-- Innehåll injiceras här -->
+        </div>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" class="fixed inset-0 z-[120] bg-black/95 backdrop-blur-xl flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-6">
+        <button onclick="closeLightbox()" class="fixed top-4 right-4 md:top-6 md:right-6 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-main border border-border_subtle text-slate-400 hover:text-accent hover:border-accent transition-all z-[130]">
+            <i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i>
+        </button>
+        <div id="lightbox-content" class="max-w-full max-h-full flex items-center justify-center">
+            <!-- Bild maximeras här -->
+        </div>
+    </div>
+
+    <!-- QUICK ADD (SOFF-LÄGE) UI -->
+    <button onclick="toggleQuickAdd()" class="fixed bottom-6 right-6 z-[90] w-14 h-14 bg-accent text-main rounded-full shadow-[0_0_20px_rgba(229,142,38,0.4)] flex items-center justify-center hover:scale-110 transition-transform">
+        <i data-lucide="plus" class="w-6 h-6"></i>
+    </button>
+
+    <div id="quick-add-panel" class="fixed bottom-24 right-6 w-[90vw] max-w-sm bg-card border border-border_subtle rounded-3xl shadow-2xl z-[90] transform translate-y-4 opacity-0 pointer-events-none transition-all duration-300 flex flex-col p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h4 class="text-accent uppercase font-black text-[10px] tracking-widest flex items-center gap-2"><i data-lucide="zap" class="w-3 h-3"></i> Snabb Inmatning</h4>
+            <button onclick="toggleQuickAdd()" class="text-slate-500 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+        
+        <input type="text" id="quick-media" placeholder="Huvudbildens URL" class="bg-main border border-border_subtle p-3 rounded-xl outline-none text-xs text-slate-200 focus:border-accent transition-colors mb-3">
+        <textarea id="quick-prompt" placeholder="Master Prompt (AI skapar text utifrån denna)" class="bg-main border border-border_subtle p-3 rounded-xl outline-none text-xs text-slate-200 focus:border-accent h-24 resize-none transition-colors mb-3"></textarea>
+        
+        <label class="text-[8px] uppercase tracking-widest text-slate-500 mb-1">Processbilder (Sparas auto)</label>
+        <input type="text" id="quick-thumbs" placeholder="Separera med kommatecken" class="bg-main border border-border_subtle p-3 rounded-xl outline-none text-xs text-slate-200 focus:border-accent transition-colors mb-3">
+        
+        <select id="quick-type" class="bg-main border border-border_subtle p-3 rounded-xl outline-none text-xs text-slate-200 focus:border-accent transition-colors mb-4">
+            <option value="image">Format: Bild (Image)</option>
+            <option value="video">Format: Film (Video)</option>
+        </select>
+        
+        <button onclick="submitQuickProject()" class="w-full bg-accent/20 border border-accent text-accent px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-accent hover:text-main transition-colors shadow-[0_0_15px_rgba(229,142,38,0.2)]">Spara & Nästa</button>
+        
+        <div id="quick-status" class="mt-3 text-center text-[10px] font-mono h-4"></div>
+    </div>
+
+    <!-- LOGIK & DATA -->
+    <script>
+        // ==========================================
+        // 0. SÄKERHETSINSTÄLLNINGAR (PROMPT LOCK)
+        // ==========================================
+        // HÄR ÄNDRAR DU DITT LÖSENORD FÖR PROMPTERNA!
+        const SYSTEM_PASSWORD = "nexus"; 
+
+        // ==========================================
+        // 1. DATA: MALL 
+        // ==========================================
+        let portfolioData = [
+            {
+                type: 'image', 
+                mediaUrl: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=1600&auto=format&fit=crop',
+                processThumbnails: [
+                    'https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=400&auto=format&fit=crop'
+                ],
+                mainPrompt: 'cinematic portrait of a cyberpunk character, neon lights, glowing accents, highly detailed, 8k, photorealistic --ar 16:9 --v 6.0'
+            }
+        ];
+
+        let savedData = null;
+        try {
+            savedData = localStorage.getItem('blom_portfolio_data');
+        } catch (e) {
+            console.warn("Lokal lagring blockerad");
+        }
+        
+        if (savedData) {
+            try {
+                portfolioData = JSON.parse(savedData);
+            } catch (e) {
+                console.error("Fel vid laddning", e);
+            }
+        }
+
+        // ==========================================
+        // 2. AUTO-ENRICHMENT ENGINE 
+        // ==========================================
+        function autoEnrichData() {
+            portfolioData.forEach((item, index) => {
+                // FIX: Krypto-unikt ID förhindrar klick-buggen på dubbletter
+                if (!item.id) item.id = 'proj-' + index + '-' + Math.random().toString(36).substring(2, 10);
+                if (!item.subtitle) item.subtitle = 'Logg ' + String(portfolioData.length - index).padStart(3, '0');
+                if (!item.tags) item.tags = [];
+
+                if (item.mainPrompt) {
+                    const promptParts = item.mainPrompt.split(',').map(p => p.trim());
+                    const textToScan = item.mainPrompt.toLowerCase();
+
+                    if (!item.title) {
+                        let firstPhrase = promptParts[0];
+                        item.title = firstPhrase.charAt(0).toUpperCase() + firstPhrase.slice(1);
+                        if(item.title.length > 40) item.title = item.title.substring(0, 40) + '...';
+                    }
+
+                    if (!item.description) {
+                        let keywords = promptParts.slice(1, 4).join(', '); 
+                        if (!keywords) keywords = "angivna parametrar";
+                        item.description = `Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **${keywords}** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering.`;
+                    }
+
+                    const newTags = new Set(item.tags);
+                    if (textToScan.includes('--v') || textToScan.includes('midjourney')) newTags.add('Midjourney');
+                    if (textToScan.includes('runway') || textToScan.includes('gen-2') || textToScan.includes('gen-3')) newTags.add('Runway');
+                    if (textToScan.includes('magnific')) newTags.add('Magnific AI');
+                    if (textToScan.includes('photoshop')) newTags.add('Photoshop');
+                    if (textToScan.includes('ar 16:9') || textToScan.includes('ar 21:9')) newTags.add('Cinematic Format');
+                    
+                    item.tags = Array.from(newTags);
+                } else {
+                    if (!item.title) item.title = "Oklassificerad Kreation";
+                    if (!item.description) item.description = "Dokumentation saknas. Endast visuell data tillgänglig.";
+                }
+            });
+
+            try { localStorage.setItem('blom_portfolio_data', JSON.stringify(portfolioData)); } catch(e) {}
+        }
+
+        function updateStats() {
+            const count = portfolioData.length;
+            document.getElementById('stats-count').innerText = `[SYS: ${count} PROCESSER LOGGADE]`;
+        }
+
+        // ==========================================
+        // 3. RENDER MOTOR OCH SÖKNING
+        // ==========================================
+        const grid = document.getElementById('portfolio-grid');
+        let currentFilter = 'all';
+        let currentTag = null;
+        let currentSearch = '';
+
+        function parseMarkdown(text) {
+            if (!text) return '';
+            let html = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-200">$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em class="text-slate-300 italic">$1</em>');
+            html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" class="text-accent hover:underline hover:text-white transition-colors">$1</a>');
+            html = html.replace(/\n/g, '<br>');
+            return html;
+        }
+
+        function setFilter(type) {
+            currentFilter = type;
+            ['all', 'image', 'video'].forEach(f => {
+                const btn = document.getElementById(`btn-filter-${f}`);
+                if(btn) {
+                    if (f === currentFilter) {
+                        btn.classList.add('border-accent', 'text-accent');
+                        btn.classList.remove('border-border_subtle', 'text-slate-400');
+                    } else {
+                        btn.classList.remove('border-accent', 'text-accent');
+                        btn.classList.add('border-border_subtle', 'text-slate-400');
+                    }
+                }
+            });
+            renderPortfolio();
+        }
+
+        function setTagFilter(tag) {
+            currentTag = tag;
+            const tagContainer = document.getElementById('active-tag-container');
+            const tagText = document.getElementById('active-tag-text');
+            
+            if (tag) {
+                tagText.textContent = tag;
+                tagContainer.classList.remove('hidden');
+                tagContainer.classList.add('flex');
+            } else {
+                tagContainer.classList.add('hidden');
+                tagContainer.classList.remove('flex');
+            }
+            document.getElementById('portfolio').scrollIntoView({ behavior: 'smooth' });
+            renderPortfolio();
+        }
+
+        function clearTagFilter() { setTagFilter(null); }
+
+        function handleSearch() {
+            currentSearch = document.getElementById('search-input').value.toLowerCase().trim();
+            renderPortfolio();
+        }
+
+        function renderPortfolio() {
+            grid.innerHTML = ''; 
+
+            const filteredData = portfolioData.filter(item => {
+                const matchType = currentFilter === 'all' || item.type === currentFilter;
+                const matchTag = !currentTag || item.tags.includes(currentTag);
+                const searchString = `${item.title} ${item.description} ${item.mainPrompt || ''} ${item.tags.join(' ')}`.toLowerCase();
+                const matchSearch = !currentSearch || searchString.includes(currentSearch);
+                
+                return matchType && matchTag && matchSearch;
+            });
+
+            if (filteredData.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 font-mono text-sm">Ingen data i databasen matchar dina parametrar.</div>`;
+                return;
+            }
+
+            filteredData.forEach((item) => {
+                const article = document.createElement('article');
+                article.className = 'reveal group cursor-pointer'; 
+                article.onclick = () => openProjectDossier(item.id);
+
+                let mediaIcon = item.type === 'video' ? 'video' : 'image';
+                
+                article.innerHTML = `
+                    <div class="bg-card rounded-3xl border border-border_subtle overflow-hidden relative aspect-square transition-all duration-500 group-hover:border-accent group-hover:shadow-[0_0_30px_rgba(229,142,38,0.15)]">
+                        <img src="${item.mediaUrl}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 group-hover:opacity-60" alt="${item.title}" loading="lazy">
+                        
+                        <div class="absolute inset-0 bg-gradient-to-t from-main via-main/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6">
+                            <div class="translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                <span class="text-[10px] font-black uppercase tracking-widest text-accent flex items-center gap-2 mb-2">
+                                    <i data-lucide="${mediaIcon}" class="w-3 h-3"></i> ${item.subtitle}
+                                </span>
+                                <h3 class="text-xl md:text-2xl font-black uppercase italic tracking-tighter text-white mb-2 leading-tight">${item.title}</h3>
+                                <div class="flex items-center gap-2 text-slate-300 text-[10px] md:text-xs font-bold uppercase tracking-widest">
+                                    <i data-lucide="folder-open" class="w-4 h-4"></i> Öppna Dossier
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(article);
+            });
+
+            lucide.createIcons();
+            setupObservers();
+        }
+
+        // ==========================================
+        // 4. MODAL LOGIK OCH LÖSENORDSSKYDD
+        // ==========================================
+
+        function openInfoModal(appName, appDesc) {
+            const content = document.getElementById('modal-content');
+            content.innerHTML = `
+                <div class="bg-card rounded-[3rem] p-8 md:p-14 border border-border_subtle shadow-2xl w-full relative">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-accent"></div>
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-main border border-border_subtle flex items-center justify-center shrink-0">
+                            <i data-lucide="cpu" class="w-5 h-5 md:w-6 md:h-6 text-accent"></i>
+                        </div>
+                        <h3 class="text-2xl md:text-3xl font-black uppercase italic tracking-tighter text-slate-100">${appName}</h3>
+                    </div>
+                    <p class="text-slate-400 leading-relaxed text-base md:text-lg">${appDesc}</p>
+                </div>
+            `;
+            showModal('info-modal');
+        }
+
+        function openProjectDossier(projectId) {
+            const item = portfolioData.find(p => p.id === projectId);
+            if (!item) return;
+
+            const content = document.getElementById('modal-content');
+            
+            const tagsHTML = item.tags.map(tag => `<button onclick="closeInfoModal(); setTagFilter('${tag}')" class="px-2 py-1 md:px-3 md:py-1 rounded-xl bg-main border border-border_subtle text-[8px] font-black uppercase tracking-widest text-slate-300 hover:border-accent hover:text-accent transition-colors">${tag}</button>`).join('');
+            
+            let thumbnailsHTML = '';
+            if (item.processThumbnails && item.processThumbnails.length > 0) {
+                const thumbs = item.processThumbnails.map(url => `
+                    <div onclick="openLightbox('${url}')" class="w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-xl overflow-hidden border border-border_subtle cursor-pointer hover:border-accent transition-colors relative group">
+                        <img src="${url}" class="w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-main/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i data-lucide="maximize" class="w-4 h-4 md:w-5 md:h-5 text-accent"></i>
+                        </div>
+                    </div>
+                `).join('');
+                thumbnailsHTML = `
+                    <div class="mt-6 md:mt-8">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-3">Uppbyggnad / Process</span>
+                        <div class="flex gap-3 md:gap-4 overflow-x-auto pb-4 custom-scrollbar">
+                            ${thumbs}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // LÖSENORDSSKYDDAD PROMPT LOGIK
+            let promptHTML = '';
+            if (item.mainPrompt && item.mainPrompt.trim() !== '') {
+                const escapedPrompt = item.mainPrompt.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                promptHTML = `
+                    <div class="mt-8 pt-6 border-t border-border_subtle" id="prompt-container-wrapper-${item.id}">
+                        <button onclick="showPasswordInput('${item.id}')" class="px-4 py-3 rounded-xl bg-red-900/10 border border-red-500/30 hover:border-red-500 text-[10px] font-black uppercase tracking-widest text-red-400 transition-all flex items-center gap-2">
+                            <i data-lucide="lock" class="w-3 h-3"></i> Dekryptera Master Prompt
+                        </button>
+                        
+                        <!-- Lösenordsinmatning (Dold som standard) -->
+                        <div id="password-input-wrapper-${item.id}" class="hidden mt-2 flex-col sm:flex-row items-start sm:items-center gap-2">
+                            <div class="bg-main border border-border_subtle rounded-xl flex items-center px-3 py-2 w-full sm:w-auto">
+                                <i data-lucide="key" class="w-3 h-3 text-slate-500 mr-2 shrink-0"></i>
+                                <input type="password" id="prompt-password-${item.id}" placeholder="Ange lösenord..." class="bg-transparent border-none outline-none text-xs text-white font-mono w-full sm:w-32 placeholder-slate-600" onkeypress="handlePasswordEnter(event, '${item.id}')">
+                            </div>
+                            <button onclick="checkPromptPassword('${item.id}')" class="px-4 py-2 rounded-xl bg-accent/20 border border-accent text-accent text-[10px] font-black uppercase tracking-widest hover:bg-accent hover:text-main transition-colors w-full sm:w-auto">Lås upp</button>
+                        </div>
+
+                        <!-- Själva Prompten (Dold som standard) -->
+                        <div id="prompt-${item.id}" class="prompt-container mt-4">
+                            <div class="bg-main border border-accent rounded-xl p-4 flex items-start gap-4 shadow-[0_0_15px_rgba(229,142,38,0.1)] relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1 h-full bg-accent"></div>
+                                <code class="text-xs text-accent font-mono flex-1 whitespace-pre-wrap select-all pl-2">${item.mainPrompt}</code>
+                                <button onclick="copyPrompt('${escapedPrompt}', this)" class="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg bg-card border border-border_subtle text-slate-500 hover:text-white hover:border-accent transition-all" title="Kopiera Prompt">
+                                    <i data-lucide="copy" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            let mainMediaHTML = item.type === 'video' 
+                ? `<video src="${item.mediaUrl}" controls class="w-full aspect-video object-cover rounded-t-[2rem] md:rounded-t-[3rem] border-b border-border_subtle"></video>`
+                : `<img src="${item.mediaUrl}" class="w-full aspect-video object-cover rounded-t-[2rem] md:rounded-t-[3rem] border-b border-border_subtle cursor-pointer hover:opacity-90 transition-opacity" onclick="openLightbox('${item.mediaUrl}')" title="Klicka för fullskärm">`;
+
+            content.innerHTML = `
+                <div class="bg-card rounded-[2rem] md:rounded-[3rem] border border-border_subtle shadow-2xl w-full relative flex flex-col my-8">
+                    <div class="relative w-full">
+                        ${mainMediaHTML}
+                        ${item.type === 'image' ? `<div class="absolute top-4 right-4 bg-black/50 backdrop-blur p-2 rounded-lg pointer-events-none text-slate-300"><i data-lucide="maximize" class="w-4 h-4"></i></div>` : ''}
+                        
+                        <div class="absolute top-4 left-4 z-10 hidden sm:block">
+                            <button onclick="copyShareLink('${item.id}', this)" class="px-3 py-2 md:px-4 md:py-2 rounded-xl bg-main/80 backdrop-blur border border-border_subtle hover:border-accent text-[8px] md:text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-accent transition-all flex items-center gap-2 shadow-lg">
+                                <i data-lucide="share-2" class="w-3 h-3 md:w-4 md:h-4"></i> Dela
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 md:p-12">
+                        <div class="flex flex-col lg:flex-row gap-6 md:gap-8 justify-between">
+                            <div class="flex-1">
+                                <span class="text-[10px] font-black uppercase tracking-widest text-accent mb-2 block">${item.subtitle}</span>
+                                <h3 class="text-3xl md:text-4xl font-black uppercase italic tracking-tighter text-slate-100 mb-4">${item.title}</h3>
+                                <div class="flex flex-wrap gap-2 mb-6">${tagsHTML}</div>
+                                <p class="text-slate-400 leading-relaxed text-sm md:text-base">${parseMarkdown(item.description)}</p>
+                                ${promptHTML}
+                            </div>
+                            <div class="lg:max-w-xs w-full shrink-0">
+                                ${thumbnailsHTML}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            showModal('info-modal');
+        }
+
+        function showPasswordInput(id) {
+            document.querySelector(`#prompt-container-wrapper-${id} button`).classList.add('hidden');
+            const wrapper = document.getElementById(`password-input-wrapper-${id}`);
+            wrapper.classList.remove('hidden');
+            wrapper.classList.add('flex');
+            document.getElementById(`prompt-password-${id}`).focus();
+        }
+
+        function handlePasswordEnter(e, id) {
+            if (e.key === 'Enter') {
+                checkPromptPassword(id);
+            }
+        }
+
+        function checkPromptPassword(id) {
+            const input = document.getElementById(`prompt-password-${id}`);
+            const val = input.value;
+            
+            if (val === SYSTEM_PASSWORD) {
+                const wrapper = document.getElementById(`password-input-wrapper-${id}`);
+                wrapper.classList.add('hidden');
+                wrapper.classList.remove('flex');
+                
+                const promptBox = document.getElementById(`prompt-${id}`);
+                promptBox.classList.add('open');
+            } else {
+                input.value = '';
+                input.placeholder = 'ÅTKOMST NEKAD';
+                input.classList.add('text-red-500', 'placeholder-red-500');
+                setTimeout(() => {
+                    input.placeholder = 'Ange lösenord...';
+                    input.classList.remove('text-red-500', 'placeholder-red-500');
+                }, 1500);
+            }
+        }
+
+        function copyPrompt(text, btnElement) {
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            const originalIcon = btnElement.innerHTML;
+            btnElement.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-green-400"></i>`;
+            btnElement.classList.add('border-green-400', 'text-green-400');
+            lucide.createIcons();
+
+            setTimeout(() => {
+                btnElement.innerHTML = originalIcon;
+                btnElement.classList.remove('border-green-400', 'text-green-400');
+                lucide.createIcons();
+            }, 2000);
+        }
+
+        function copyShareLink(projectId, btnElement) {
+            const baseUrl = window.location.href.split('?')[0];
+            const shareUrl = `${baseUrl}?project=${projectId}`;
+            
+            const el = document.createElement('textarea');
+            el.value = shareUrl;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            const originalText = btnElement.innerHTML;
+            btnElement.innerHTML = `<i data-lucide="check" class="w-3 h-3 md:w-4 md:h-4 text-green-400"></i> Kopierad`;
+            btnElement.classList.add('border-green-400', 'text-green-400');
+            lucide.createIcons();
+
+            setTimeout(() => {
+                btnElement.innerHTML = originalText;
+                btnElement.classList.remove('border-green-400', 'text-green-400');
+                lucide.createIcons();
+            }, 2000);
+        }
+
+        function showModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            document.body.style.overflow = 'hidden'; 
+            lucide.createIcons();
+        }
+
+        function closeInfoModal() {
+            const modal = document.getElementById('info-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            document.body.style.overflow = '';
+            setTimeout(() => { document.getElementById('modal-content').innerHTML = ''; }, 300);
+        }
+
+        function openLightbox(mediaUrl) {
+            const content = document.getElementById('lightbox-content');
+            content.innerHTML = `<img src="${mediaUrl}" class="max-w-full max-h-[90vh] object-contain rounded-xl border border-border_subtle shadow-2xl">`;
+            showModal('lightbox-modal');
+        }
+
+        function closeLightbox() {
+            const modal = document.getElementById('lightbox-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            if(document.getElementById('info-modal').classList.contains('opacity-0')) {
+                 document.body.style.overflow = '';
+            }
+            setTimeout(() => { document.getElementById('lightbox-content').innerHTML = ''; }, 300);
+        }
+
+        function setupObservers() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        // ==========================================
+        // 5. TERMINAL & QUICK ADD LOGIC
+        // ==========================================
+        const terminalOverlay = document.getElementById('terminal-overlay');
+        const terminalInput = document.getElementById('terminal-input');
+        const terminalOutput = document.getElementById('terminal-output');
+
+        function toggleTerminal() {
+            if (terminalOverlay.classList.contains('open')) {
+                terminalOverlay.classList.remove('open');
+                terminalInput.blur();
+            } else {
+                terminalOverlay.classList.add('open');
+                setTimeout(() => terminalInput.focus(), 500);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '`' || e.key === '~' || (e.key === 'Escape' && terminalOverlay.classList.contains('open'))) {
+                e.preventDefault();
+                toggleTerminal();
+            }
+        });
+
+        function toggleQuickAdd() {
+            const panel = document.getElementById('quick-add-panel');
+            if (panel.classList.contains('opacity-0')) {
+                panel.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+                document.getElementById('quick-thumbs').value = localStorage.getItem('blom_last_thumbs') || '';
+                document.getElementById('quick-media').focus();
+            } else {
+                panel.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+            }
+        }
+
+        function submitQuickProject() {
+            const media = document.getElementById('quick-media').value.trim();
+            const prompt = document.getElementById('quick-prompt').value.trim();
+            const thumbsRaw = document.getElementById('quick-thumbs').value.trim();
+            const type = document.getElementById('quick-type').value;
+            const statusEl = document.getElementById('quick-status');
+
+            if(!media || !prompt) {
+                statusEl.innerHTML = '<span class="text-red-500">Länk och prompt krävs!</span>';
+                return;
+            }
+
+            localStorage.setItem('blom_last_thumbs', thumbsRaw);
+            const thumbs = thumbsRaw ? thumbsRaw.split(',').map(s => s.trim()) : [];
+
+            portfolioData.unshift({ type: type, mediaUrl: media, processThumbnails: thumbs, mainPrompt: prompt }); 
+            autoEnrichData(); 
+            updateStats();
+            renderPortfolio();
+            
+            statusEl.innerHTML = '<span class="text-green-400">Sparat! Redo för nästa.</span>';
+            document.getElementById('quick-media').value = '';
+            document.getElementById('quick-prompt').value = '';
+            document.getElementById('quick-media').focus();
+            
+            setTimeout(() => { if(statusEl.innerHTML.includes('Sparat')) statusEl.innerHTML = ''; }, 3000);
+        }
+
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const val = terminalInput.value.trim();
+                if (!val) return;
+                printTerminal(`<span class="text-slate-500">root@blom:~#</span> ${val}`);
+                terminalInput.value = '';
+
+                const cmd = val.toLowerCase();
+                if (cmd === '/help') {
+                    printTerminal(`Available commands:<br>  <span class="text-accent">/help</span> - Show this message<br>  <span class="text-accent">/add</span> - Lägg till nytt projekt (UI)<br>  <span class="text-accent">/batch</span> - Massimport av projekt<br>  <span class="text-accent">/edit</span> - Redigera/Ta bort projekt (UI)<br>  <span class="text-accent">/raw</span> - Visa all rådata för kopiering<br>  <span class="text-accent">/theme light</span> - Switch to light mode<br>  <span class="text-accent">/stats</span> - Show system statistics<br>  <span class="text-accent">/export</span> - Ladda ner JSON backup<br>  <span class="text-accent">/import</span> - Ladda upp JSON backup<br>  <span class="text-accent">/reset</span> - Rensa webbläsarens minne<br>  <span class="text-accent">/clear</span> - Clear terminal<br>  <span class="text-accent">/exit</span> - Close terminal`);
+                } else if (cmd === '/add') {
+                    showAddProjectForm();
+                } else if (cmd === '/batch') {
+                    showBatchForm();
+                } else if (cmd === '/edit') {
+                    showEditList();
+                } else if (cmd === '/raw') {
+                    const rawText = JSON.stringify(portfolioData, null, 2);
+                    printTerminal(`<div class="bg-card border border-border_subtle p-3 rounded-lg mt-2 mb-2 max-h-64 overflow-y-auto"><pre class="text-[10px] text-slate-300 font-mono whitespace-pre-wrap select-all">${rawText}</pre></div><span class="text-green-400 font-bold block mb-4">^ Kopiera detta och klistra in i koden! ^</span>`);
+                } else if (cmd === '/theme light') {
+                    printTerminal(`<span class="text-red-500">ERROR: Security override. Light theme is forbidden by system architect 'Blom'. Maintaining tactical dark mode.</span>`);
+                } else if (cmd === '/stats') {
+                    printTerminal(`System Status:<br>- Database entries: ${portfolioData.length}<br>- Memory optimized: True`);
+                } else if (cmd === '/export') {
+                    exportData();
+                    printTerminal(`<span class="text-green-400">[OK] Exporterar databas till lokal fil...</span>`);
+                } else if (cmd === '/import') {
+                    importData();
+                    printTerminal(`<span class="text-accent">[AWAIT] Välj en JSON-fil att importera...</span>`);
+                } else if (cmd === '/reset') {
+                    try { localStorage.removeItem('blom_portfolio_data'); } catch(e) {}
+                    printTerminal(`<span class="text-green-400">[OK] Lokalt minne rensat. Återställer till hårdkodad grundmall...</span>`);
+                    setTimeout(() => location.reload(), 1500);
+                } else if (cmd === '/clear') {
+                    terminalOutput.innerHTML = '';
+                } else if (cmd === '/exit') {
+                    toggleTerminal();
+                } else {
+                    printTerminal(`Command not found: ${val}. Type '/help' for available commands.`);
+                }
+            }
+        });
+
+        function showAddProjectForm() {
+            const lastThumbs = localStorage.getItem('blom_last_thumbs') || '';
+            const uid = Date.now();
+            const formHtml = `
+                <div class="bg-card border border-border_subtle p-4 rounded-xl mt-2 flex flex-col gap-3 font-sans" id="form-container-${uid}">
+                    <h4 class="text-accent uppercase font-black text-[10px] tracking-widest flex items-center gap-2"><i data-lucide="database" class="w-3 h-3"></i> N.E.X.U.S. Data Entry</h4>
+                    <input type="text" id="add-media-${uid}" placeholder="Huvudbildens URL (Länk till ditt slutresultat)" class="bg-main border border-border_subtle p-3 rounded-lg outline-none text-xs text-slate-200 focus:border-accent transition-colors">
+                    <textarea id="add-prompt-${uid}" placeholder="Klistra in din Master Prompt här (AI analyserar denna)" class="bg-main border border-border_subtle p-3 rounded-lg outline-none text-xs text-slate-200 focus:border-accent h-24 resize-none transition-colors"></textarea>
+                    <label class="text-[8px] uppercase tracking-widest text-slate-500 -mb-2 mt-1">Processbilder (Fylls automatiskt i med senaste)</label>
+                    <input type="text" id="add-thumbs-${uid}" value="${lastThumbs}" placeholder="Processbilder URL:er (Separera med kommatecken, valfritt)" class="bg-main border border-border_subtle p-3 rounded-lg outline-none text-xs text-slate-200 focus:border-accent transition-colors">
+                    <select id="add-type-${uid}" class="bg-main border border-border_subtle p-3 rounded-lg outline-none text-xs text-slate-200 focus:border-accent transition-colors">
+                        <option value="image">Format: Bild (Image)</option>
+                        <option value="video">Format: Film (Video)</option>
+                    </select>
+                    <button id="btn-submit-${uid}" onclick="submitNewProject('${uid}')" class="bg-accent/20 border border-accent text-accent px-4 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-accent hover:text-main transition-colors mt-2 shadow-[0_0_15px_rgba(229,142,38,0.2)]">Infoga i Systemet</button>
+                </div>
+            `;
+            printTerminal(formHtml);
+            lucide.createIcons(); 
+        }
+
+        function submitNewProject(uid) {
+            const media = document.getElementById(`add-media-${uid}`).value.trim();
+            const prompt = document.getElementById(`add-prompt-${uid}`).value.trim();
+            const thumbsRaw = document.getElementById(`add-thumbs-${uid}`).value.trim();
+            const type = document.getElementById(`add-type-${uid}`).value;
+
+            if(!media || !prompt) { printTerminal('<span class="text-red-500 font-mono mt-2 block">[FEL] Länk och prompt krävs!</span>'); return; }
+
+            localStorage.setItem('blom_last_thumbs', thumbsRaw);
+            const thumbs = thumbsRaw ? thumbsRaw.split(',').map(s => s.trim()) : [];
+            portfolioData.unshift({ type: type, mediaUrl: media, processThumbnails: thumbs, mainPrompt: prompt }); 
+            
+            autoEnrichData(); updateStats(); renderPortfolio();
+            printTerminal('<span class="text-green-400 font-mono mt-2 block">[SUCCESS] Projektet sparat och indexerat.</span>');
+            
+            const btn = document.getElementById(`btn-submit-${uid}`);
+            if(btn) { btn.innerText = "PROJEKT SPARAT"; btn.disabled = true; btn.classList.add('opacity-50', 'cursor-not-allowed'); }
+        }
+
+        function showBatchForm() {
+            const uid = Date.now();
+            const formHtml = `
+                <div class="bg-card border border-border_subtle p-4 rounded-xl mt-2 flex flex-col gap-3 font-sans" id="batch-container-${uid}">
+                    <h4 class="text-accent uppercase font-black text-[10px] tracking-widest flex items-center gap-2"><i data-lucide="layers" class="w-3 h-3"></i> N.E.X.U.S. Massimport</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-1">Lägg in ett projekt per rad. Separera länken och prompten med ett rakt streck (<span class="text-accent font-bold">|</span>).<br>Exempel: <span class="font-mono text-[10px] bg-main p-1 rounded">https://bild.jpg | Min grymma prompt</span></p>
+                    <textarea id="batch-input-${uid}" placeholder="Länk | Prompt" class="bg-main border border-border_subtle p-3 rounded-lg outline-none text-xs text-slate-200 focus:border-accent h-40 resize-none transition-colors whitespace-pre overflow-x-auto"></textarea>
+                    <input type="text" id="batch-thumbs-${uid}" placeholder="Gemensamma processbilder (Valfritt)" class="bg-main border border-border_subtle p-3 rounded-lg outline-none text-xs text-slate-200 focus:border-accent transition-colors">
+                    <button id="btn-batch-${uid}" onclick="submitBatch('${uid}')" class="bg-accent/20 border border-accent text-accent px-4 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-accent hover:text-main transition-colors mt-2">Processa Batch-data</button>
+                </div>
+            `;
+            printTerminal(formHtml);
+            lucide.createIcons();
+        }
+
+        function submitBatch(uid) {
+            const inputData = document.getElementById(`batch-input-${uid}`).value.trim();
+            const thumbsRaw = document.getElementById(`batch-thumbs-${uid}`).value.trim();
+            if (!inputData) return;
+
+            const thumbs = thumbsRaw ? thumbsRaw.split(',').map(s => s.trim()) : [];
+            const lines = inputData.split('\n');
+            let addedCount = 0;
+
+            lines.forEach(line => {
+                if (!line.trim()) return;
+                const parts = line.split('|');
+                if (parts.length >= 2) {
+                    const media = parts[0].trim();
+                    const prompt = parts.slice(1).join('|').trim(); 
+                    if (media && prompt) {
+                        portfolioData.unshift({ type: 'image', mediaUrl: media, processThumbnails: thumbs, mainPrompt: prompt });
+                        addedCount++;
+                    }
+                }
+            });
+
+            if (addedCount > 0) {
+                autoEnrichData(); updateStats(); renderPortfolio();
+                printTerminal(`<span class="text-green-400 font-mono mt-2 block">[SUCCESS] ${addedCount} projekt massimporterades!</span>`);
+            }
+        }
+
+        function showEditList() {
+            let listHtml = `<div class="text-slate-300 mt-2 mb-2 font-black uppercase tracking-widest text-[10px]"><i data-lucide="database" class="w-3 h-3 inline mr-1"></i> Välj projekt att redigera:</div><div class="space-y-2 font-sans">`;
+            portfolioData.forEach(p => {
+                listHtml += `
+                    <div class="flex justify-between items-center bg-card p-3 rounded-lg border border-border_subtle hover:border-accent/50 transition-colors">
+                        <div class="flex flex-col overflow-hidden">
+                            <span class="text-[10px] font-black uppercase text-accent tracking-widest">${p.subtitle}</span>
+                            <span class="text-xs text-slate-200 truncate pr-4">${p.title}</span>
+                        </div>
+                        <button onclick="showEditForm('${p.id}')" class="text-slate-400 hover:text-accent px-3 py-2 rounded-md bg-main border border-border_subtle hover:border-accent text-[10px] uppercase font-black tracking-widest shrink-0 transition-colors flex items-center gap-1">
+                            <i data-lucide="edit-2" class="w-3 h-3"></i> Redigera
+                        </button>
+                    </div>`;
+            });
+            listHtml += `</div>`;
+            printTerminal(listHtml);
+            lucide.createIcons();
+        }
+
+        function showEditForm(id) {
+            const item = portfolioData.find(p => p.id === id);
+            if (!item) return;
+            const formHtml = `
+                <div class="bg-card border border-border_subtle p-4 rounded-xl mt-4 flex flex-col gap-3 font-sans relative" id="edit-form-${id}">
+                    <h4 class="text-accent uppercase font-black text-[10px] tracking-widest flex items-center justify-between gap-2 border-b border-border_subtle pb-2">
+                        <span><i data-lucide="edit" class="w-3 h-3 inline"></i> Redigerar: ${item.title}</span>
+                    </h4>
+                    <input type="text" id="edit-media-${id}" value="${item.mediaUrl}" class="bg-main border border-border_subtle p-3 rounded-lg outline-none text-xs text-slate-200 focus:border-accent transition-colors">
+                    <textarea id="edit-prompt-${id}" class="bg-main border border-border_subtle p-3 rounded-lg outline-none text-xs text-slate-200 focus:border-accent h-24 resize-none transition-colors">${item.mainPrompt || ''}</textarea>
+                    <input type="text" id="edit-thumbs-${id}" value="${(item.processThumbnails || []).join(', ')}" class="bg-main border border-border_subtle p-3 rounded-lg outline-none text-xs text-slate-200 focus:border-accent transition-colors">
+                    <div class="flex gap-2 mt-2">
+                        <button onclick="saveEditProject('${id}')" class="flex-1 bg-accent/20 border border-accent text-accent px-4 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-accent hover:text-main transition-colors shadow-[0_0_15px_rgba(229,142,38,0.2)]">Spara</button>
+                        <button onclick="deleteProject('${id}')" class="bg-red-900/20 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-colors" title="Radera"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+            `;
+            printTerminal(formHtml);
+            lucide.createIcons();
+        }
+
+        function saveEditProject(id) {
+            const item = portfolioData.find(p => p.id === id);
+            if (!item) return;
+            item.mediaUrl = document.getElementById(`edit-media-${id}`).value.trim();
+            item.mainPrompt = document.getElementById(`edit-prompt-${id}`).value.trim();
+            const thumbsRaw = document.getElementById(`edit-thumbs-${id}`).value.trim();
+            item.processThumbnails = thumbsRaw ? thumbsRaw.split(',').map(s => s.trim()) : [];
+            item.title = ""; item.description = ""; item.tags = []; // Force re-enrich
+            autoEnrichData(); updateStats(); renderPortfolio();
+            printTerminal(`<span class="text-green-400 font-mono mt-2 block">[SUCCESS] Projektet uppdaterades.</span>`);
+        }
+
+        function deleteProject(id) {
+            portfolioData = portfolioData.filter(p => p.id !== id);
+            try { localStorage.setItem('blom_portfolio_data', JSON.stringify(portfolioData)); } catch(e) {}
+            updateStats(); renderPortfolio();
+            printTerminal(`<span class="text-red-500 font-mono mt-2 block">[DELETED] Projektet raderades.</span>`);
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(portfolioData, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "blom_portfolio_backup.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = event => {
+                    try {
+                        const importedData = JSON.parse(event.target.result);
+                        if (Array.isArray(importedData)) {
+                            portfolioData = importedData;
+                            autoEnrichData(); updateStats(); renderPortfolio();
+                            printTerminal(`<span class="text-green-400">[SUCCESS] Databas importerad. Laddar om UI...</span>`);
+                        }
+                    } catch (err) {}
+                }
+                reader.readAsText(file);
+            }
+            input.click();
+        }
+
+        function printTerminal(htmlString) {
+            const div = document.createElement('div');
+            div.innerHTML = htmlString;
+            terminalOutput.appendChild(div);
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        // ==========================================
+        // 8. BOOT SEQUENCE
+        // ==========================================
+        function runBootSequence() {
+            const bootOverlay = document.getElementById('boot-sequence');
+            const bootText = document.getElementById('boot-text');
+            const bootLines = ["Initiating N.E.X.U.S. kernel...", "Mounting Blom.AI File System...", "Authenticating architect 'Blom'...", "Decrypting visual assets...", "Access Granted. Loading User Interface..."];
+            let lineIndex = 0;
+            document.body.style.overflow = 'hidden';
+
+            function typeNextLine() {
+                if (lineIndex < bootLines.length) {
+                    const line = document.createElement('div');
+                    line.textContent = '> ' + bootLines[lineIndex];
+                    bootText.appendChild(line);
+                    lineIndex++;
+                    setTimeout(typeNextLine, 200 + Math.random() * 200); 
+                } else {
+                    setTimeout(() => {
+                        bootOverlay.style.opacity = '0';
+                        bootOverlay.style.pointerEvents = 'none';
+                        document.body.style.overflow = ''; 
+                        setTimeout(() => bootOverlay.remove(), 1000);
+                    }, 600);
+                }
+            }
+            setTimeout(typeNextLine, 200);
+        }
+
+        // ==========================================
+        // INITIERING
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            runBootSequence(); 
+            autoEnrichData(); 
+            updateStats(); 
+            renderPortfolio();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectIdToOpen = urlParams.get('project');
+            if (projectIdToOpen) {
+                setTimeout(() => { document.getElementById('portfolio').scrollIntoView({ behavior: 'smooth' }); }, 500);
+                setTimeout(() => { openProjectDossier(projectIdToOpen); }, 1000);
+            }
+        });
+
+    </script>
+</body>
+</html>
