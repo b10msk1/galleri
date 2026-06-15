@@ -259,6 +259,7 @@
         </div>
         <div id="terminal-output" class="flex-1 p-4 overflow-y-auto text-slate-300 space-y-2">
             <div class="text-accent">Welcome to Blom.AI Terminal. Type '/help' for a list of commands.</div>
+            <div class="text-slate-400 mt-2">Datan laddas nu från din databas-fil över nätverket. Lokala ändringar sparas tillfälligt, se till att exportera och ladda upp en ny database.json!</div>
         </div>
         <div class="h-12 border-t border-border_subtle flex items-center px-4 gap-2 bg-main">
             <span class="text-accent">root@blom:~#</span>
@@ -292,6 +293,11 @@
 
         let activePortfolioData = [];
         let activePrivateData = [];
+        
+        // Huvudvariabler som populeras via Fetch från database.json
+        let portfolioData = [];
+        let appData = [];
+        let privateData = [];
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -312,32 +318,6 @@
             imgElement.replaceWith(div);
             lucide.createIcons();
         };
-
-        // ==========================================
-        // 1. DATA LADDAS DYNAMISKT FRÅN MINNET
-        // ==========================================
-        let portfolioData = [];
-        let savedData = null;
-        try { savedData = localStorage.getItem('blom_portfolio_data'); } catch (e) { }
-        if (savedData) {
-            try {
-                let parsed = JSON.parse(savedData);
-                if(Array.isArray(parsed) && parsed.length > 0) { portfolioData = parsed; }
-            } catch (e) { }
-        }
-
-        let appData = [];
-        try { 
-            let saved = localStorage.getItem('blom_app_data');
-            if(saved) appData = JSON.parse(saved);
-        } catch(e){}
-
-        let privateData = [];
-        try { 
-            let savedPriv = localStorage.getItem('blom_private_data'); 
-            if(savedPriv) privateData = JSON.parse(savedPriv);
-        } catch(e){}
-
 
         function switchView(viewId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
@@ -509,7 +489,7 @@
             const displayCount = currentFilter === 'private' ? currentPrivateDisplayCount : currentPortfolioDisplayCount;
 
             if (sourceData.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 font-mono text-sm">Ingen data matchar. Ladda in via [SYS] Terminal.</div>`;
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 font-mono text-sm">Ingen data matchar. Laddar databasen...</div>`;
                 return;
             }
 
@@ -735,7 +715,7 @@
         }
 
         // ==========================================
-        // 5. TERMINAL OCH IMPORTFUNKTIONER
+        // 5. TERMINAL
         // ==========================================
         const terminalOverlay = document.getElementById('terminal-overlay');
         const terminalInput = document.getElementById('terminal-input');
@@ -763,9 +743,9 @@
                 } else if (cmd === '/import') {
                     document.getElementById('import-file').click();
                 } else if (cmd === '/stats') {
-                    const currentPortfolio = JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]').length;
+                    const currentPortfolio = typeof portfolioData !== 'undefined' ? portfolioData.length : JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]').length;
                     const currentApps = typeof appData !== 'undefined' ? appData.length : JSON.parse(localStorage.getItem('blom_app_data') || '[]').length;
-                    const currentPrivate = JSON.parse(localStorage.getItem('blom_private_data') || '[]').length;
+                    const currentPrivate = typeof privateData !== 'undefined' ? privateData.length : JSON.parse(localStorage.getItem('blom_private_data') || '[]').length;
                     printTerminal(`System Status:<br>- Database entries: ${currentPortfolio}<br>- App entries: ${currentApps}<br>- Private entries: ${currentPrivate}<br>- Memory optimized: True`);
                 } else if (cmd === '/clear') {
                     terminalOutput.innerHTML = '';
@@ -784,11 +764,14 @@
             terminalOutput.scrollTop = terminalOutput.scrollHeight;
         }
 
+        // ==========================================
+        // 6. JSON IMPORT / EXPORT (SMART MERGE VIA LOCALSTORAGE)
+        // ==========================================
         function exportData() {
             try {
-                const currentPortfolio = JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]');
+                const currentPortfolio = typeof portfolioData !== 'undefined' && portfolioData.length > 0 ? portfolioData : JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]');
                 const currentApps = typeof appData !== 'undefined' && appData.length > 0 ? appData : JSON.parse(localStorage.getItem('blom_app_data') || '[]');
-                const currentPrivate = JSON.parse(localStorage.getItem('blom_private_data') || '[]');
+                const currentPrivate = typeof privateData !== 'undefined' && privateData.length > 0 ? privateData : JSON.parse(localStorage.getItem('blom_private_data') || '[]');
 
                 const dataToExport = {
                     portfolio: currentPortfolio,
@@ -884,6 +867,52 @@
         }
 
         // ==========================================
+        // DYNAMISK FETCH AV DATABASE.JSON (Riktig Lösning)
+        // ==========================================
+        async function fetchDatabase() {
+            try {
+                // Vi försöker ladda filen database.json över nätverket (fungerar på GitHub Pages!)
+                const response = await fetch('database.json');
+                if (!response.ok) throw new Error('Database not found locally.');
+                
+                const data = await response.json();
+                let loadedSomething = false;
+                
+                if (data.portfolio && Array.isArray(data.portfolio)) {
+                    portfolioData = data.portfolio;
+                    localStorage.setItem('blom_portfolio_data', JSON.stringify(portfolioData));
+                    loadedSomething = true;
+                }
+                if (data.apps && Array.isArray(data.apps)) {
+                    appData = data.apps;
+                    localStorage.setItem('blom_app_data', JSON.stringify(appData));
+                    loadedSomething = true;
+                }
+                if (data.private && Array.isArray(data.private)) {
+                    privateData = data.private;
+                    localStorage.setItem('blom_private_data', JSON.stringify(privateData));
+                }
+                
+                if(loadedSomething) {
+                    autoEnrichData();
+                    updateStats();
+                    applyFiltersAndShuffle();
+                    applyPrivateFiltersAndShuffle();
+                    renderPortfolio();
+                    console.log("Databas laddades över nätverket (publik åtkomst)");
+                }
+            } catch (error) {
+                console.warn("Laddade inte från database.json. Använder webbläsarens lokala minne istället.", error);
+                // Om filen inte finns, faller vi automatiskt tillbaka på lokala minnet som vi brukar.
+                autoEnrichData();
+                updateStats();
+                applyFiltersAndShuffle();
+                applyPrivateFiltersAndShuffle();
+                renderPortfolio();
+            }
+        }
+
+        // ==========================================
         // 8. BOOT SEQUENCE
         // ==========================================
         function runBootSequence() {
@@ -920,18 +949,19 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            runBootSequence(); 
-            autoEnrichData(); 
-            updateStats(); 
-            setFilter('all');
+            // Ladda databasen över nätverket (om den finns) innan vi bootar!
+            fetchDatabase().then(() => {
+                runBootSequence(); 
+                setFilter('all');
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const projectIdToOpen = urlParams.get('project');
-            if (projectIdToOpen) {
-                switchView('portfolio-view');
-                setTimeout(() => { document.getElementById('portfolio-grid').scrollIntoView({ behavior: 'smooth' }); }, 500);
-                setTimeout(() => { openProjectDossier(projectIdToOpen); }, 1000);
-            }
+                const urlParams = new URLSearchParams(window.location.search);
+                const projectIdToOpen = urlParams.get('project');
+                if (projectIdToOpen) {
+                    switchView('portfolio-view');
+                    setTimeout(() => { document.getElementById('portfolio-grid').scrollIntoView({ behavior: 'smooth' }); }, 500);
+                    setTimeout(() => { openProjectDossier(projectIdToOpen); }, 1000);
+                }
+            });
         });
 
     </script>
