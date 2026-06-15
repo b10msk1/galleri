@@ -63,15 +63,15 @@
                 <button onclick="switchView('hero-view')" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
                     <i data-lucide="user" class="w-3 h-3"></i> Profil
                 </button>
-                <button onclick="switchView('portfolio-view')" class="text-[10px] font-black uppercase tracking-widest text-accent flex items-center gap-2 outline-none">
+                <button onclick="switchView('portfolio-view')" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
                     <i data-lucide="image" class="w-3 h-3"></i> Kreationer
                 </button>
-                <a href="app-valv.html" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
-                    <i data-lucide="layout-grid" class="w-3 h-3"></i> System & Appar
-                </a>
-                <button onclick="switchView('private-view')" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
-                    <i data-lucide="lock" class="w-3 h-3"></i> Privat Valv
+                <button onclick="switchView('games-view')" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
+                    <i data-lucide="gamepad-2" class="w-3 h-3"></i> Spel
                 </button>
+                <a href="app-valv.html" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
+                    <i data-lucide="layout-grid" class="w-3 h-3"></i> App-Valv
+                </a>
             </nav>
             <button class="md:hidden text-slate-400 hover:text-accent outline-none">
                 <i data-lucide="menu" class="w-6 h-6"></i>
@@ -81,7 +81,6 @@
 
     <main class="max-w-7xl mx-auto px-6 pt-20">
 
-        <!-- VY 1: PROFIL (HERO) -->
         <div id="hero-view" class="view-section active-view pb-24">
             <section class="relative min-h-[calc(100vh-5rem)] flex flex-col justify-center border-b border-border_subtle reveal pt-10 pb-10 overflow-hidden">
                 <div class="w-full lg:w-[55%] z-10 flex flex-col justify-center h-full mt-4 lg:mt-0">
@@ -102,12 +101,15 @@
                         </div>
                         
                         <p class="text-slate-400 text-base md:text-lg leading-relaxed">
-                            Denna plattform fungerar som min digitala hjärna och portfölj. Här samlar jag mina AI-kreationer, från avancerade master-prompts till utvecklingen av över 140 skräddarsydda applikationer och system.
+                            Denna plattform fungerar som min digitala hjärna och portfölj. Här samlar jag mina AI-kreationer, från avancerade master-prompts till utvecklingen av över 140 skräddarsydda applikationer, spel och system.
                         </p>
 
-                        <div class="pt-4 flex gap-4">
+                        <div class="pt-4 flex flex-wrap gap-4">
                             <button onclick="switchView('portfolio-view')" class="px-6 py-3 rounded-xl bg-accent/20 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent hover:text-main transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(229,142,38,0.2)]">
                                 <i data-lucide="image" class="w-4 h-4"></i> Se Kreationer
+                            </button>
+                            <button onclick="switchView('games-view')" class="px-6 py-3 rounded-xl bg-card border border-border_subtle text-[10px] font-black uppercase tracking-widest text-slate-300 hover:border-accent hover:text-accent transition-all flex items-center gap-2">
+                                <i data-lucide="gamepad-2" class="w-4 h-4"></i> Spel
                             </button>
                             <a href="app-valv.html" class="px-6 py-3 rounded-xl bg-card border border-border_subtle text-[10px] font-black uppercase tracking-widest text-slate-300 hover:border-accent hover:text-accent transition-all flex items-center gap-2">
                                 <i data-lucide="layout-grid" class="w-4 h-4"></i> App-Valv
@@ -116,14 +118,72 @@
                     </div>
                 </div>
                 
-                <div class="absolute bottom-0 right-0 w-full lg:w-[45%] h-[60vh] lg:h-[80vh] flex justify-center lg:justify-end items-end z-0 pointer-events-none">
-                    <img src="https://i.imgur.com/SkZObbh.png" alt="Jonas Blomquist Profil" class="max-h-full max-w-full object-contain object-bottom mix-blend-screen opacity-50 md:opacity-70 lg:opacity-90 drop-shadow-2xl transition-transform duration-1000 hover:scale-[1.02]">
+                <div class="absolute bottom-0 right-0 w-full lg:w-[45%] h-[70vh] lg:h-full flex justify-center lg:justify-end items-end z-0 pointer-events-none">
+                    <img src="https://i.imgur.com/SkZObbh.png" alt="Jonas Blomquist Profil" class="h-full w-auto max-w-none object-contain object-bottom mix-blend-screen opacity-50 md:opacity-70 lg:opacity-90 drop-shadow-2xl transition-transform duration-1000 hover:scale-[1.02]">
                     <div class="absolute bottom-0 w-full h-40 lg:h-48 bg-gradient-to-t from-main via-main/80 to-transparent z-10"></div>
                 </div>
             </section>
         </div>
 
-        <!-- VY 2: KREATIONER (BILDER/FILMER) -->
+        <div id="games-view" class="view-section pt-12 pb-24">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border_subtle pb-6 reveal active">
+                <div>
+                    <h2 class="text-4xl font-black uppercase italic tracking-tighter flex items-center gap-4">
+                        <i data-lucide="gamepad-2" class="w-8 h-8 text-accent"></i>
+                        Spel & Interaktivt
+                    </h2>
+                    <p class="text-slate-500 text-sm mt-2 font-mono">En samling av mina publicerade spel och digitala upplevelser.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+                <div class="bg-card border border-border_subtle p-6 rounded-3xl hover:border-accent transition-colors flex flex-col h-full reveal active group">
+                    <div class="w-full h-48 mb-6 rounded-xl bg-main border border-border_subtle flex items-center justify-center overflow-hidden relative">
+                        <i data-lucide="gamepad-2" class="w-12 h-12 text-slate-700 absolute"></i>
+                        </div>
+                    <h3 class="text-2xl font-black uppercase italic tracking-tighter text-white group-hover:text-accent transition-colors mb-2">Spel Titel 1</h3>
+                    <p class="text-slate-400 text-sm flex-1 mb-6">Kort beskrivning av spelet och tekniken bakom det.</p>
+                    <a href="#" target="_blank" class="w-full py-3 rounded-xl bg-accent/10 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent hover:text-main transition-colors text-center">Spela Nu</a>
+                </div>
+
+                <div class="bg-card border border-border_subtle p-6 rounded-3xl hover:border-accent transition-colors flex flex-col h-full reveal active group">
+                    <div class="w-full h-48 mb-6 rounded-xl bg-main border border-border_subtle flex items-center justify-center overflow-hidden relative">
+                        <i data-lucide="gamepad-2" class="w-12 h-12 text-slate-700 absolute"></i>
+                        </div>
+                    <h3 class="text-2xl font-black uppercase italic tracking-tighter text-white group-hover:text-accent transition-colors mb-2">Spel Titel 2</h3>
+                    <p class="text-slate-400 text-sm flex-1 mb-6">Kort beskrivning av spelet och tekniken bakom det.</p>
+                    <a href="#" target="_blank" class="w-full py-3 rounded-xl bg-accent/10 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent hover:text-main transition-colors text-center">Spela Nu</a>
+                </div>
+
+                <div class="bg-card border border-border_subtle p-6 rounded-3xl hover:border-accent transition-colors flex flex-col h-full reveal active group">
+                    <div class="w-full h-48 mb-6 rounded-xl bg-main border border-border_subtle flex items-center justify-center overflow-hidden relative">
+                        <i data-lucide="gamepad-2" class="w-12 h-12 text-slate-700 absolute"></i>
+                        </div>
+                    <h3 class="text-2xl font-black uppercase italic tracking-tighter text-white group-hover:text-accent transition-colors mb-2">Spel Titel 3</h3>
+                    <p class="text-slate-400 text-sm flex-1 mb-6">Kort beskrivning av spelet och tekniken bakom det.</p>
+                    <a href="#" target="_blank" class="w-full py-3 rounded-xl bg-accent/10 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent hover:text-main transition-colors text-center">Spela Nu</a>
+                </div>
+
+                <div class="bg-card border border-border_subtle p-6 rounded-3xl hover:border-accent transition-colors flex flex-col h-full reveal active group">
+                    <div class="w-full h-48 mb-6 rounded-xl bg-main border border-border_subtle flex items-center justify-center overflow-hidden relative">
+                        <i data-lucide="gamepad-2" class="w-12 h-12 text-slate-700 absolute"></i>
+                        </div>
+                    <h3 class="text-2xl font-black uppercase italic tracking-tighter text-white group-hover:text-accent transition-colors mb-2">Spel Titel 4</h3>
+                    <p class="text-slate-400 text-sm flex-1 mb-6">Kort beskrivning av spelet och tekniken bakom det.</p>
+                    <a href="#" target="_blank" class="w-full py-3 rounded-xl bg-accent/10 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent hover:text-main transition-colors text-center">Spela Nu</a>
+                </div>
+
+                <div class="bg-card border border-border_subtle p-6 rounded-3xl hover:border-accent transition-colors flex flex-col h-full reveal active group">
+                    <div class="w-full h-48 mb-6 rounded-xl bg-main border border-border_subtle flex items-center justify-center overflow-hidden relative">
+                        <i data-lucide="gamepad-2" class="w-12 h-12 text-slate-700 absolute"></i>
+                        </div>
+                    <h3 class="text-2xl font-black uppercase italic tracking-tighter text-white group-hover:text-accent transition-colors mb-2">Spel Titel 5</h3>
+                    <p class="text-slate-400 text-sm flex-1 mb-6">Kort beskrivning av spelet och tekniken bakom det.</p>
+                    <a href="#" target="_blank" class="w-full py-3 rounded-xl bg-accent/10 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent hover:text-main transition-colors text-center">Spela Nu</a>
+                </div>
+            </div>
+        </div>
+
         <div id="portfolio-view" class="view-section pt-12 pb-24">
             <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border_subtle pb-6 reveal active">
                 <div>
@@ -135,9 +195,6 @@
                 </div>
                 
                 <div class="flex flex-col md:flex-row items-start md:items-center gap-4 w-full lg:w-auto">
-                    <button onclick="openCreationModal()" class="px-5 py-2 rounded-xl bg-accent/10 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent hover:text-main transition-all flex items-center gap-2 shrink-0">
-                        <i data-lucide="plus" class="w-4 h-4"></i> Lägg till
-                    </button>
                     <div class="relative w-full md:w-64">
                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
                         <input type="text" id="search-input" oninput="handleSearch()" placeholder="Sök prompt, tagg eller titel..." class="w-full bg-main border border-border_subtle rounded-xl py-2 pl-9 pr-4 text-xs font-mono text-slate-200 focus:border-accent outline-none transition-colors placeholder:text-slate-600 shadow-inner">
@@ -161,11 +218,9 @@
             </div>
 
             <div id="portfolio-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-                <!-- Genereras dynamiskt -->
-            </div>
+                </div>
         </div>
 
-        <!-- VY 4: PRIVAT VALV (LÅST) -->
         <div id="private-view" class="view-section pt-12 pb-24">
             <div id="private-lock-screen" class="flex flex-col items-center justify-center min-h-[50vh] reveal active">
                 <div class="p-6 bg-slate-800/50 rounded-full mb-6 border border-slate-700/50">
@@ -179,7 +234,6 @@
                 </div>
             </div>
 
-            <!-- Innehållet (Dolt tills upplåst) -->
             <div id="private-content-screen" class="hidden flex-col">
                 <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border_subtle pb-6 reveal active">
                     <div>
@@ -189,61 +243,31 @@
                         </h2>
                         <p class="text-slate-500 text-sm mt-2 font-mono">Dolt bibliotek för privata kreationer (Bilder & Filmer).</p>
                     </div>
-                    
                     <div class="flex flex-col md:flex-row items-start md:items-center gap-4 w-full lg:w-auto">
                         <button onclick="lockPrivateVault()" class="px-5 py-2 rounded-xl bg-card border border-border_subtle text-[10px] font-black uppercase tracking-widest text-slate-400 hover:border-red-500 hover:text-white transition-all flex items-center gap-2 shrink-0">
                             <i data-lucide="lock" class="w-4 h-4"></i> Lås Valvet
                         </button>
                     </div>
                 </div>
-
                 <div id="private-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-                    <!-- Privata inlägg genereras här -->
-                </div>
+                    </div>
             </div>
         </div>
 
     </main>
 
-    <!-- Modal: Lägg till Kreation -->
-    <div id="add-creation-modal" class="fixed inset-0 z-[300] bg-main/95 backdrop-blur-xl flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4 overflow-y-auto">
-        <div class="bg-card w-full max-w-2xl rounded-[2rem] border border-border_subtle p-6 md:p-8 shadow-2xl relative my-auto">
-            <button onclick="closeCreationModal()" class="absolute top-6 right-6 text-slate-400 hover:text-accent transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
-            <h3 class="text-2xl font-black text-white italic mb-6">Lägg till ny Kreation</h3>
-            <div class="space-y-4">
-                <div class="flex flex-col md:flex-row gap-4">
-                    <div class="w-full md:w-1/3">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Mediatyp</label>
-                        <select id="add-c-type" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent">
-                            <option value="image">Bild</option>
-                            <option value="video">Film (MP4)</option>
-                        </select>
-                    </div>
-                    <div class="w-full md:w-2/3">
-                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Huvudlänk (Imgur URL)</label>
-                        <input type="text" id="add-c-media" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="https://i.imgur.com/...">
-                    </div>
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Processbilder (Kommaseparerade URL:er)</label>
-                    <input type="text" id="add-c-thumbs" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="Länk 1, Länk 2...">
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Master Prompt</label>
-                    <textarea id="add-c-prompt" rows="4" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="Din prompt här..."></textarea>
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Beskrivning</label>
-                    <textarea id="add-c-desc" rows="2" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="Mina tankar kring denna generering..."></textarea>
-                </div>
+    <footer class="border-t border-border_subtle bg-header py-12 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center opacity-50">
+            <div class="flex items-center gap-3">
+                <i data-lucide="cpu" class="w-5 h-5"></i>
+                <span class="text-sm font-black uppercase italic tracking-tighter">Blom.AI © 2026</span>
             </div>
-            <div class="mt-8">
-                <button onclick="saveCreation()" class="w-full px-6 py-3 rounded-xl bg-accent text-main font-black uppercase tracking-widest hover:bg-white transition-colors shadow-lg">Spara i Valvet</button>
-            </div>
+            <button onclick="toggleTerminal()" class="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-accent transition-colors flex items-center gap-2">
+                <i data-lucide="terminal-square" class="w-4 h-4"></i> [SYS]
+            </button>
         </div>
-    </div>
+    </footer>
 
-    <!-- Terminal Overlay -->
     <div id="terminal-overlay" class="fixed top-0 left-0 right-0 h-[60vh] z-[200] bg-main/95 backdrop-blur-xl border-b border-accent/30 shadow-2xl shadow-accent/5 font-mono text-sm flex flex-col">
         <div class="h-10 bg-header border-b border-border_subtle flex items-center justify-between px-4">
             <span class="text-[10px] font-black uppercase tracking-widest text-accent flex items-center gap-2">
@@ -251,15 +275,15 @@
             </span>
             <div class="flex items-center gap-4">
                 <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
-                <button onclick="exportData()" class="text-[10px] font-black uppercase tracking-widest text-amber-500 hover:text-white transition flex items-center gap-1"><i data-lucide="download" class="w-3 h-3"></i> Export</button>
-                <button onclick="document.getElementById('import-file').click()" class="text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-white transition flex items-center gap-1"><i data-lucide="upload" class="w-3 h-3"></i> Import</button>
+                <button onclick="exportData()" class="text-[10px] font-black uppercase tracking-widest text-amber-500 hover:text-white transition flex items-center gap-1" title="Exportera JSON"><i data-lucide="download" class="w-3 h-3"></i> Export</button>
+                <button onclick="document.getElementById('import-file').click()" class="text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-white transition flex items-center gap-1" title="Importera JSON (Smart Merge)"><i data-lucide="upload" class="w-3 h-3"></i> Import</button>
                 <div class="w-px h-4 bg-slate-700 mx-2"></div>
                 <button onclick="toggleTerminal()" class="text-slate-500 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
         </div>
         <div id="terminal-output" class="flex-1 p-4 overflow-y-auto text-slate-300 space-y-2">
             <div class="text-accent">Welcome to Blom.AI Terminal. Type '/help' for a list of commands.</div>
-            <div class="text-slate-400 mt-2">Datan laddas nu från din databas-fil över nätverket. Lokala ändringar sparas tillfälligt, se till att exportera och ladda upp en ny database.json!</div>
+            <div class="text-slate-400 mt-2">Datan laddas via Smart Merge. Data går ej förlorad vid import.</div>
         </div>
         <div class="h-12 border-t border-border_subtle flex items-center px-4 gap-2 bg-main">
             <span class="text-accent">root@blom:~#</span>
@@ -267,7 +291,6 @@
         </div>
     </div>
 
-    <!-- Info/Project Modal -->
     <div id="info-modal" class="fixed inset-0 z-[100] bg-main/95 backdrop-blur-xl flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4 md:p-6 overflow-y-auto">
         <button onclick="closeInfoModal()" class="fixed top-4 right-4 md:top-6 md:right-6 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-card border border-border_subtle text-slate-400 hover:text-accent hover:border-accent transition-all z-[110]">
             <i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i>
@@ -275,7 +298,6 @@
         <div class="max-w-4xl w-full my-auto flex flex-col justify-center relative pt-12 md:pt-0" id="modal-content"></div>
     </div>
     
-    <!-- Lightbox Modal -->
     <div id="lightbox-modal" class="fixed inset-0 z-[120] bg-black/95 backdrop-blur-xl flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-6">
         <button onclick="closeLightbox()" class="fixed top-4 right-4 md:top-6 md:right-6 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-main border border-border_subtle text-slate-400 hover:text-accent hover:border-accent transition-all z-[130]">
             <i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i>
@@ -294,7 +316,7 @@
         let activePortfolioData = [];
         let activePrivateData = [];
         
-        // Huvudvariabler som populeras via Fetch från database.json
+        // Data arrays
         let portfolioData = [];
         let appData = [];
         let privateData = [];
@@ -319,10 +341,32 @@
             lucide.createIcons();
         };
 
+        // ==========================================
+        // 1. KLISTRA IN DIN GAMLA BILD-ARRAY HÄR FRÅN GITHUB
+        // ==========================================
+        let hardcodedPortfolio = [
+            // KLISTRA IN DINA GAMLA OBJEKT HÄR
+        ];
+
         function switchView(viewId) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
             document.getElementById(viewId).classList.add('active-view');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function mergeDataArrays(targetArray, sourceArray) {
+            sourceArray.forEach(sourceItem => {
+                const existingIndex = targetArray.findIndex(t => (t.id && t.id === sourceItem.id) || (t.title && t.title === sourceItem.title));
+                if (existingIndex >= 0) {
+                    const existingLen = JSON.stringify(targetArray[existingIndex]).length;
+                    const sourceLen = JSON.stringify(sourceItem).length;
+                    if (sourceLen > existingLen) {
+                        targetArray[existingIndex] = sourceItem; 
+                    }
+                } else {
+                    targetArray.push(sourceItem);
+                }
+            });
         }
 
         function autoEnrichData() {
@@ -489,7 +533,7 @@
             const displayCount = currentFilter === 'private' ? currentPrivateDisplayCount : currentPortfolioDisplayCount;
 
             if (sourceData.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 font-mono text-sm">Ingen data matchar. Laddar databasen...</div>`;
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 font-mono text-sm">Ingen data matchar. Ladda in via [SYS] Terminal.</div>`;
                 return;
             }
 
@@ -554,38 +598,6 @@
         }
 
         function handlePrivatePasswordEnter(e) { if (e.key === 'Enter') unlockPrivateFilter(); }
-
-        function openCreationModal() { document.getElementById('add-creation-modal').classList.remove('opacity-0', 'pointer-events-none'); document.body.style.overflow = 'hidden'; }
-        function closeCreationModal() { document.getElementById('add-creation-modal').classList.add('opacity-0', 'pointer-events-none'); document.body.style.overflow = ''; }
-
-        function saveCreation() {
-            const type = document.getElementById('add-c-type').value;
-            const mediaUrl = document.getElementById('add-c-media').value.trim();
-            const thumbsRaw = document.getElementById('add-c-thumbs').value.trim();
-            const prompt = document.getElementById('add-c-prompt').value.trim();
-            const desc = document.getElementById('add-c-desc').value.trim();
-
-            if(!mediaUrl) { alert('Huvudlänk saknas!'); return; }
-
-            const thumbsArray = thumbsRaw ? thumbsRaw.split(',').map(s => s.trim()) : [];
-            const newItem = {
-                id: 'proj-' + Date.now().toString(36), type: type, mediaUrl: mediaUrl,
-                processThumbnails: thumbsArray, mainPrompt: prompt, description: desc,
-                title: '', tags: [], subtitle: 'Logg ' + String(portfolioData.length + 1).padStart(3, '0')
-            };
-
-            portfolioData.unshift(newItem);
-            autoEnrichData();
-            updateStats();
-            applyFiltersAndShuffle();
-            renderPortfolio();
-            closeCreationModal();
-            
-            document.getElementById('add-c-media').value = '';
-            document.getElementById('add-c-thumbs').value = '';
-            document.getElementById('add-c-prompt').value = '';
-            document.getElementById('add-c-desc').value = '';
-        }
 
         function openProjectDossier(projectId) {
             const allItems = portfolioData.concat(privateData);
@@ -715,7 +727,7 @@
         }
 
         // ==========================================
-        // 5. TERMINAL
+        // 5. TERMINAL & SMART MERGE IMPORT
         // ==========================================
         const terminalOverlay = document.getElementById('terminal-overlay');
         const terminalInput = document.getElementById('terminal-input');
@@ -743,10 +755,7 @@
                 } else if (cmd === '/import') {
                     document.getElementById('import-file').click();
                 } else if (cmd === '/stats') {
-                    const currentPortfolio = typeof portfolioData !== 'undefined' ? portfolioData.length : JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]').length;
-                    const currentApps = typeof appData !== 'undefined' ? appData.length : JSON.parse(localStorage.getItem('blom_app_data') || '[]').length;
-                    const currentPrivate = typeof privateData !== 'undefined' ? privateData.length : JSON.parse(localStorage.getItem('blom_private_data') || '[]').length;
-                    printTerminal(`System Status:<br>- Database entries: ${currentPortfolio}<br>- App entries: ${currentApps}<br>- Private entries: ${currentPrivate}<br>- Memory optimized: True`);
+                    printTerminal(`System Status:<br>- Database entries: ${portfolioData.length}<br>- App entries: ${appData.length}<br>- Private entries: ${privateData.length}<br>- Memory optimized: True`);
                 } else if (cmd === '/clear') {
                     terminalOutput.innerHTML = '';
                 } else if (cmd === '/exit') {
@@ -764,28 +773,21 @@
             terminalOutput.scrollTop = terminalOutput.scrollHeight;
         }
 
-        // ==========================================
-        // 6. JSON IMPORT / EXPORT (SMART MERGE VIA LOCALSTORAGE)
-        // ==========================================
         function exportData() {
             try {
-                const currentPortfolio = typeof portfolioData !== 'undefined' && portfolioData.length > 0 ? portfolioData : JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]');
-                const currentApps = typeof appData !== 'undefined' && appData.length > 0 ? appData : JSON.parse(localStorage.getItem('blom_app_data') || '[]');
-                const currentPrivate = typeof privateData !== 'undefined' && privateData.length > 0 ? privateData : JSON.parse(localStorage.getItem('blom_private_data') || '[]');
-
                 const dataToExport = {
-                    portfolio: currentPortfolio,
-                    apps: currentApps,
-                    private: currentPrivate 
+                    portfolio: portfolioData,
+                    apps: appData,
+                    private: privateData 
                 };
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToExport, null, 2));
                 const downloadAnchorNode = document.createElement('a');
                 downloadAnchorNode.setAttribute("href", dataStr);
-                downloadAnchorNode.setAttribute("download", "blom_master_vault_" + new Date().toISOString().slice(0,10) + ".json");
+                downloadAnchorNode.setAttribute("download", "database.json");
                 document.body.appendChild(downloadAnchorNode); 
                 downloadAnchorNode.click();
                 downloadAnchorNode.remove();
-                printTerminal(`<span class="text-emerald-400">System backup exported successfully.</span>`);
+                printTerminal(`<span class="text-emerald-400">System backup exported successfully. Spara filen som 'database.json'.</span>`);
             } catch(e) {
                 printTerminal(`<span class="text-red-500">ERROR: Export failed.</span>`);
             }
@@ -798,117 +800,78 @@
             reader.onload = function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
-                    let importedSomething = false;
-                    
-                    let currentPortfolio = JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]');
-                    let currentApps = JSON.parse(localStorage.getItem('blom_app_data') || '[]');
-                    if (typeof appData !== 'undefined' && appData.length > 0) {
-                        currentApps = appData;
-                    }
-                    
                     let importPortfolio = [];
                     let importApps = [];
+                    let importPrivate = [];
 
                     if (Array.isArray(importedData)) {
                         importPortfolio = importedData;
                     } else {
                         if (importedData.portfolio && Array.isArray(importedData.portfolio)) importPortfolio = importedData.portfolio;
                         if (importedData.apps && Array.isArray(importedData.apps)) importApps = importedData.apps;
-                        if (importedData.private && Array.isArray(importedData.private)) {
-                            localStorage.setItem('blom_private_data', JSON.stringify(importedData.private));
-                            importedSomething = true;
-                        }
+                        if (importedData.private && Array.isArray(importedData.private)) importPrivate = importedData.private;
                     }
 
-                    // SMART MERGE PORTFOLIO
-                    if (importPortfolio.length > 0) {
-                        const mergedPortfolio = [...currentPortfolio];
-                        importPortfolio.forEach(impItem => {
-                            if (!mergedPortfolio.find(existing => existing.id === impItem.id || existing.mediaUrl === impItem.mediaUrl)) {
-                                mergedPortfolio.push(impItem);
-                            }
-                        });
-                        localStorage.setItem('blom_portfolio_data', JSON.stringify(mergedPortfolio));
-                        importedSomething = true;
-                    }
+                    // SMART MERGE
+                    mergeDataArrays(portfolioData, importPortfolio);
+                    mergeDataArrays(appData, importApps);
+                    mergeDataArrays(privateData, importPrivate);
 
-                    // SMART MERGE APPS
-                    if (importApps.length > 0) {
-                        const mergedApps = [...currentApps];
-                        importApps.forEach(impApp => {
-                            const existingIndex = mergedApps.findIndex(a => a.id === impApp.id || a.title === impApp.title);
-                            if (existingIndex >= 0) {
-                                const existingLength = (mergedApps[existingIndex].fullDesc || '').length;
-                                const importedLength = (impApp.fullDesc || '').length;
-                                if (importedLength > existingLength) {
-                                    mergedApps[existingIndex] = impApp; 
-                                }
-                            } else {
-                                mergedApps.push(impApp); 
-                            }
-                        });
-                        localStorage.setItem('blom_app_data', JSON.stringify(mergedApps));
-                        importedSomething = true;
-                    }
+                    // Save back to local storage as fallback
+                    localStorage.setItem('blom_portfolio_data', JSON.stringify(portfolioData));
+                    localStorage.setItem('blom_app_data', JSON.stringify(appData));
+                    localStorage.setItem('blom_private_data', JSON.stringify(privateData));
                     
-                    if(importedSomething) {
-                        printTerminal(`<span class="text-emerald-400">Smart Merge Successful: Vault synchronized. Reloading OS...</span>`);
-                        setTimeout(() => location.reload(), 1500);
-                    } else {
-                        throw new Error("Missing portfolio or apps arrays in JSON.");
-                    }
+                    printTerminal(`<span class="text-emerald-400">Smart Merge Successful: Vault synchronized. Reloading OS...</span>`);
+                    setTimeout(() => location.reload(), 1500);
+
                 } catch (err) {
                     printTerminal(`<span class="text-red-500">ERROR: Invalid JSON file structure.</span>`);
-                    alert("Fel vid import av JSON. Kontrollera filstrukturen.");
                 }
             };
             reader.readAsText(file);
             event.target.value = ''; 
         }
 
+        function mergeDataArrays(targetArray, sourceArray) {
+            sourceArray.forEach(sourceItem => {
+                const existingIndex = targetArray.findIndex(t => (t.id && t.id === sourceItem.id) || (t.title && t.title === sourceItem.title));
+                if (existingIndex >= 0) {
+                    const existingLen = JSON.stringify(targetArray[existingIndex]).length;
+                    const sourceLen = JSON.stringify(sourceItem).length;
+                    if (sourceLen > existingLen) {
+                        targetArray[existingIndex] = sourceItem; 
+                    }
+                } else {
+                    targetArray.push(sourceItem);
+                }
+            });
+        }
+
         // ==========================================
-        // DYNAMISK FETCH AV DATABASE.JSON (Riktig Lösning)
+        // DYNAMISK FETCH AV DATABASE.JSON (DEN LÖSER PROBLEMET)
         // ==========================================
         async function fetchDatabase() {
             try {
-                // Vi försöker ladda filen database.json över nätverket (fungerar på GitHub Pages!)
+                // Kombinera eventuell sparad hårdkodad data som bas
+                mergeDataArrays(portfolioData, hardcodedPortfolio);
+                
+                // Fetch från fil (Gör att andra datorer/användare får tillgång)
                 const response = await fetch('database.json');
-                if (!response.ok) throw new Error('Database not found locally.');
+                if (!response.ok) throw new Error('Database file not found on server.');
                 
                 const data = await response.json();
-                let loadedSomething = false;
                 
-                if (data.portfolio && Array.isArray(data.portfolio)) {
-                    portfolioData = data.portfolio;
-                    localStorage.setItem('blom_portfolio_data', JSON.stringify(portfolioData));
-                    loadedSomething = true;
-                }
-                if (data.apps && Array.isArray(data.apps)) {
-                    appData = data.apps;
-                    localStorage.setItem('blom_app_data', JSON.stringify(appData));
-                    loadedSomething = true;
-                }
-                if (data.private && Array.isArray(data.private)) {
-                    privateData = data.private;
-                    localStorage.setItem('blom_private_data', JSON.stringify(privateData));
-                }
+                if (data.portfolio && Array.isArray(data.portfolio)) mergeDataArrays(portfolioData, data.portfolio);
+                if (data.apps && Array.isArray(data.apps)) mergeDataArrays(appData, data.apps);
+                if (data.private && Array.isArray(data.private)) mergeDataArrays(privateData, data.private);
                 
-                if(loadedSomething) {
-                    autoEnrichData();
-                    updateStats();
-                    applyFiltersAndShuffle();
-                    applyPrivateFiltersAndShuffle();
-                    renderPortfolio();
-                    console.log("Databas laddades över nätverket (publik åtkomst)");
-                }
+                localStorage.setItem('blom_portfolio_data', JSON.stringify(portfolioData));
+                localStorage.setItem('blom_app_data', JSON.stringify(appData));
+                localStorage.setItem('blom_private_data', JSON.stringify(privateData));
+                
             } catch (error) {
-                console.warn("Laddade inte från database.json. Använder webbläsarens lokala minne istället.", error);
-                // Om filen inte finns, faller vi automatiskt tillbaka på lokala minnet som vi brukar.
-                autoEnrichData();
-                updateStats();
-                applyFiltersAndShuffle();
-                applyPrivateFiltersAndShuffle();
-                renderPortfolio();
+                console.warn("Kunde inte hämta database.json (använder lokalt minne). Se till att döpa om din JSON-fil och ladda upp den på GitHub.");
             }
         }
 
@@ -939,6 +902,7 @@
                         const viewToOpen = urlParams.get('view');
                         if (viewToOpen === 'portfolio') switchView('portfolio-view');
                         else if (viewToOpen === 'private') switchView('private-view');
+                        else if (viewToOpen === 'games') switchView('games-view');
                         else switchView('hero-view');
 
                         setTimeout(() => bootOverlay.remove(), 800);
@@ -949,8 +913,8 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            // Ladda databasen över nätverket (om den finns) innan vi bootar!
             fetchDatabase().then(() => {
+                autoEnrichData();
                 runBootSequence(); 
                 setFilter('all');
 
