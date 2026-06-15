@@ -97,14 +97,14 @@
         <div class="mt-8 p-6 bg-accent/5 border border-accent/20 rounded-3xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 reveal active">
             <div>
                 <h3 class="text-xl font-black uppercase italic text-accent flex items-center gap-2"><i data-lucide="globe" class="w-6 h-6"></i> Öppna Moduler</h3>
-                <p class="text-slate-400 text-sm mt-1">Applikationer som är öppna för testning och publik användning.</p>
+                <p class="text-slate-400 text-sm mt-1">Länkar till appar som är live och redo för granskning.</p>
             </div>
             <div class="flex flex-wrap gap-3 w-full lg:w-auto">
-                <a href="#" target="_blank" class="px-5 py-3 rounded-xl bg-card border border-border_subtle text-[10px] font-black uppercase tracking-widest text-slate-200 hover:border-accent hover:text-accent transition-all flex items-center gap-2">
-                    <i data-lucide="external-link" class="w-4 h-4"></i> Publik App 1
+                <a href="offertkalkylator.html" target="_blank" class="px-5 py-3 rounded-xl bg-card border border-border_subtle text-[10px] font-black uppercase tracking-widest text-slate-200 hover:border-accent hover:text-accent transition-all flex items-center gap-2">
+                    <i data-lucide="external-link" class="w-4 h-4"></i> Offertkalkylator Pro
                 </a>
-                <a href="#" target="_blank" class="px-5 py-3 rounded-xl bg-card border border-border_subtle text-[10px] font-black uppercase tracking-widest text-slate-200 hover:border-accent hover:text-accent transition-all flex items-center gap-2">
-                    <i data-lucide="external-link" class="w-4 h-4"></i> Publik App 2
+                <a href="genesis_archive.html" target="_blank" class="px-5 py-3 rounded-xl bg-card border border-border_subtle text-[10px] font-black uppercase tracking-widest text-slate-200 hover:border-accent hover:text-accent transition-all flex items-center gap-2">
+                    <i data-lucide="external-link" class="w-4 h-4"></i> Genesis Archive
                 </a>
             </div>
         </div>
@@ -181,7 +181,6 @@
 
         // ==========================================
         // DINA 60 DJUP-DOKUMENTERADE APPAR
-        // (De här raderas aldrig av en import)
         // ==========================================
         let hardcodedApps = [
             { id: 'app-001', image: '', title: 'The All Seeing Eye', shortDesc: 'AI-driven förstapersons-äventyrsmotor och interaktiv världsbyggare.', icon: 'eye', tags: ['RPG Engine', 'Inpainting', 'Generative AI'], fullDesc: 'Utvecklad som en avancerad, AI-driven RPG-motor. Systemet började som ett verktyg för inpainting (\'magisk pensel\') men expanderades till en portal där användaren kan kliva in i genererade bilder och utforska dem i ett 3D-liknande perspektiv. Styrs via textkommandon och klick för att skapa djupa, visuella äventyr och dynamiskt världsbyggande. Byggt med fokus på tillgänglighet och gränslös kreativitet.' },
@@ -279,72 +278,39 @@
         ];
 
         // ==========================================
-        // DYNAMISK FETCH AV DATABASE.JSON (Riktig Lösning)
+        // DYNAMISK FETCH AV DATABASE.JSON
         // ==========================================
         async function fetchDatabase() {
             try {
-                // Vi försöker ladda filen database.json över nätverket (fungerar publikt på GitHub Pages!)
-                const response = await fetch('database.json');
-                if (!response.ok) throw new Error('Database not found locally.');
+                // Vi läser först lokalt i webbläsaren om det finns sparad import
+                const sA = localStorage.getItem('blom_app_data');
+                if (sA) {
+                    let localApps = JSON.parse(sA);
+                    mergeDataArrays(localApps, hardcodedApps);
+                    appData = localApps;
+                } else {
+                    appData = hardcodedApps;
+                }
+
+                // Försök hämta filen från servern
+                const response = await fetch('database.json?v=' + new Date().getTime());
+                if (!response.ok) throw new Error('Database file not found on server.');
                 
                 const data = await response.json();
-                let loadedSomething = false;
-
-                // Smart Merge för Portfolio
-                if (data.portfolio && Array.isArray(data.portfolio)) {
-                    let currentPortfolio = JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]');
-                    data.portfolio.forEach(impItem => {
-                        if (!currentPortfolio.find(existing => existing.id === impItem.id || existing.mediaUrl === impItem.mediaUrl)) {
-                            currentPortfolio.push(impItem);
-                        }
-                    });
-                    localStorage.setItem('blom_portfolio_data', JSON.stringify(currentPortfolio));
-                    loadedSomething = true;
-                }
-
-                // Smart Merge för Apps
+                
                 if (data.apps && Array.isArray(data.apps)) {
-                    let currentApps = hardcodedApps; // Utgå från de 60 vi räddat
-                    data.apps.forEach(impApp => {
-                        const existingIndex = currentApps.findIndex(a => a.id === impApp.id || a.title === impApp.title);
-                        if (existingIndex >= 0) {
-                            const existingLength = (currentApps[existingIndex].fullDesc || '').length;
-                            const importedLength = (impApp.fullDesc || '').length;
-                            if (importedLength > existingLength) {
-                                currentApps[existingIndex] = impApp; 
-                            }
-                        } else {
-                            currentApps.push(impApp); 
-                        }
-                    });
-                    appData = currentApps;
-                    localStorage.setItem('blom_app_data', JSON.stringify(appData));
-                    loadedSomething = true;
-                }
-
-                // Smart Merge för Private
-                if (data.private && Array.isArray(data.private)) {
-                    let currentPrivate = JSON.parse(localStorage.getItem('blom_private_data') || '[]');
-                    data.private.forEach(impItem => {
-                        if (!currentPrivate.find(existing => existing.id === impItem.id || existing.mediaUrl === impItem.mediaUrl)) {
-                            currentPrivate.push(impItem);
-                        }
-                    });
-                    localStorage.setItem('blom_private_data', JSON.stringify(currentPrivate));
-                    loadedSomething = true;
+                    mergeDataArrays(appData, data.apps);
                 }
                 
-                if(loadedSomething) {
-                    console.log("Databas laddades över nätverket (publik åtkomst)");
-                }
+                localStorage.setItem('blom_app_data', JSON.stringify(appData));
+                
             } catch (error) {
-                console.warn("Laddade inte från database.json. Använder webbläsarens lokala minne/hårdkodad bas.", error);
-                appData = hardcodedApps; // Fallback till 60 ifall json saknas
+                console.warn("Kunde inte hämta database.json över nätverket. Laddar lokalt minne.");
             }
         }
 
         // ==========================================
-        // 8. BOOT SEQUENCE
+        // BOOT SEQUENCE
         // ==========================================
         function runBootSequence() {
             const bootOverlay = document.getElementById('boot-sequence');
