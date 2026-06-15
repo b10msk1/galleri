@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    
+    <title>Blom | AI Portfolio & Systemdesign</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        main: '#0a0f1a',
+                        header: '#0f172a',
+                        card: '#161d2b',
+                        accent: '#e58e26',
+                        border_subtle: '#1e293b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0f1a; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #e58e26; }
+
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        #terminal-overlay { transform: translateY(-100%); transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        #terminal-overlay.open { transform: translateY(0); }
+        .prompt-container { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; opacity: 0; }
+        .prompt-container.open { max-height: 500px; opacity: 1; }
+        .view-section { display: none; opacity: 0; transition: opacity 0.5s ease-in-out; }
+        .view-section.active-view { display: block; opacity: 1; }
+    </style>
+</head>
+<body class="bg-main text-slate-100 font-sans antialiased min-h-screen selection:bg-accent selection:text-main overflow-x-hidden">
+
+    <div id="boot-sequence" class="fixed inset-0 z-[9999] bg-main flex flex-col justify-center items-start p-10 md:p-24 font-mono text-sm sm:text-base pointer-events-auto transition-opacity duration-1000">
+        <div id="boot-text" class="text-green-500 space-y-2"></div>
+    </div>
+
+    <header class="fixed top-0 left-0 right-0 z-50 bg-header/80 backdrop-blur-md border-b border-border_subtle">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('hero-view')">
+                <i data-lucide="cpu" class="w-6 h-6 text-accent"></i>
+                <h1 class="text-xl font-black uppercase italic tracking-tighter">Blom<span class="text-accent">.AI</span></h1>
+            </div>
+            <nav class="hidden md:flex gap-8">
+                <button onclick="switchView('hero-view')" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
+                    <i data-lucide="user" class="w-3 h-3"></i> Profil
+                </button>
+                <button onclick="switchView('portfolio-view')" class="text-[10px] font-black uppercase tracking-widest text-accent flex items-center gap-2 outline-none">
+                    <i data-lucide="image" class="w-3 h-3"></i> Kreationer
+                </button>
+                <a href="app-valv.html" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
+                    <i data-lucide="layout-grid" class="w-3 h-3"></i> System & Appar
+                </a>
+                <button onclick="switchView('private-view')" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
+                    <i data-lucide="lock" class="w-3 h-3"></i> Privat Valv
+                </button>
+            </nav>
+            <button class="md:hidden text-slate-400 hover:text-accent outline-none">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 pt-20">
+
+        <!-- VY 1: PROFIL (HERO) -->
+        <div id="hero-view" class="view-section active-view pb-24">
+            <section class="relative min-h-[calc(100vh-5rem)] flex flex-col justify-center border-b border-border_subtle reveal pt-10 pb-10 overflow-hidden">
+                <div class="w-full lg:w-[55%] z-10 flex flex-col justify-center h-full mt-4 lg:mt-0">
+                    <div class="text-center lg:text-left w-full mb-10">
+                        <h2 class="text-4xl md:text-5xl lg:text-6xl font-black uppercase italic tracking-tighter leading-tight text-slate-100">
+                            Arkitekt av <span class="text-accent">Digitala Världar</span>
+                        </h2>
+                    </div>
+
+                    <div class="text-left max-w-lg mx-auto lg:mx-0 space-y-6 bg-main/40 lg:bg-transparent backdrop-blur-sm lg:backdrop-blur-none p-4 lg:p-0 rounded-2xl relative z-20">
+                        <div class="border-b border-border_subtle pb-4">
+                            <div class="flex items-end gap-6">
+                                <span class="font-['Caveat'] text-5xl md:text-6xl text-slate-200 leading-none">Jonas Blomquist</span>
+                            </div>
+                            <div id="system-stats" class="text-[10px] font-black uppercase tracking-widest text-accent mt-3 flex items-center gap-2">
+                                <i data-lucide="database" class="w-3 h-3"></i> <span id="stats-count">Laddar...</span>
+                            </div>
+                        </div>
+                        
+                        <p class="text-slate-400 text-base md:text-lg leading-relaxed">
+                            Denna plattform fungerar som min digitala hjärna och portfölj. Här samlar jag mina AI-kreationer, från avancerade master-prompts till utvecklingen av över 140 skräddarsydda applikationer och system.
+                        </p>
+
+                        <div class="pt-4 flex gap-4">
+                            <button onclick="switchView('portfolio-view')" class="px-6 py-3 rounded-xl bg-accent/20 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent hover:text-main transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(229,142,38,0.2)]">
+                                <i data-lucide="image" class="w-4 h-4"></i> Se Kreationer
+                            </button>
+                            <a href="app-valv.html" class="px-6 py-3 rounded-xl bg-card border border-border_subtle text-[10px] font-black uppercase tracking-widest text-slate-300 hover:border-accent hover:text-accent transition-all flex items-center gap-2">
+                                <i data-lucide="layout-grid" class="w-4 h-4"></i> App-Valv
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="absolute bottom-0 right-0 w-full lg:w-[45%] h-[60vh] lg:h-[80vh] flex justify-center lg:justify-end items-end z-0 pointer-events-none">
+                    <img src="https://i.imgur.com/SkZObbh.png" alt="Jonas Blomquist Profil" class="max-h-full max-w-full object-contain object-bottom mix-blend-screen opacity-50 md:opacity-70 lg:opacity-90 drop-shadow-2xl transition-transform duration-1000 hover:scale-[1.02]">
+                    <div class="absolute bottom-0 w-full h-40 lg:h-48 bg-gradient-to-t from-main via-main/80 to-transparent z-10"></div>
+                </div>
+            </section>
+        </div>
+
+        <!-- VY 2: KREATIONER (BILDER/FILMER) -->
+        <div id="portfolio-view" class="view-section pt-12 pb-24">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border_subtle pb-6 reveal active">
+                <div>
+                    <h2 class="text-4xl font-black uppercase italic tracking-tighter flex items-center gap-4">
+                        <i data-lucide="aperture" class="w-8 h-8 text-accent"></i>
+                        Databas: Kreationer
+                    </h2>
+                    <p class="text-slate-500 text-sm mt-2 font-mono">Visuella experiment och prompter.</p>
+                </div>
+                
+                <div class="flex flex-col md:flex-row items-start md:items-center gap-4 w-full lg:w-auto">
+                    <button onclick="openCreationModal()" class="px-5 py-2 rounded-xl bg-accent/10 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent hover:text-main transition-all flex items-center gap-2 shrink-0">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Lägg till
+                    </button>
+                    <div class="relative w-full md:w-64">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                        <input type="text" id="search-input" oninput="handleSearch()" placeholder="Sök prompt, tagg eller titel..." class="w-full bg-main border border-border_subtle rounded-xl py-2 pl-9 pr-4 text-xs font-mono text-slate-200 focus:border-accent outline-none transition-colors placeholder:text-slate-600 shadow-inner">
+                    </div>
+
+                    <div class="flex gap-2 shrink-0 flex-wrap" id="filter-buttons">
+                        <button onclick="setFilter('all')" id="btn-filter-all" class="px-4 py-2 rounded-xl bg-card border border-accent text-accent text-[10px] font-black uppercase tracking-widest transition-all">Alla</button>
+                        <button onclick="setFilter('image')" id="btn-filter-image" class="px-4 py-2 rounded-xl bg-card border border-border_subtle text-slate-400 hover:border-accent hover:text-accent transition-all text-[10px] font-black uppercase tracking-widest">Bilder</button>
+                        <button onclick="setFilter('video')" id="btn-filter-video" class="px-4 py-2 rounded-xl bg-card border border-border_subtle text-slate-400 hover:border-accent hover:text-accent transition-all text-[10px] font-black uppercase tracking-widest">Film</button>
+                        <button onclick="handlePrivateClick()" id="btn-filter-private" class="px-4 py-2 rounded-xl bg-card border border-border_subtle text-slate-400 hover:border-red-500 hover:text-red-400 transition-all text-[10px] font-black uppercase tracking-widest flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Privat</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="active-tag-container" class="hidden items-center gap-2 mb-4 mt-6">
+                <span class="text-[10px] font-black uppercase tracking-widest text-slate-500">Aktiv Tagg:</span>
+                <button onclick="clearTagFilter()" class="flex items-center gap-2 px-3 py-1 rounded-xl bg-accent/10 border border-accent text-accent text-[10px] font-black uppercase tracking-widest hover:bg-accent/20 transition-all">
+                    <span id="active-tag-text"></span>
+                    <i data-lucide="x" class="w-3 h-3"></i>
+                </button>
+            </div>
+
+            <div id="portfolio-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+                <!-- Genereras dynamiskt -->
+            </div>
+        </div>
+
+        <!-- VY 4: PRIVAT VALV (LÅST) -->
+        <div id="private-view" class="view-section pt-12 pb-24">
+            <div id="private-lock-screen" class="flex flex-col items-center justify-center min-h-[50vh] reveal active">
+                <div class="p-6 bg-slate-800/50 rounded-full mb-6 border border-slate-700/50">
+                    <i data-lucide="lock" class="w-12 h-12 text-slate-500"></i>
+                </div>
+                <h2 class="text-3xl font-black uppercase italic tracking-tighter text-white mb-3">Åtkomst Nekad</h2>
+                <p class="text-slate-400 mb-8 font-mono text-xs uppercase tracking-widest text-center">Denna sektor är krypterad.</p>
+                <div class="flex flex-col sm:flex-row gap-3 w-full max-w-sm mx-auto">
+                    <input type="password" id="private-password-input" class="flex-1 bg-main border border-border_subtle rounded-xl px-4 py-3 text-white outline-none focus:border-red-500 font-mono text-center sm:text-left" placeholder="Ange lösenord..." onkeypress="handlePrivatePasswordEnter(event)">
+                    <button onclick="unlockPrivateFilter()" class="bg-red-900/20 border border-red-500 text-red-500 font-black uppercase tracking-widest px-6 py-3 rounded-xl hover:bg-red-500 hover:text-white transition-colors shadow-[0_0_15px_rgba(239,68,68,0.2)]">Dekryptera</button>
+                </div>
+            </div>
+
+            <!-- Innehållet (Dolt tills upplåst) -->
+            <div id="private-content-screen" class="hidden flex-col">
+                <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border_subtle pb-6 reveal active">
+                    <div>
+                        <h2 class="text-4xl font-black uppercase italic tracking-tighter flex items-center gap-4 text-red-400">
+                            <i data-lucide="shield-alert" class="w-8 h-8"></i>
+                            Privat Valv
+                        </h2>
+                        <p class="text-slate-500 text-sm mt-2 font-mono">Dolt bibliotek för privata kreationer (Bilder & Filmer).</p>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row items-start md:items-center gap-4 w-full lg:w-auto">
+                        <button onclick="lockPrivateVault()" class="px-5 py-2 rounded-xl bg-card border border-border_subtle text-[10px] font-black uppercase tracking-widest text-slate-400 hover:border-red-500 hover:text-white transition-all flex items-center gap-2 shrink-0">
+                            <i data-lucide="lock" class="w-4 h-4"></i> Lås Valvet
+                        </button>
+                    </div>
+                </div>
+
+                <div id="private-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
+                    <!-- Privata inlägg genereras här -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal: Lägg till Kreation -->
+    <div id="add-creation-modal" class="fixed inset-0 z-[300] bg-main/95 backdrop-blur-xl flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4 overflow-y-auto">
+        <div class="bg-card w-full max-w-2xl rounded-[2rem] border border-border_subtle p-6 md:p-8 shadow-2xl relative my-auto">
+            <button onclick="closeCreationModal()" class="absolute top-6 right-6 text-slate-400 hover:text-accent transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <h3 class="text-2xl font-black text-white italic mb-6">Lägg till ny Kreation</h3>
+            <div class="space-y-4">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="w-full md:w-1/3">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Mediatyp</label>
+                        <select id="add-c-type" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent">
+                            <option value="image">Bild</option>
+                            <option value="video">Film (MP4)</option>
+                        </select>
+                    </div>
+                    <div class="w-full md:w-2/3">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Huvudlänk (Imgur URL)</label>
+                        <input type="text" id="add-c-media" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="https://i.imgur.com/...">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Processbilder (Kommaseparerade URL:er)</label>
+                    <input type="text" id="add-c-thumbs" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="Länk 1, Länk 2...">
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Master Prompt</label>
+                    <textarea id="add-c-prompt" rows="4" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="Din prompt här..."></textarea>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Beskrivning</label>
+                    <textarea id="add-c-desc" rows="2" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="Mina tankar kring denna generering..."></textarea>
+                </div>
+            </div>
+            <div class="mt-8">
+                <button onclick="saveCreation()" class="w-full px-6 py-3 rounded-xl bg-accent text-main font-black uppercase tracking-widest hover:bg-white transition-colors shadow-lg">Spara i Valvet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terminal Overlay -->
+    <div id="terminal-overlay" class="fixed top-0 left-0 right-0 h-[60vh] z-[200] bg-main/95 backdrop-blur-xl border-b border-accent/30 shadow-2xl shadow-accent/5 font-mono text-sm flex flex-col">
+        <div class="h-10 bg-header border-b border-border_subtle flex items-center justify-between px-4">
+            <span class="text-[10px] font-black uppercase tracking-widest text-accent flex items-center gap-2">
+                <i data-lucide="terminal" class="w-3 h-3"></i> N.E.X.U.S. Command Line
+            </span>
+            <div class="flex items-center gap-4">
+                <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
+                <button onclick="exportData()" class="text-[10px] font-black uppercase tracking-widest text-amber-500 hover:text-white transition flex items-center gap-1"><i data-lucide="download" class="w-3 h-3"></i> Export</button>
+                <button onclick="document.getElementById('import-file').click()" class="text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-white transition flex items-center gap-1"><i data-lucide="upload" class="w-3 h-3"></i> Import</button>
+                <div class="w-px h-4 bg-slate-700 mx-2"></div>
+                <button onclick="toggleTerminal()" class="text-slate-500 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+        </div>
+        <div id="terminal-output" class="flex-1 p-4 overflow-y-auto text-slate-300 space-y-2">
+            <div class="text-accent">Welcome to Blom.AI Terminal. Type '/help' for a list of commands.</div>
+        </div>
+        <div class="h-12 border-t border-border_subtle flex items-center px-4 gap-2 bg-main">
+            <span class="text-accent">root@blom:~#</span>
+            <input type="text" id="terminal-input" class="flex-1 bg-transparent border-none outline-none text-slate-100 placeholder-slate-700 font-mono" placeholder="Enter command..." autocomplete="off">
+        </div>
+    </div>
+
+    <!-- Info/Project Modal -->
+    <div id="info-modal" class="fixed inset-0 z-[100] bg-main/95 backdrop-blur-xl flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4 md:p-6 overflow-y-auto">
+        <button onclick="closeInfoModal()" class="fixed top-4 right-4 md:top-6 md:right-6 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-card border border-border_subtle text-slate-400 hover:text-accent hover:border-accent transition-all z-[110]">
+            <i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i>
+        </button>
+        <div class="max-w-4xl w-full my-auto flex flex-col justify-center relative pt-12 md:pt-0" id="modal-content"></div>
+    </div>
+    
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" class="fixed inset-0 z-[120] bg-black/95 backdrop-blur-xl flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-6">
+        <button onclick="closeLightbox()" class="fixed top-4 right-4 md:top-6 md:right-6 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-main border border-border_subtle text-slate-400 hover:text-accent hover:border-accent transition-all z-[130]">
+            <i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i>
+        </button>
+        <div id="lightbox-content" class="max-w-full max-h-full flex items-center justify-center"></div>
+    </div>
+
+    <script>
+        const SYSTEM_PASSWORD = "nexus"; 
+        
+        const itemsPerPage = 10;
+        let currentPortfolioDisplayCount = itemsPerPage;
+        let currentPrivateDisplayCount = itemsPerPage;
+        let isPrivateUnlocked = false;
+
+        let activePortfolioData = [];
+        let activePrivateData = [];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        window.handleImageError = function(imgElement, type) {
+            const div = document.createElement('div');
+            if (type === 'grid' || type === 'thumb' || type === 'main' || type === 'light') {
+                div.className = 'w-full h-full flex flex-col items-center justify-center bg-card border border-border_subtle text-slate-600 text-[10px] uppercase tracking-widest';
+                div.innerHTML = '<i data-lucide="image-off" class="w-8 h-8 mb-2 opacity-50"></i>Källfil Offline';
+            } else if (type === 'hide') {
+                imgElement.parentElement.style.display = 'none'; return;
+            }
+            imgElement.replaceWith(div);
+            lucide.createIcons();
+        };
+
+        // ==========================================
+        // 1. DATA LADDAS DYNAMISKT FRÅN MINNET
+        // ==========================================
+        let portfolioData = [];
+        let savedData = null;
+        try { savedData = localStorage.getItem('blom_portfolio_data'); } catch (e) { }
+        if (savedData) {
+            try {
+                let parsed = JSON.parse(savedData);
+                if(Array.isArray(parsed) && parsed.length > 0) { portfolioData = parsed; }
+            } catch (e) { }
+        }
+
+        let appData = [];
+        try { 
+            let saved = localStorage.getItem('blom_app_data');
+            if(saved) appData = JSON.parse(saved);
+        } catch(e){}
+
+        let privateData = [];
+        try { 
+            let savedPriv = localStorage.getItem('blom_private_data'); 
+            if(savedPriv) privateData = JSON.parse(savedPriv);
+        } catch(e){}
+
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+            document.getElementById(viewId).classList.add('active-view');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function autoEnrichData() {
+            const uniqueUrls = new Set();
+            const deduplicatedPortfolio = [];
+            
+            portfolioData.forEach((item, index) => {
+                if (item.mediaUrl && uniqueUrls.has(item.mediaUrl)) return; 
+                if (item.mediaUrl) uniqueUrls.add(item.mediaUrl);
+
+                if (!item.id || item.id === 'proj-0') item.id = 'proj-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 10);
+                item.subtitle = 'Logg ' + String(portfolioData.length - index).padStart(3, '0');
+                if (!item.tags) item.tags = [];
+
+                if (item.mainPrompt) {
+                    const promptParts = item.mainPrompt.split(',').map(p => p.trim());
+                    const textToScan = item.mainPrompt.toLowerCase();
+                    if (!item.title || item.title === "Oklassificerad Kreation" || item.title.includes("...")) {
+                        let firstPhrase = promptParts[0];
+                        item.title = firstPhrase.charAt(0).toUpperCase() + firstPhrase.slice(1);
+                        if(item.title.length > 40) item.title = item.title.substring(0, 40) + '...';
+                    }
+
+                    const newTags = new Set(item.tags);
+                    if (textToScan.includes('--v') || textToScan.includes('midjourney')) newTags.add('Midjourney');
+                    if (textToScan.includes('runway') || textToScan.includes('gen-2') || textToScan.includes('gen-3')) newTags.add('Runway');
+                    if (textToScan.includes('magnific')) newTags.add('Magnific AI');
+                    if (textToScan.includes('photoshop')) newTags.add('Photoshop');
+                    if (textToScan.includes('ar 16:9') || textToScan.includes('ar 21:9')) newTags.add('Cinematic Format');
+                    item.tags = Array.from(newTags);
+                }
+                deduplicatedPortfolio.push(item);
+            });
+            portfolioData = deduplicatedPortfolio;
+            localStorage.setItem('blom_portfolio_data', JSON.stringify(portfolioData));
+        }
+
+        function updateStats() {
+            document.getElementById('stats-count').innerText = `[SYS: ${portfolioData.length} BILDER | ${appData.length} APPAR | ${privateData.length} PRIVATA]`;
+        }
+
+        const grid = document.getElementById('portfolio-grid');
+        let currentFilter = 'all';
+        let currentTag = null;
+        let currentSearch = '';
+
+        function parseMarkdown(text) {
+            if (!text) return '';
+            let html = text.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-200">$1</strong>');
+            html = html.replace(/\*(.*?)\*/g, '<em class="text-slate-300 italic">$1</em>');
+            html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" class="text-accent hover:underline hover:text-white transition-colors">$1</a>');
+            html = html.replace(/\n/g, '<br>');
+            return html;
+        }
+
+        function applyFiltersAndShuffle() {
+            const filteredData = portfolioData.filter(item => {
+                const matchType = currentFilter === 'all' || item.type === currentFilter;
+                const matchTag = !currentTag || (item.tags && item.tags.includes(currentTag));
+                const searchString = `${item.title} ${item.description} ${item.mainPrompt || ''} ${item.tags ? item.tags.join(' ') : ''}`.toLowerCase();
+                const matchSearch = !currentSearch || searchString.includes(currentSearch);
+                return matchType && matchTag && matchSearch;
+            });
+            activePortfolioData = shuffleArray([...filteredData]);
+            currentPortfolioDisplayCount = itemsPerPage; 
+        }
+
+        function applyPrivateFiltersAndShuffle() {
+            const filteredData = privateData.filter(item => {
+                const matchTag = !currentTag || (item.tags && item.tags.includes(currentTag));
+                const searchString = `${item.title} ${item.description} ${item.mainPrompt || ''} ${item.tags ? item.tags.join(' ') : ''}`.toLowerCase();
+                const matchSearch = !currentSearch || searchString.includes(currentSearch);
+                return matchTag && matchSearch;
+            });
+            activePrivateData = shuffleArray([...filteredData]);
+            currentPrivateDisplayCount = itemsPerPage;
+        }
+
+        function setFilter(type) {
+            currentFilter = type;
+            updateFilterButtons();
+            applyFiltersAndShuffle();
+            renderPortfolio();
+        }
+
+        function handlePrivateClick() {
+            currentFilter = 'private';
+            updateFilterButtons();
+            if (isPrivateUnlocked) applyPrivateFiltersAndShuffle();
+            renderPortfolio();
+        }
+
+        function updateFilterButtons() {
+            ['all', 'image', 'video', 'private'].forEach(f => {
+                const btn = document.getElementById(`btn-filter-${f}`);
+                if(btn) {
+                    if (f === currentFilter) {
+                        btn.classList.add(f === 'private' ? 'border-red-500' : 'border-accent', f === 'private' ? 'text-red-500' : 'text-accent');
+                        btn.classList.remove('border-border_subtle', 'text-slate-400');
+                        if(f === 'private') btn.classList.replace('hover:border-red-500', 'hover:border-red-400');
+                    } else {
+                        btn.classList.remove('border-accent', 'border-red-500', 'text-accent', 'text-red-500');
+                        btn.classList.add('border-border_subtle', 'text-slate-400');
+                        if(f === 'private') btn.classList.replace('hover:border-red-400', 'hover:border-red-500');
+                    }
+                }
+            });
+        }
+
+        function setTagFilter(tag) {
+            currentTag = tag;
+            const tagContainer = document.getElementById('active-tag-container');
+            const tagText = document.getElementById('active-tag-text');
+            if (tag) {
+                tagText.textContent = tag;
+                tagContainer.classList.remove('hidden');
+                tagContainer.classList.add('flex');
+            } else {
+                tagContainer.classList.add('hidden');
+                tagContainer.classList.remove('flex');
+            }
+            applyFiltersAndShuffle();
+            applyPrivateFiltersAndShuffle();
+            renderPortfolio();
+        }
+
+        function clearTagFilter() { setTagFilter(null); }
+
+        function handleSearch() {
+            currentSearch = document.getElementById('search-input').value.toLowerCase().trim();
+            applyFiltersAndShuffle();
+            applyPrivateFiltersAndShuffle();
+            renderPortfolio();
+        }
+
+        function loadMorePortfolio() {
+            if (currentFilter === 'private') currentPrivateDisplayCount += itemsPerPage;
+            else currentPortfolioDisplayCount += itemsPerPage;
+            renderPortfolio();
+        }
+
+        function renderPortfolio() {
+            grid.innerHTML = ''; 
+
+            if (currentFilter === 'private' && !isPrivateUnlocked) {
+                grid.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center py-16 w-full">
+                        <div class="p-6 bg-slate-800/50 rounded-full mb-6 border border-slate-700/50">
+                            <i data-lucide="lock" class="w-12 h-12 text-slate-500"></i>
+                        </div>
+                        <h2 class="text-3xl font-black uppercase italic tracking-tighter text-white mb-3 text-center">Åtkomst Nekad</h2>
+                        <p class="text-slate-400 mb-8 font-mono text-xs uppercase tracking-widest text-center">Denna sektor är krypterad.</p>
+                        <div class="flex flex-col sm:flex-row gap-3 w-full max-w-sm mx-auto">
+                            <input type="password" id="private-password-input" class="flex-1 bg-main border border-border_subtle rounded-xl px-4 py-3 text-white outline-none focus:border-red-500 font-mono text-center sm:text-left" placeholder="Ange lösenord..." onkeypress="handlePrivatePasswordEnter(event)">
+                            <button onclick="unlockPrivateFilter()" class="bg-red-900/20 border border-red-500 text-red-500 font-black uppercase tracking-widest px-6 py-3 rounded-xl hover:bg-red-500 hover:text-white transition-colors shadow-[0_0_15px_rgba(239,68,68,0.2)]">Dekryptera</button>
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            const sourceData = currentFilter === 'private' ? activePrivateData : activePortfolioData;
+            const displayCount = currentFilter === 'private' ? currentPrivateDisplayCount : currentPortfolioDisplayCount;
+
+            if (sourceData.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 font-mono text-sm">Ingen data matchar. Ladda in via [SYS] Terminal.</div>`;
+                return;
+            }
+
+            const dataToShow = sourceData.slice(0, displayCount);
+
+            dataToShow.forEach((item) => {
+                const article = document.createElement('article');
+                article.className = 'reveal group cursor-pointer'; 
+                article.setAttribute('data-id', item.id);
+                article.onclick = function() { openProjectDossier(this.getAttribute('data-id')); };
+
+                let mediaIcon = item.type === 'video' ? 'video' : (currentFilter === 'private' ? 'lock' : 'image');
+                let displayTitle = (currentFilter === 'private' && !item.title) ? "Krypterad Kreation" : item.title;
+                let borderClass = currentFilter === 'private' ? 'border-red-900/30 group-hover:border-red-500 group-hover:shadow-[0_0_30px_rgba(239,68,68,0.15)]' : 'border-border_subtle group-hover:border-accent group-hover:shadow-[0_0_30px_rgba(229,142,38,0.15)]';
+                let textClass = currentFilter === 'private' ? 'text-red-400' : 'text-accent';
+
+                article.innerHTML = `
+                    <div class="bg-card rounded-3xl border ${borderClass} overflow-hidden relative aspect-square transition-all duration-500">
+                        <img src="${item.mediaUrl}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 group-hover:opacity-60" alt="${displayTitle}" loading="lazy" onerror="handleImageError(this, 'grid')">
+                        <div class="absolute inset-0 bg-gradient-to-t from-main via-main/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6">
+                            <div class="translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                <span class="text-[10px] font-black uppercase tracking-widest ${textClass} flex items-center gap-2 mb-2">
+                                    <i data-lucide="${mediaIcon}" class="w-3 h-3"></i> ${item.subtitle}
+                                </span>
+                                <h3 class="text-xl md:text-2xl font-black uppercase italic tracking-tighter text-white mb-2 leading-tight truncate">${displayTitle}</h3>
+                                <div class="flex items-center gap-2 text-slate-300 text-[10px] md:text-xs font-bold uppercase tracking-widest">
+                                    <i data-lucide="${currentFilter === 'private' ? 'eye' : 'folder-open'}" class="w-4 h-4"></i> ${currentFilter === 'private' ? 'Granska' : 'Öppna Dossier'}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(article);
+            });
+
+            if (displayCount < sourceData.length) {
+                const btnContainer = document.createElement('div');
+                btnContainer.className = 'col-span-full flex justify-center mt-6 mb-4';
+                let btnHover = currentFilter === 'private' ? 'hover:border-red-400 hover:text-red-400 text-red-500 border-red-900/50' : 'hover:border-accent hover:text-accent text-slate-300 border-border_subtle';
+                btnContainer.innerHTML = `
+                    <button onclick="loadMorePortfolio()" class="px-8 py-3 rounded-xl bg-card border ${btnHover} text-[12px] font-black uppercase tracking-widest transition-all flex items-center gap-3 shadow-lg">
+                        <i data-lucide="chevron-down" class="w-5 h-5"></i> Ladda fler
+                    </button>
+                `;
+                grid.appendChild(btnContainer);
+            }
+
+            lucide.createIcons();
+            setupObservers();
+        }
+
+        function unlockPrivateFilter() {
+            const input = document.getElementById('private-password-input');
+            if (input.value === SYSTEM_PASSWORD) {
+                isPrivateUnlocked = true;
+                applyPrivateFiltersAndShuffle();
+                renderPortfolio();
+            } else {
+                input.value = ''; input.placeholder = 'FEL LÖSENORD'; input.classList.add('text-red-500', 'placeholder-red-500', 'border-red-500');
+                setTimeout(() => { input.placeholder = 'Ange lösenord...'; input.classList.remove('text-red-500', 'placeholder-red-500', 'border-red-500'); }, 1500);
+            }
+        }
+
+        function handlePrivatePasswordEnter(e) { if (e.key === 'Enter') unlockPrivateFilter(); }
+
+        function openCreationModal() { document.getElementById('add-creation-modal').classList.remove('opacity-0', 'pointer-events-none'); document.body.style.overflow = 'hidden'; }
+        function closeCreationModal() { document.getElementById('add-creation-modal').classList.add('opacity-0', 'pointer-events-none'); document.body.style.overflow = ''; }
+
+        function saveCreation() {
+            const type = document.getElementById('add-c-type').value;
+            const mediaUrl = document.getElementById('add-c-media').value.trim();
+            const thumbsRaw = document.getElementById('add-c-thumbs').value.trim();
+            const prompt = document.getElementById('add-c-prompt').value.trim();
+            const desc = document.getElementById('add-c-desc').value.trim();
+
+            if(!mediaUrl) { alert('Huvudlänk saknas!'); return; }
+
+            const thumbsArray = thumbsRaw ? thumbsRaw.split(',').map(s => s.trim()) : [];
+            const newItem = {
+                id: 'proj-' + Date.now().toString(36), type: type, mediaUrl: mediaUrl,
+                processThumbnails: thumbsArray, mainPrompt: prompt, description: desc,
+                title: '', tags: [], subtitle: 'Logg ' + String(portfolioData.length + 1).padStart(3, '0')
+            };
+
+            portfolioData.unshift(newItem);
+            autoEnrichData();
+            updateStats();
+            applyFiltersAndShuffle();
+            renderPortfolio();
+            closeCreationModal();
+            
+            document.getElementById('add-c-media').value = '';
+            document.getElementById('add-c-thumbs').value = '';
+            document.getElementById('add-c-prompt').value = '';
+            document.getElementById('add-c-desc').value = '';
+        }
+
+        function openProjectDossier(projectId) {
+            const allItems = portfolioData.concat(privateData);
+            const item = allItems.find(p => p.id === projectId);
+            if (!item) return;
+
+            const content = document.getElementById('modal-content');
+            const tagsHTML = item.tags && item.tags.length > 0 ? item.tags.map(tag => `<button onclick="closeInfoModal(); setTagFilter('${tag}')" class="px-2 py-1 md:px-3 md:py-1 rounded-xl bg-main border border-border_subtle text-[8px] font-black uppercase tracking-widest text-slate-300 hover:border-accent hover:text-accent transition-colors">${tag}</button>`).join('') : '';
+            
+            let thumbnailsHTML = '';
+            if (item.processThumbnails && item.processThumbnails.length > 0) {
+                const thumbs = item.processThumbnails.map(url => `
+                    <div onclick="openLightbox('${url}')" class="w-20 h-20 md:w-24 md:h-24 shrink-0 rounded-xl overflow-hidden border border-border_subtle cursor-pointer hover:border-accent transition-colors relative group">
+                        <img src="${url}" class="w-full h-full object-cover" loading="lazy" onerror="handleImageError(this, 'thumb')">
+                        <div class="absolute inset-0 bg-main/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="maximize" class="w-4 h-4 md:w-5 md:h-5 text-accent"></i></div>
+                    </div>
+                `).join('');
+                thumbnailsHTML = `<div class="mt-6 md:mt-8"><span class="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-3">Uppbyggnad / Process</span><div class="flex gap-3 md:gap-4 overflow-x-auto pb-4 custom-scrollbar">${thumbs}</div></div>`;
+            }
+
+            let promptHTML = '';
+            if (item.mainPrompt && item.mainPrompt.trim() !== '') {
+                const escapedPrompt = item.mainPrompt.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                promptHTML = `
+                    <div class="mt-8 pt-6 border-t border-border_subtle" id="prompt-container-wrapper-${item.id}">
+                        <button onclick="showPasswordInput('${item.id}')" class="px-4 py-3 rounded-xl bg-red-900/10 border border-red-500/30 hover:border-red-500 text-[10px] font-black uppercase tracking-widest text-red-400 transition-all flex items-center gap-2">
+                            <i data-lucide="lock" class="w-3 h-3"></i> Dekryptera Master Prompt
+                        </button>
+                        <div id="password-input-wrapper-${item.id}" class="hidden mt-2 flex-col sm:flex-row items-start sm:items-center gap-2">
+                            <div class="bg-main border border-border_subtle rounded-xl flex items-center px-3 py-2 w-full sm:w-auto">
+                                <i data-lucide="key" class="w-3 h-3 text-slate-500 mr-2 shrink-0"></i>
+                                <input type="password" id="prompt-password-${item.id}" placeholder="Ange lösenord..." class="bg-transparent border-none outline-none text-xs text-white font-mono w-full sm:w-32 placeholder-slate-600" onkeypress="handlePasswordEnter(event, '${item.id}')">
+                            </div>
+                            <button onclick="checkPromptPassword('${item.id}')" class="px-4 py-2 rounded-xl bg-accent/20 border border-accent text-accent text-[10px] font-black uppercase tracking-widest hover:bg-accent hover:text-main transition-colors w-full sm:w-auto">Lås upp</button>
+                        </div>
+                        <div id="prompt-${item.id}" class="prompt-container mt-4">
+                            <div class="bg-main border border-accent rounded-xl p-4 flex items-start gap-4 shadow-[0_0_15px_rgba(229,142,38,0.1)] relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1 h-full bg-accent"></div>
+                                <code class="text-xs text-accent font-mono flex-1 whitespace-pre-wrap select-all pl-2">${item.mainPrompt}</code>
+                                <button onclick="copyPrompt('${escapedPrompt}', this)" class="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg bg-card border border-border_subtle text-slate-500 hover:text-white hover:border-accent transition-all" title="Kopiera Prompt">
+                                    <i data-lucide="copy" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            let mainMediaHTML = item.type === 'video' 
+                ? `<video src="${item.mediaUrl}" controls class="w-full aspect-video object-cover rounded-t-[2rem] md:rounded-t-[3rem] border-b border-border_subtle"></video>`
+                : `<img src="${item.mediaUrl}" class="w-full aspect-video object-cover rounded-t-[2rem] md:rounded-t-[3rem] border-b border-border_subtle cursor-pointer hover:opacity-90 transition-opacity" onclick="openLightbox('${item.mediaUrl}')" title="Klicka för fullskärm" onerror="handleImageError(this, 'main')">`;
+
+            content.innerHTML = `
+                <div class="bg-card rounded-[2rem] md:rounded-[3rem] border border-border_subtle shadow-2xl w-full relative flex flex-col my-8">
+                    <div class="relative w-full">
+                        ${mainMediaHTML}
+                        ${item.type === 'image' ? `<div class="absolute top-4 right-4 bg-black/50 backdrop-blur p-2 rounded-lg pointer-events-none text-slate-300"><i data-lucide="maximize" class="w-4 h-4"></i></div>` : ''}
+                        <div class="absolute top-4 left-4 z-10 hidden sm:block">
+                            <button onclick="copyShareLink('${item.id}', this)" class="px-3 py-2 md:px-4 md:py-2 rounded-xl bg-main/80 backdrop-blur border border-border_subtle hover:border-accent text-[8px] md:text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-accent transition-all flex items-center gap-2 shadow-lg">
+                                <i data-lucide="share-2" class="w-3 h-3 md:w-4 md:h-4"></i> Dela
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6 md:p-12">
+                        <div class="flex flex-col lg:flex-row gap-6 md:gap-8 justify-between">
+                            <div class="flex-1">
+                                <span class="text-[10px] font-black uppercase tracking-widest text-accent mb-2 block">${item.subtitle}</span>
+                                <h3 class="text-3xl md:text-4xl font-black uppercase italic tracking-tighter text-slate-100 mb-4">${item.title}</h3>
+                                <div class="flex flex-wrap gap-2 mb-6">${tagsHTML}</div>
+                                <p class="text-slate-400 leading-relaxed text-sm md:text-base">${parseMarkdown(item.description)}</p>
+                                ${promptHTML}
+                            </div>
+                            <div class="lg:max-w-xs w-full shrink-0">
+                                ${thumbnailsHTML}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            showModal('info-modal');
+        }
+
+        function showPasswordInput(id) {
+            document.querySelector(`#prompt-container-wrapper-${id} button`).classList.add('hidden');
+            const wrapper = document.getElementById(`password-input-wrapper-${id}`);
+            wrapper.classList.remove('hidden');
+            wrapper.classList.add('flex');
+            document.getElementById(`prompt-password-${id}`).focus();
+        }
+
+        function handlePasswordEnter(e, id) { if (e.key === 'Enter') checkPromptPassword(id); }
+
+        function checkPromptPassword(id) {
+            const input = document.getElementById(`prompt-password-${id}`);
+            if (input.value === SYSTEM_PASSWORD) {
+                document.getElementById(`password-input-wrapper-${id}`).classList.add('hidden');
+                document.getElementById(`password-input-wrapper-${id}`).classList.remove('flex');
+                document.getElementById(`prompt-${id}`).classList.add('open');
+            } else {
+                input.value = ''; input.placeholder = 'ÅTKOMST NEKAD'; input.classList.add('text-red-500', 'placeholder-red-500');
+                setTimeout(() => { input.placeholder = 'Ange lösenord...'; input.classList.remove('text-red-500', 'placeholder-red-500'); }, 1500);
+            }
+        }
+
+        function copyPrompt(text, btnElement) {
+            const el = document.createElement('textarea'); el.value = text; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+            const originalIcon = btnElement.innerHTML; btnElement.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-green-400"></i>`; btnElement.classList.add('border-green-400', 'text-green-400'); lucide.createIcons();
+            setTimeout(() => { btnElement.innerHTML = originalIcon; btnElement.classList.remove('border-green-400', 'text-green-400'); lucide.createIcons(); }, 2000);
+        }
+
+        function copyShareLink(projectId, btnElement) {
+            const shareUrl = `${window.location.href.split('?')[0]}?project=${projectId}`;
+            const el = document.createElement('textarea'); el.value = shareUrl; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+            const originalText = btnElement.innerHTML; btnElement.innerHTML = `<i data-lucide="check" class="w-3 h-3 md:w-4 md:h-4 text-green-400"></i> Kopierad`; btnElement.classList.add('border-green-400', 'text-green-400'); lucide.createIcons();
+            setTimeout(() => { btnElement.innerHTML = originalText; btnElement.classList.remove('border-green-400', 'text-green-400'); lucide.createIcons(); }, 2000);
+        }
+
+        function showModal(id) { document.getElementById(id).classList.remove('opacity-0', 'pointer-events-none'); document.body.style.overflow = 'hidden'; lucide.createIcons(); }
+        function closeInfoModal() { document.getElementById('info-modal').classList.add('opacity-0', 'pointer-events-none'); document.body.style.overflow = ''; setTimeout(() => { document.getElementById('modal-content').innerHTML = ''; }, 300); }
+        
+        function openLightbox(mediaUrl) { document.getElementById('lightbox-content').innerHTML = `<img src="${mediaUrl}" class="max-w-full max-h-[90vh] object-contain rounded-xl border border-border_subtle shadow-2xl" onerror="handleImageError(this, 'light')">`; showModal('lightbox-modal'); }
+        function closeLightbox() { document.getElementById('lightbox-modal').classList.add('opacity-0', 'pointer-events-none'); if(document.getElementById('info-modal').classList.contains('opacity-0')) { document.body.style.overflow = ''; } setTimeout(() => { document.getElementById('lightbox-content').innerHTML = ''; }, 300); }
+
+        function setupObservers() {
+            const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        // ==========================================
+        // 5. TERMINAL OCH IMPORTFUNKTIONER
+        // ==========================================
+        const terminalOverlay = document.getElementById('terminal-overlay');
+        const terminalInput = document.getElementById('terminal-input');
+        const terminalOutput = document.getElementById('terminal-output');
+
+        function toggleTerminal() {
+            if (terminalOverlay.classList.contains('open')) { terminalOverlay.classList.remove('open'); terminalInput.blur(); } 
+            else { terminalOverlay.classList.add('open'); setTimeout(() => terminalInput.focus(), 500); }
+        }
+
+        document.addEventListener('keydown', (e) => { if (e.key === '`' || e.key === '~' || (e.key === 'Escape' && terminalOverlay.classList.contains('open'))) { e.preventDefault(); toggleTerminal(); } });
+
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const val = terminalInput.value.trim();
+                if (!val) return;
+                printTerminal(`<span class="text-slate-500">root@blom:~#</span> ${val}`);
+                terminalInput.value = '';
+
+                const cmd = val.toLowerCase();
+                if (cmd === '/help') {
+                    printTerminal(`Available commands:<br>  <span class="text-accent">/help</span> - Show this message<br>  <span class="text-accent">/export</span> - Export JSON backup<br>  <span class="text-accent">/import</span> - Import JSON backup<br>  <span class="text-accent">/stats</span> - Show system statistics<br>  <span class="text-accent">/clear</span> - Clear terminal<br>  <span class="text-accent">/exit</span> - Close terminal`);
+                } else if (cmd === '/export') {
+                    exportData();
+                } else if (cmd === '/import') {
+                    document.getElementById('import-file').click();
+                } else if (cmd === '/stats') {
+                    const currentPortfolio = JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]').length;
+                    const currentApps = typeof appData !== 'undefined' ? appData.length : JSON.parse(localStorage.getItem('blom_app_data') || '[]').length;
+                    const currentPrivate = JSON.parse(localStorage.getItem('blom_private_data') || '[]').length;
+                    printTerminal(`System Status:<br>- Database entries: ${currentPortfolio}<br>- App entries: ${currentApps}<br>- Private entries: ${currentPrivate}<br>- Memory optimized: True`);
+                } else if (cmd === '/clear') {
+                    terminalOutput.innerHTML = '';
+                } else if (cmd === '/exit') {
+                    toggleTerminal();
+                } else {
+                    printTerminal(`Command not found: ${val}. Type '/help' for available commands.`);
+                }
+            }
+        });
+
+        function printTerminal(htmlString) {
+            const div = document.createElement('div');
+            div.innerHTML = htmlString;
+            terminalOutput.appendChild(div);
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        function exportData() {
+            try {
+                const currentPortfolio = JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]');
+                const currentApps = typeof appData !== 'undefined' && appData.length > 0 ? appData : JSON.parse(localStorage.getItem('blom_app_data') || '[]');
+                const currentPrivate = JSON.parse(localStorage.getItem('blom_private_data') || '[]');
+
+                const dataToExport = {
+                    portfolio: currentPortfolio,
+                    apps: currentApps,
+                    private: currentPrivate 
+                };
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToExport, null, 2));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                downloadAnchorNode.setAttribute("download", "blom_master_vault_" + new Date().toISOString().slice(0,10) + ".json");
+                document.body.appendChild(downloadAnchorNode); 
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
+                printTerminal(`<span class="text-emerald-400">System backup exported successfully.</span>`);
+            } catch(e) {
+                printTerminal(`<span class="text-red-500">ERROR: Export failed.</span>`);
+            }
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    let importedSomething = false;
+                    
+                    let currentPortfolio = JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]');
+                    let currentApps = JSON.parse(localStorage.getItem('blom_app_data') || '[]');
+                    if (typeof appData !== 'undefined' && appData.length > 0) {
+                        currentApps = appData;
+                    }
+                    
+                    let importPortfolio = [];
+                    let importApps = [];
+
+                    if (Array.isArray(importedData)) {
+                        importPortfolio = importedData;
+                    } else {
+                        if (importedData.portfolio && Array.isArray(importedData.portfolio)) importPortfolio = importedData.portfolio;
+                        if (importedData.apps && Array.isArray(importedData.apps)) importApps = importedData.apps;
+                        if (importedData.private && Array.isArray(importedData.private)) {
+                            localStorage.setItem('blom_private_data', JSON.stringify(importedData.private));
+                            importedSomething = true;
+                        }
+                    }
+
+                    // SMART MERGE PORTFOLIO
+                    if (importPortfolio.length > 0) {
+                        const mergedPortfolio = [...currentPortfolio];
+                        importPortfolio.forEach(impItem => {
+                            if (!mergedPortfolio.find(existing => existing.id === impItem.id || existing.mediaUrl === impItem.mediaUrl)) {
+                                mergedPortfolio.push(impItem);
+                            }
+                        });
+                        localStorage.setItem('blom_portfolio_data', JSON.stringify(mergedPortfolio));
+                        importedSomething = true;
+                    }
+
+                    // SMART MERGE APPS
+                    if (importApps.length > 0) {
+                        const mergedApps = [...currentApps];
+                        importApps.forEach(impApp => {
+                            const existingIndex = mergedApps.findIndex(a => a.id === impApp.id || a.title === impApp.title);
+                            if (existingIndex >= 0) {
+                                const existingLength = (mergedApps[existingIndex].fullDesc || '').length;
+                                const importedLength = (impApp.fullDesc || '').length;
+                                if (importedLength > existingLength) {
+                                    mergedApps[existingIndex] = impApp; 
+                                }
+                            } else {
+                                mergedApps.push(impApp); 
+                            }
+                        });
+                        localStorage.setItem('blom_app_data', JSON.stringify(mergedApps));
+                        importedSomething = true;
+                    }
+                    
+                    if(importedSomething) {
+                        printTerminal(`<span class="text-emerald-400">Smart Merge Successful: Vault synchronized. Reloading OS...</span>`);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        throw new Error("Missing portfolio or apps arrays in JSON.");
+                    }
+                } catch (err) {
+                    printTerminal(`<span class="text-red-500">ERROR: Invalid JSON file structure.</span>`);
+                    alert("Fel vid import av JSON. Kontrollera filstrukturen.");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; 
+        }
+
+        // ==========================================
+        // 8. BOOT SEQUENCE
+        // ==========================================
+        function runBootSequence() {
+            const bootOverlay = document.getElementById('boot-sequence');
+            const bootText = document.getElementById('boot-text');
+            const bootLines = ["Initiating Blom OS...", "Mounting Graphic Assets...", "Authenticating architect 'Blom'...", "Decrypting visual nodes...", "Access Granted. Loading User Interface..."];
+            let lineIndex = 0;
+            document.body.style.overflow = 'hidden';
+
+            function typeNextLine() {
+                if (lineIndex < bootLines.length) {
+                    const line = document.createElement('div');
+                    line.textContent = '> ' + bootLines[lineIndex];
+                    bootText.appendChild(line);
+                    lineIndex++;
+                    setTimeout(typeNextLine, 150 + Math.random() * 150); 
+                } else {
+                    setTimeout(() => {
+                        bootOverlay.style.opacity = '0';
+                        bootOverlay.style.pointerEvents = 'none';
+                        document.body.style.overflow = ''; 
+                        
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const viewToOpen = urlParams.get('view');
+                        if (viewToOpen === 'portfolio') switchView('portfolio-view');
+                        else if (viewToOpen === 'private') switchView('private-view');
+                        else switchView('hero-view');
+
+                        setTimeout(() => bootOverlay.remove(), 800);
+                    }, 400);
+                }
+            }
+            setTimeout(typeNextLine, 200);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            runBootSequence(); 
+            autoEnrichData(); 
+            updateStats(); 
+            setFilter('all');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectIdToOpen = urlParams.get('project');
+            if (projectIdToOpen) {
+                switchView('portfolio-view');
+                setTimeout(() => { document.getElementById('portfolio-grid').scrollIntoView({ behavior: 'smooth' }); }, 500);
+                setTimeout(() => { openProjectDossier(projectIdToOpen); }, 1000);
+            }
+        });
+
+    </script>
+</body>
+</html>

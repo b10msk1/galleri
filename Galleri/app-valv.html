@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    
+    <title>Blom | System & Appar</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        main: '#0a0f1a',
+                        header: '#0f172a',
+                        card: '#161d2b',
+                        accent: '#e58e26',
+                        border_subtle: '#1e293b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0f1a; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #e58e26; }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #terminal-overlay {
+            transform: translateY(-100%);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #terminal-overlay.open {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-main text-slate-100 font-sans antialiased min-h-screen selection:bg-accent selection:text-main overflow-x-hidden flex flex-col">
+
+    <div id="boot-sequence" class="fixed inset-0 z-[9999] bg-main flex flex-col justify-center items-start p-10 md:p-24 font-mono text-sm sm:text-base pointer-events-auto transition-opacity duration-1000">
+        <div id="boot-text" class="text-green-500 space-y-2"></div>
+    </div>
+
+    <header class="fixed top-0 left-0 right-0 z-50 bg-header/80 backdrop-blur-md border-b border-border_subtle">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-3 cursor-pointer">
+                <i data-lucide="cpu" class="w-6 h-6 text-accent"></i>
+                <h1 class="text-xl font-black uppercase italic tracking-tighter">Blom<span class="text-accent">.AI</span></h1>
+            </a>
+            <nav class="hidden md:flex gap-8">
+                <a href="index.html" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
+                    <i data-lucide="user" class="w-3 h-3"></i> Profil
+                </a>
+                <a href="index.html?view=portfolio" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
+                    <i data-lucide="image" class="w-3 h-3"></i> Kreationer
+                </a>
+                <button class="text-[10px] font-black uppercase tracking-widest text-accent flex items-center gap-2 outline-none cursor-default">
+                    <i data-lucide="layout-grid" class="w-3 h-3"></i> App-Valv
+                </button>
+                <a href="index.html?view=private" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
+                    <i data-lucide="lock" class="w-3 h-3"></i> Privat Valv
+                </a>
+            </nav>
+            <button class="md:hidden text-slate-400 hover:text-accent outline-none">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 pt-32 pb-24 flex-1 w-full">
+        
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-border_subtle pb-6 reveal active">
+            <div>
+                <h2 class="text-4xl font-black uppercase italic tracking-tighter flex items-center gap-4">
+                    <i data-lucide="layout-grid" class="w-8 h-8 text-accent"></i>
+                    Databas: Appar & System
+                </h2>
+                <p class="text-slate-500 text-sm mt-2 font-mono">Bibliotek med egenutvecklade digitala verktyg och arkitektur.</p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row items-start md:items-center gap-4 w-full lg:w-auto">
+                <button onclick="openAppModal()" class="px-5 py-2 rounded-xl bg-accent/10 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent hover:text-main transition-all flex items-center gap-2 shrink-0">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Lägg till Modul
+                </button>
+                <div class="relative w-full md:w-64">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                    <input type="text" id="app-search-input" oninput="renderApps()" placeholder="Sök app-namn eller funktion..." class="w-full bg-main border border-border_subtle rounded-xl py-2 pl-9 pr-4 text-xs font-mono text-slate-200 focus:border-accent outline-none transition-colors placeholder:text-slate-600 shadow-inner">
+                </div>
+            </div>
+        </div>
+
+        <div id="apps-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            <!-- Appar genereras här -->
+        </div>
+
+    </main>
+
+    <footer class="border-t border-border_subtle bg-header py-12 mt-auto">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center opacity-50">
+            <div class="flex items-center gap-3">
+                <i data-lucide="cpu" class="w-5 h-5"></i>
+                <span class="text-sm font-black uppercase italic tracking-tighter">Blom.AI © 2026</span>
+            </div>
+            <button onclick="toggleTerminal()" class="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-accent transition-colors flex items-center gap-2">
+                <i data-lucide="terminal-square" class="w-4 h-4"></i> [SYS]
+            </button>
+        </div>
+    </footer>
+
+    <!-- Modal: Lägg till App/Modul -->
+    <div id="add-app-modal" class="fixed inset-0 z-[300] bg-main/95 backdrop-blur-xl flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4 overflow-y-auto">
+        <div class="bg-card w-full max-w-2xl rounded-[2rem] border border-border_subtle p-6 md:p-8 shadow-2xl relative my-auto">
+            <button onclick="closeAppModal()" class="absolute top-6 right-6 text-slate-400 hover:text-accent transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <h3 class="text-2xl font-black text-white italic mb-6">Lägg till ny App / Modul</h3>
+            <div class="space-y-4">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="w-full md:w-1/3">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">ID (T.ex. app-128)</label>
+                        <input type="text" id="add-a-id" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="app-xxx">
+                    </div>
+                    <div class="w-full md:w-2/3">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Titel</label>
+                        <input type="text" id="add-a-title" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="Systemets namn">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Bildlänk (Imgur URL - Valfritt)</label>
+                    <input type="text" id="add-a-image" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="https://i.imgur.com/...">
+                </div>
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="w-full md:w-1/2">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Kort Beskrivning</label>
+                        <input type="text" id="add-a-short" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="En snabb summering...">
+                    </div>
+                    <div class="w-full md:w-1/2">
+                        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Taggar (Kommaseparerade)</label>
+                        <input type="text" id="add-a-tags" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="React, Firebase, 3D...">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Fullständig Dokumentation</label>
+                    <textarea id="add-a-full" rows="6" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="Den detaljerade arkitekturen..."></textarea>
+                </div>
+            </div>
+            <div class="mt-8">
+                <button onclick="saveApp()" class="w-full px-6 py-3 rounded-xl bg-accent text-main font-black uppercase tracking-widest hover:bg-white transition-colors shadow-lg">Spara Modul i Valvet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info/Project Modal -->
+    <div id="info-modal" class="fixed inset-0 z-[100] bg-main/95 backdrop-blur-xl flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4 md:p-6 overflow-y-auto">
+        <button onclick="closeInfoModal()" class="fixed top-4 right-4 md:top-6 md:right-6 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-card border border-border_subtle text-slate-400 hover:text-accent hover:border-accent transition-all z-[110]">
+            <i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i>
+        </button>
+        <div class="max-w-4xl w-full my-auto flex flex-col justify-center relative pt-12 md:pt-0" id="modal-content"></div>
+    </div>
+
+    <!-- Terminal Overlay -->
+    <div id="terminal-overlay" class="fixed top-0 left-0 right-0 h-[60vh] z-[200] bg-main/95 backdrop-blur-xl border-b border-accent/30 shadow-2xl shadow-accent/5 font-mono text-sm flex flex-col">
+        <div class="h-10 bg-header border-b border-border_subtle flex items-center justify-between px-4">
+            <span class="text-[10px] font-black uppercase tracking-widest text-accent flex items-center gap-2">
+                <i data-lucide="terminal" class="w-3 h-3"></i> N.E.X.U.S. Command Line
+            </span>
+            <div class="flex items-center gap-4">
+                <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
+                <button onclick="exportData()" class="text-[10px] font-black uppercase tracking-widest text-amber-500 hover:text-white transition flex items-center gap-1" title="Exportera JSON"><i data-lucide="download" class="w-3 h-3"></i> Export</button>
+                <button onclick="document.getElementById('import-file').click()" class="text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-white transition flex items-center gap-1" title="Importera JSON"><i data-lucide="upload" class="w-3 h-3"></i> Import</button>
+                <div class="w-px h-4 bg-slate-700 mx-2"></div>
+                <button onclick="toggleTerminal()" class="text-slate-500 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+        </div>
+        <div id="terminal-output" class="flex-1 p-4 overflow-y-auto text-slate-300 space-y-2">
+            <div class="text-accent">Welcome to Blom.AI Terminal. Type '/help' for a list of commands.</div>
+        </div>
+        <div class="h-12 border-t border-border_subtle flex items-center px-4 gap-2 bg-main">
+            <span class="text-accent">root@blom:~#</span>
+            <input type="text" id="terminal-input" class="flex-1 bg-transparent border-none outline-none text-slate-100 placeholder-slate-700 font-mono" placeholder="Enter command..." autocomplete="off">
+        </div>
+    </div>
+
+    <script>
+        const itemsPerPage = 10;
+        let currentAppDisplayCount = itemsPerPage;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        window.handleImageError = function(imgElement, type) {
+            const div = document.createElement('div');
+            if (type === 'grid' || type === 'thumb' || type === 'main' || type === 'light') {
+                div.className = 'w-full h-full flex flex-col items-center justify-center bg-card border border-border_subtle text-slate-600 text-[10px] uppercase tracking-widest';
+                div.innerHTML = '<i data-lucide="image-off" class="w-8 h-8 mb-2 opacity-50"></i>Källfil Offline';
+            } else if (type === 'hide') {
+                imgElement.parentElement.style.display = 'none'; return;
+            }
+            imgElement.replaceWith(div);
+            lucide.createIcons();
+        };
+
+        // ==========================================
+        // 1. DATA: DINA APPAR (60 STYCKEN - ALLA INKLUDERADE OCH SKYDDADE)
+        // ==========================================
+        let appData = [
+            { id: 'app-001', image: '', title: 'The All Seeing Eye', shortDesc: 'AI-driven förstapersons-äventyrsmotor och interaktiv världsbyggare.', icon: 'eye', tags: ['RPG Engine', 'Inpainting', 'Generative AI'], fullDesc: 'Utvecklad som en avancerad, AI-driven RPG-motor. Systemet började som ett verktyg för inpainting (\'magisk pensel\') men expanderades till en portal där användaren kan kliva in i genererade bilder och utforska dem i ett 3D-liknande perspektiv. Styrs via textkommandon och klick för att skapa djupa, visuella äventyr och dynamiskt världsbyggande. Byggt med fokus på tillgänglighet och gränslös kreativitet.' },
+            { id: 'app-002', image: '', title: '360 Känslan', shortDesc: 'Terapeutisk 360-graders miljöutforskare med semantisk GPS.', icon: 'compass', tags: ['Virtual Environment', 'Semantic AI', 'Memory Optimizer'], fullDesc: 'Jag har utvecklat "360 Känslan" som ett terapeutiskt verktyg för eskapism, särskilt anpassat för användare med fysiska begränsningar. Systemet låter användaren utforska och panorera i AI-genererade miljöer via klick- och scrollhändelser. För att tvinga AI:n att förstå navigering byggde jag in ett "Semantiskt GPS"-system som översätter klickkoordinater till beskrivande text (t.ex. "långt bort i den vänstra bakgrunden"). Jag adderade även en "Chain-of-Thought"-logik (inre monolog) som tvingar modellen att förklara kamerarörelsen innan bilden genereras, vilket dramatiskt höjde precisionen. Systemets arkitektur hanterar högupplösta Base64-bilder och förhindrar webbläsarkrascher genom en strikt implementerad FIFO-kö som raderar äldre data och håller historiken begränsad till max 5 steg.' },
+            { id: 'app-003', image: '', title: 'Bloms Magiska Pensel', shortDesc: 'AI-driven inpainting och ritverktyg med semantisk prompt-översättning.', icon: 'brush', tags: ['Inpainting', 'Single-File', 'UI/UX'], fullDesc: 'Jag har utvecklat Bloms Magiska Pensel med en "Single-File Architecture" för att göra verktyget omedelbart responsivt. Applikationen hanterar avancerad inpainting med en "Fit to Screen"-skalningslogik (max 65vh) för att bevara originalbildens proportioner. Smarta arkitektoniska beslut inkluderar en automatisk semantisk prompt-översättning från svenska till engelska, en "Ångra-funktion" (History Stack) för experimentellt skapande, och en inbyggd "8K Kvalitetskontroll" som tvingar AI:n till högupplösta fotorealistiska resultat. Jag eliminerade manuella ritverktyg för att lägga fokus helt på att "regissera" AI:n.' },
+            { id: 'app-004', image: '', title: 'Dokumentationsstudio', shortDesc: 'Huvudsystem för att generera, sammanställa och exportera arkitektonisk systemdokumentation.', icon: 'folder-open', tags: ['Documentation', 'PDF Generator', 'Architecture'], fullDesc: 'Dokumentationsstudion är det centrala navet där all min systemarkitektur samlas och formaliseras. Verktyget är skapat för att binda samman och generera de övergripande PDF-dokumenten som beskriver utvecklingstidslinjer, funktionslistor och arkitektoniska beslut för alla mina övriga applikationer (som Bokverkstaden, Fotoassistenten, m.fl.). Genom en strikt och enhetlig mall säkerställer studion att hela mitt portfolio-ekosystem dokumenteras på ett professionellt och enhetligt sätt.' },
+            { id: 'app-005', image: '', title: 'Fotoassistenten', shortDesc: 'Interaktiv kameraassistent och kalkylator för nattfotografering.', icon: 'camera', tags: ['Photography', 'React SPA', 'UI/UX'], fullDesc: 'Jag har utvecklat Fotoassistenten som ett interaktivt verktyg för fotografer, utrustat med en 180°-regel-kalkylator för perfekt rörelseoskärpa, en interaktiv "pre-flight"-checklista för hårdvara och en upplösningsguide. Arkitektoniskt är applikationen ett "Single-File Mandate" byggt i React. Jag valde Tailwind CSS med ett mörkt tema (slate-950) specifikt för att inte störa användarens mörkerseende vid nattfotografering, samt Lucide-ikoner för en kognitivt avlastande upplevelse.' },
+            { id: 'app-006', image: '', title: 'Liljas Platta', shortDesc: 'Trygg digital miljö och pedagogiskt gränssnitt kurerat för barn.', icon: 'tablet', tags: ['Trygg digital miljö', 'Pedagogiskt gränssnitt', 'AI-kurerad kreativitet'], fullDesc: 'Liljas Platta är min specialdesignade, webbaserade startskärm skapad för att erbjuda en trygg digital trädgård för en 6-åring. Jag har byggt applikationen med ett fokus på visuell hierarki och enkelhet, där jag använder stora, färgkodade ikoner och en "Magisk Saga"-maskin driven av Gemini API för att uppmuntra till lärande och kreativitet. För att maximera portabilitet och enkelhet vid uppdateringar har jag valt att bygga lösningen som en webb-app i en enda HTML-fil med Tailwind CSS och HTML5 Canvas för högpresterande ritfunktionalitet.' },
+            { id: 'app-007', image: '', title: 'Djur-Memory för barn', shortDesc: 'Pedagogiskt och kognitivt minnesspel designat för barn.', icon: 'cat', tags: ['Educational', 'Game', 'Cognitive Aid'], fullDesc: 'Ett interaktivt memory-spel med djurtema, skräddarsytt för yngre användare. Applikationen är utformad som en trygg och pedagogisk miljö som tränar arbetsminne och mönsterigenkänning genom omedelbar visuell och auditiv feedback.' },
+            { id: 'app-008', image: '', title: 'Bokverkstaden (BookEditorPro)', shortDesc: 'Dedikerat systemverktyg för avancerat författande och bokskapande.', icon: 'book', tags: ['BookEditorPro', 'Writing', 'System'], fullDesc: 'Bokverkstaden är en systemapplikation utvecklad under arbetsnamnet BookEditorPro. Syftet är att erbjuda en strukturerad och djuplodande plattform för författande och redigering av böcker. Dokumentationen från projektet visar på en strikt tidslinje, en omfattande funktionslista och tydliga arkitektoniska beslut kring hur text och narrativ data hanteras effektivt i ett användargränssnitt.' },
+            { id: 'app-009', image: '', title: 'Bokskapare Pro', shortDesc: 'Distraktionsfri och kraftfull kreativ studio för författande.', icon: 'book-open', tags: ['React SPA', 'JSON Export', 'Writing', 'AI Prompts'], fullDesc: 'Syftet med Bokskapare Pro är att erbjuda en distraktionsfri men kraftfull kreativ studio för författande. Systemet låter användaren strukturera text och bilder i block och ger visuell inspiration via inbyggda AI-promptgeneratorer. Arkitekturen (byggd i React med Tailwind CSS i "Sky Protocol"-estetik) är helt moln-isolerad för maximal sekretess, där all data hanteras i klientens minne och sparas via manuell JSON-export. Systemet stöder övergång från utkast till färdig utskriftsvänlig sida på sekunder.' },
+            { id: 'app-011', image: '', title: 'Bloms Bokskapare', shortDesc: 'System för att författa, strukturera och generera böcker.', icon: 'book', tags: ['Writing', 'Storytelling', 'PDF Generator'], fullDesc: 'Bloms Bokskapare är utvecklad för att ge en sömlös författarupplevelse där text och layout möts. Applikationen möjliggör dynamisk strukturering av kapitel och innehåll. Genom att integrera AI-assistans kan författaren snabbt generera utkast och visuell formatering, allt optimerat för slutgiltig export och publicering.' },
+            { id: 'app-012', image: '', title: 'Realtidschatt', shortDesc: 'Anonym kommunikation och realtidssynkronisering via Firebase.', icon: 'message-square', tags: ['Anonym kommunikation', 'Frictionless sessions', 'Realtidssynkronisering'], fullDesc: 'Denna realtidschatt är en webbaserad plattform för textkommunikation utan krav på registreringsprocesser. Genom att använda Firebase Auth för anonyma sessioner och Cloud Firestore med onSnapshot för omedelbar synkronisering, uppnår jag en friktionsfri upplevelse för användare. Arkitektoniskt har jag valt en platt databasstruktur där varje chattrum genererar en egen samling, vilket minimerar datamängden och optimerar prestandan för varje ansluten klient. Gränssnittet är byggt med React för modulär vyhantering och Tailwind CSS för en responsiv layout.' },
+            { id: 'app-014', image: '', title: 'Låtskrivarstudio', shortDesc: 'Dedikerad plattform för musikalisk textförfattning och AI-driven komposition.', icon: 'music', tags: ['Audio Production', 'Writing', 'Music AI'], fullDesc: 'Låtskrivarstudion är skapad för att optimera den kreativa processen vid textförfattande och musikalisk komposition. Applikationen erbjuder ett dedikerat gränssnitt där användaren kan strukturera verser, refränger och bryggor, samtidigt som AI-verktyg finns integrerade för att generera rim, rytmiska förslag och harmoniska strukturer.' },
+            { id: 'app-015', image: '', title: 'AI Video Prompt Skapare', shortDesc: 'Automatiserad brygga mellan svenska koncept och tekniska videoprompter.', icon: 'video', tags: ['Video AI', 'Prompt Engineering', 'React SPA'], fullDesc: 'Systemets primära syfte är att fungera som en automatiserad brygga mellan svenskspråkiga koncept och engelskspråkiga AI-verktyg för videogenerering (som Runway Gen-2, Sora och Pika Labs). Applikationen omvandlar korta beskrivningar till detaljerade, tekniska prompter som automatiskt inkluderar nödvändiga parametrar för ljussättning, kameravinklar och stilistik. Arkitekturen är byggd som en klientcentrerad SPA (Single Page Application) i React med Tailwind CSS för att säkerställa snabb navigering och omedelbar tillståndshantering utan sidomladdningar.' },
+            { id: 'app-016', image: '', title: 'Berättarröst Studio Pro', shortDesc: 'Webbaserad ljudproduktion och multi-track mixer för sagor.', icon: 'mic', tags: ['Audio Production', 'TTS', 'React SPA', 'Multi-Track Mixer'], fullDesc: 'Mitt primära mål med Berättarröst Studio Pro var att demokratisera avancerad ljudproduktion. Jag designade verktyget för att låta användaren skapa professionella berättelser med högkvalitativa röster (TTS), synkroniserade ljudeffekter och bakgrundsmusik direkt i webbläsaren, helt utan förkunskaper i tunga DAW-program. Applikationen hanterar en interaktiv tidslinje med drag-and-drop-stöd och en dedikerad mixer-konsol för att balansera röst, SFX och musik. Koden är skriven i React (lokal state management via hooks) med en strikt modulär komponentstruktur och stylad med Tailwind CSS för en responsiv, dark-mode-anpassad arbetsmiljö.' },
+            { id: 'app-017', image: '', title: 'Filmstudio', shortDesc: 'Professionellt kontrollrum för generativt filmskapande och AI-prompter.', icon: 'clapperboard', tags: ['Generative AI', 'Cinematography', 'React SPA', 'Prompt Engineering'], fullDesc: 'Mitt huvudsakliga mål med Filmstudio har varit att skapa ett professionellt "kontrollrum" för generativt filmskapande. Jag har velat ge dig, Blom, möjligheten att gå från en enkel idé till en tekniskt avancerad AI-prompt utan att behöva behärska komplex "prompt engineering" manuellt. Systemet fungerar som en brygga mellan mänsklig kreativitet och avancerade AI-modeller, där jag har prioriterat visuell tydlighet, kontinuitet och finkornig kontroll över kinematografiska detaljer.' },
+            { id: 'app-018', image: '', title: 'Bildhantering', shortDesc: 'Automatiserat arkiveringsverktyg för att rädda och frilägga konstverk.', icon: 'image-down', tags: ['Archiving', 'Image Processing', 'Data Extraction'], fullDesc: 'Jag har utvecklat "Bildhantering" (även kallad Skapa med Blom) för att bygga ett kraftfullt men lättanvänt gränssnitt för AI-driven bildhantering. Det primära behovet var att rädda, katalogisera och dokumentera flera hundra gamla skärmdumpar av stensmycken jag slipat. Syftet med systemet övergick från en renodlad bildskapar-app till ett automatiserat arkiveringsverktyg. Systemet kan nu inte bara frilägga mina konstverk från irrelevanta gränssnittsdetaljer (som chattboxar), utan också extrahera och bevara mina gamla kommentarer.' },
+            { id: 'app-019', image: '', title: 'Bildstudion - Bakgrundsborttagare', shortDesc: 'Specialiserad applikation för pixel-perfekt bakgrundsborttagning med Flood Fill.', icon: 'eraser', tags: ['Flood Fill', 'RGB Distance', 'Memory Optimized'], fullDesc: 'En specialiserad modul för att frilägga objekt. För den sammanhängande färgborttagningen valde jag att implementera en iterativ, kö-baserad Flood Fill-algoritm (Breadth-First Search) istället för en traditionell rekursiv algoritm för att undvika "Call Stack Size Exceeded"-krascher. Färgmatchningen baseras på Euklidiskt avstånd i en 3D RGB-rymd, vilket ger en mer naturlig toleransnivå för mänskliga ögat. För att hantera internminnet (RAM) på extremt stora bilder har jag infört begränsad tillståndshantering (max 10 ångra-steg) samt automatisk prestandaskalning vid inläsning av massiva filer.' },
+            { id: 'app-021', image: '', title: 'Jonas Ateljé', shortDesc: 'Självbiografisk konstbok med A4 Landscape Engine och auto-skalning.', icon: 'book-open', tags: ['Digitalt arkiv', 'Konstbok', 'Layout-motor'], fullDesc: 'Jonas Ateljé är mitt personliga digitala arkiv som jag utvecklat för att överbrygga gapet mellan ett digitalt galleri och en fysisk, tryckt bok. För att säkerställa en estetisk och sammanhållen miljö har jag byggt applikationen i en enfilig React-struktur där all layout, inklusive en "A4 Landscape Engine" för 297x210mm-proportioner, hanteras centralt. Jag har implementerat intelligenta funktioner som automatisk textskalning för att garantera att innehållet alltid ryms på sidan utan skrollning, samt en "fail-safe"-lösning för Projekt-ID-hantering för att säkra att mitt arbete alltid är åtkomligt.' },
+            { id: 'app-023', image: '', title: 'Bloms Fotokollage', shortDesc: 'Professionellt verktyg för dynamiska bildkollage optimerade för A4.', icon: 'layout', tags: ['Photo Editor', 'Print Optimized', 'Drag-and-Drop'], fullDesc: 'Mitt primära mål med denna applikation var att lösa ett vanligt problem vid bildhantering: att bilder antingen blir utdragna eller att viktiga delar försvinner vid beskärning. Jag ville skapa en miljö där konstverk och foton kan samexistera i en flexibel men stabil layout. Arkitekturen inkluderar ett dynamiskt rutnät, drag-and-drop-funktionalitet för att byta plats på bilder, och avancerad "Pan/Zoom"-logik för pixelperfekt justering. Allt är exakt optimerat för utskrift på A4 utan att användaren behöver teknisk expertis.' },
+            { id: 'app-024', image: '', title: 'Kreativ Studio', shortDesc: 'Allt-i-ett studio för demokratiserad AI-grafik och avancerad bildbehandling.', icon: 'palette', tags: ['Bildbehandling', 'AI-grafik', 'Robust arkitektur'], fullDesc: 'Kreativ Studio är min applikation för att demokratisera avancerad bildbehandling genom att göra kraftfull AI-funktionalitet tillgänglig för dig utan krav på expertkunskap i program som Photoshop. Jag har konstruerat systemet med en "Single-File Architecture" och en omfattande felhanteringsstrategi, inklusive ErrorBoundary och API-interceptorer, för att säkerställa stabilitet trots tekniska utmaningar. Applikationen stöder ett brett spektrum av funktioner, från pixelbaserad borttagning och bakgrundsbyte till mer komplex "Motion Mode"-generering, allt paketerat i ett modernt och stabilt gränssnitt.' },
+            { id: 'app-025', image: '', title: 'Statuskodare', shortDesc: 'Verktyg för kodning och hantering av systemstatusar.', icon: 'activity', tags: ['System Tools', 'Status Management'], fullDesc: 'En specialiserad applikation utvecklad för att hantera och översätta systemstatusar i Blom OS. Ger en visuell överblick över pågående processer och avvikelser.' },
+            { id: 'app-029', image: '', title: 'Liljas Magiska Äventyr', shortDesc: 'Pedagogiskt äventyrsverktyg med röststyrning och visuell magi.', icon: 'wand-2', tags: ['Educational', 'Voice Recognition', 'Three.js', 'Math & Logic'], fullDesc: 'Mitt syfte med den här applikationen var att skapa ett pedagogiskt verktyg som känns som ett magiskt äventyr. Jag ville ge dig, Blom, möjligheten att förbereda personliga utmaningar för Lilja där målet (belöningen) presenteras genom visuell och auditiv magi. Systemet bygger på en klientsidebaserad enfilsapplikation som integrerar Three.js för levande 3D-miljöer och Web Speech API för intuitiv röstinteraktion, helt utan molnberoenden. Appen innehåller 10 magiska uppdrag som tränar logik och klockavläsning.' },
+            { id: 'app-030', image: '', title: 'Fortnite Karakt Studio', shortDesc: 'Studio som förvandlar foton till heroiska digitala avatarer.', icon: 'gamepad-2', tags: ['Generative AI', 'Image2Image', 'React SPA', 'Character Design'], fullDesc: 'Mitt primära mål med detta projekt har varit att skapa en bro mellan verklighet och fantasi. Genom att kombinera avancerad generativ AI med ett användarvänligt gränssnitt möjliggörs förvandling av vardagliga foton till heroiska digitala avatarer i Fortnite-stil med 100% bevarad ansiktslikhet. Arkitekturen vilar på en "Master Realism Prompt", ett draft-baserat arbetsflöde och integrerar Gemini 2.5 Flash för både bildgenerering och automatiserat författande av "Lore" (bakgrundshistorier).' },
+            { id: 'app-031', image: '', title: 'Infinite Zoom Lab', shortDesc: 'Innovativ plattform för oändliga visuella zoom-resor drivna av AI.', icon: 'zoom-in', tags: ['Zoom Engine', 'Gemini & Imagen', 'CSS Animation'], fullDesc: 'Infinite Zoom Lab är ett verktyg utvecklat för att skapa oändliga visuella resor med hjälp av artificiell intelligens. Syftet är att sänka tröskeln för avancerat skapande genom en hybrid AI-arkitektur. Gemini 2.5 Flash agerar kreativ regissör och planerar nästa logiska djupskikt, medan Imagen 4.0 renderar bilderna. Systemet använder klient-sidans CSS-transformationer istället för tung videorendering för att skapa en omedelbar, interaktiv illusion av oändlig inzoomning.' },
+            { id: 'app-032', image: '', title: 'Story Spark Pro', shortDesc: 'ADHD-vänligt verktyg för att transformera idéer till filmscener.', icon: 'sparkles', tags: ['Image2Image', 'Pixar Style', 'Prompt Engineering'], fullDesc: 'Jag har utvecklat Story Spark Pro med ett tydligt mål: att eliminera alla tekniska hinder för kreativitet, skräddarsytt för Blom och Lilja. Appen erbjuder ett ADHD-vänligt gränssnitt med omedelbar feedback och en "Gör Levande"-funktion som väcker objekt till liv i Pixar-stil. Arkitekturen utnyttjar en dynamisk modellväxling mellan Imagen 4.0 (text-till-bild) och Gemini 2.5 Flash (bild-till-bild) via Base64-överföring, och automatiserar komplex prompt engineering.' },
+            { id: 'app-033', image: '', title: 'Formfinnaren', shortDesc: 'AI-assistent för hantverkare som analyserar råmaterial och genererar formförslag.', icon: 'hammer', tags: ['Gemini Vision', 'Imagen', 'Crafting Tool'], fullDesc: 'Jag har utvecklat Formfinnaren för att fungera som en länk mellan råmaterial och färdigt hantverk. Analysmodellen (Gemini) fungerar som appens hjärna för att tolka bilddata och mm-dimensioner på en sten eller en bit trä, medan bildmodellen (Imagen) skapar de visuella renderingarna. Gränssnittet är avsiktligt minimalistiskt med naturmaterialsfärger i Tailwind CSS. Arkitekturen inkluderar Exponential Backoff för felsäker AI-kommunikation och en smart historik-logik som säkerställer att användaren alltid får nya, unika förslag vid iteration.' },
+            { id: 'app-035', image: '', title: 'Texttransformeringsapplikation', shortDesc: 'Avancerad React-applikation för textbearbetning driven av Gemini 2.5 Flash.', icon: 'file-text', tags: ['Text Processing', 'Gemini 2.5 Flash', 'React SPA'], fullDesc: 'En kraftfull texttransformeringsapplikation utformad med en asymmetrisk två-kolumnslösning i React och Tailwind CSS (glassmorphism). Vänster sidofält håller konfigurationen (humör, nivå, format) medan höger sida agerar dynamisk arbetsyta. Appen utnyttjar Gemini 2.5 Flash och en strikt "System Prompt" för att styra AI-motorn som en osynlig regissör. Arkitekturen säkras genom en exponentiell backoff-algoritm för API-anropen, och ett "Smart Urklipp" förenklar exporten av det slutgiltiga resultatet.' },
+            { id: 'app-036', image: '', title: 'Bildstudio 2', shortDesc: 'Avancerad generation och redigering i en integrerad kreativ suite.', icon: 'layers', tags: ['Image Editor', 'React SPA', 'Creative Suite'], fullDesc: 'Bildstudio 2 utgör nästa generations arbetsyta för bildhantering i Blom OS. Som arkitekt fokuserade jag på att bygga en plattform som kombinerar kraften från tidigare iterationsverktyg till en snabb och sömlös upplevelse. Applikationen hanterar tunga bildprocesser med bibehållen stabilitet i webbläsaren och är optimerad för att användaren direkt ska kunna iterera, redigera och exportera högupplösta kreationer utan fördröjning.' },
+            { id: 'app-038', image: '', title: 'AI-Bildgenerator', shortDesc: 'Intuitivt gränssnitt för realtidsgenerering av AI-bilder med Imagen 4.0.', icon: 'image', tags: ['Imagen 4.0', 'React SPA', 'Exponential Backoff'], fullDesc: 'Mitt övergripande mål med denna applikation har varit att skapa ett intuitivt gränssnitt där teknik och kreativitet möts. Jag ville bygga ett verktyg som gör den avancerade AI-tekniken tillgänglig på ett sätt som känns både inspirerande och tryggt. Visionen är att "Skapa Bild" ska vara en förlängning av din fantasi, paketerad i en modern och användarvänlig miljö med Glassmorphism-design. Appen använder Google Imagen 4.0 och implementerar Exponential Backoff för maximal nätverksstabilitet under genereringsprocessen.' },
+            { id: 'app-039', image: '', title: 'Liljas Läshjälp & Fuskverktyg för Sims 4', shortDesc: 'Python-baserat läshjälpmedel med OCR och svensk talsyntes.', icon: 'book-open-check', tags: ['Python', 'OCR', 'TTS', 'Accessibility'], fullDesc: 'Huvudsyftet med projektet var att skapa ett verktyg som gör det möjligt för Lilja, 6 år, att självständigt förstå textmeddelanden i Sims 4. Ett avgörande arkitektoniskt beslut var att kräva administratörsbehörighet för att "fånga" tangenttryckningar (F9, F10) och kringgå spelets input-blockering. För att hantera Sims 4-grafiken (ofta vit text på halvgenomskinlig blå bakgrund) byggde jag in en trestegs-förbehandling: 300% skalning, gråskala och färginvertering för Tesseract OCR. Dessutom utvecklade jag ett skript som speglar Windows OneCore-röstnycklar i registret, vilket gjorde den nyare talsyntesen "Bengt" tillgänglig för äldre Python-bibliotek utan manuella systemändringar.' },
+            { id: 'app-040', image: '', title: 'Må-bra & Rutin Tracker', shortDesc: 'Kognitivt stödverktyg för självreglering och rutinhantering.', icon: 'heart-pulse', tags: ['Health Tracker', 'React SPA', 'Cognitive Aid'], fullDesc: 'Applikationen är skapad som en kognitiv brygga för en vardag med ADHD och bipolär problematik. Mitt syfte var att bygga ett instrument för självreglering som minskar det exekutiva motståndet och ger visuell feedback på framsteg. Den innehåller energinivå-loggning för att se mönster i mående, en dynamisk fokuslista (Fysik, Familj, Jobb) och dopamin-drivna visuella framstegsmätare. Byggd som en Single-File React-app med lugnande Indigo/Violett färgskala optimerad för mobilt bruk.' },
+            { id: 'app-041', image: '', title: 'FORTNITE BATTLE CARDS ENGINE', shortDesc: 'Omfattande digitalt ekosystem och 3D-motor för ett taktiskt kortspel.', icon: 'swords', tags: ['TCG', '3D Arena', 'Firebase Multiplayer', 'Gemini Vision'], fullDesc: 'Detta massiva ekosystem transformerar ett fysiskt kortspel till en levande digital 3D-upplevelse ("Tactical Sci-Fi Tabletop"). Systemet innehåller en grafikmotor för att rendera "Data Chips", en spelmotor med dynamisk storm/reboot-mekanik, och Firebase-multiplayer. Den största arkitektoniska innovationen är integreringen av Gemini AI Vision som automatiserat läser av uppladdade PNG-korts stats (HP, Attack, Kostnad) och omvandlar handkort till 3D-standees på spelplanen. En komplett "The Loop"-affärsmodell med kryptiska valutor (Coins/V-Bucks) och AI-genererade spelarprofiler finns implementerad.' },
+            { id: 'app-042', image: '', title: 'Mulle (Kortspel)', shortDesc: 'Digital enspelarupplevelse av det klassiska kortspelet med inbyggd AI.', icon: 'club', tags: ['Card Game', 'React', 'Greedy AI', 'Algorithms'], fullDesc: 'Jag har transformerat det strategiskt djupa svenska kortspelet Mulle till en modern digital upplevelse. Systemet hanterar dubbla standardlekar (104 kort), dynamiska värden (Lillan, Storan) och detektion av "Mullar" och "Tabbar". Arkitekturen bygger på React för tillståndshantering och inkluderar en algalgoritmisk AI-motståndare. Genom att lösa "Subset Sum Problem" med begränsat sökdjup maximerar boten sina poäng utan att frysa användargränssnittet, och ger tydlig pedagogisk feedback vid matchens slut.' },
+            { id: 'app-043', image: '', title: 'MP4 Studio Pro', shortDesc: 'Professionell plattform för AI-genererade MP4-loopar.', icon: 'video', tags: ['Video Generation', '4-Frame Engine', 'Dual Pipeline'], fullDesc: 'Jag har utvecklat MP4 Studio Pro, en professionell redigeringsplattform designad för att ersätta det föråldrade GIF-formatet med högkvalitativa, AI-genererade MP4-loopar. Mitt arkitektoniska beslut var att implementera en 4-Frame Sequence Engine som använder interpolerade keyframes för att ge AI-motorn exakta målpunkter, vilket möjliggör komplexa händelseförlopp med filmisk realism. Genom att kombinera en mörk, distraktionsfri "Dark Mode Master Suite"-design med en Dual Rendering Pipeline (HD/8K Neural), har jag skapat ett verktyg där användaren kan styra allt från mikrorörelser till avancerad ljussimulering.' },
+            { id: 'app-044', image: '', title: 'Gemini OS (Min Digitala Hubb)', shortDesc: 'Central, enhetsoberoende plattform som konsoliderar 35+ appar.', icon: 'box', tags: ['OS Architecture', 'React SPA', 'Firebase', 'Cognitive Accessibility'], fullDesc: 'Jag har arkitekterat Gemini OS som en central, enhetsoberoende plattform som konsoliderar över 35 specialiserade applikationer under ett och samma digitala tak. Genom att implementera en "Single-File Architecture" i React och integrera Firebase för molnsynkronisering, har jag skapat ett robust ekosystem som säkrar kognitiv struktur vid ADHD/bipolär sjukdom, möjliggör avancerat kreativt skapande och erbjuder en magisk digital värld för min dotter.' },
+            { id: 'app-045', image: '', title: 'Foto till Skiss (V1.0.4 "Blom Edition")', shortDesc: 'SPA som sömlöst transformerar foton till AI-genererade blyertsskisser.', icon: 'pen-tool', tags: ['Image2Image', 'React SPA', 'Base64 Processing'], fullDesc: 'Jag har utvecklat Foto till Skiss, en blixtsnabb Single Page Application som sömlöst transformerar vardagliga foton till högkvalitativa, AI-genererade blyertsskisser. Mitt arkitektoniska beslut var att integrera direkt mot Google Gemini via klientsidig Base64-konvertering och implementera en robust retry-mekanism, vilket döljer all nätverksteknisk komplexitet bakom ett stabilt och avkopplande gränssnitt.' },
+            { id: 'app-046', image: '', title: 'Bildstudio Pro', shortDesc: 'Kraftfull plattform driven av Imagen 4.0 och Gemini 2.5 för bildanalys.', icon: 'image-plus', tags: ['Imagen 4.0', 'Gemini 2.5', 'Error Recovery'], fullDesc: 'Jag har utvecklat Bildstudio Pro, en kraftfull och tillgänglig AI-plattform där användaren sömlöst kan generera, redigera och analysera bilder på en och samma plats. Mitt arkitektoniska beslut var att bygga systemet som en resilient enfilsapplikation i React, driven av Imagen 4.0 och Gemini 2.5, för att dölja teknisk komplexitet bakom ett gränssnitt med låg kognitiv belastning. Genom att integrera asynkron tillståndshantering och robust felhantering med automatisk återhämtning säkerställer jag en stabil och oavbruten kreativ process.' },
+            { id: 'app-050', image: '', title: 'Quantum Psytrance Studio', shortDesc: 'Avancerad DAW med stem-separation och AI-integration.', icon: 'music', tags: ['DAW', 'Stem-separation', 'AI-integration'], fullDesc: 'Quantum Psytrance Studio är en specialiserad arbetsstation för produktion och dekonstruktion av elektronisk musik. Systemet innehåller en 16-stegs "Matrix Sequencer" och en avancerad "Neural Stem Mixer" som delar upp ljudfiler i fem separata kanaler (Vocals, Guitar, Bass, Drums, Other) via parallella filterkedjor. För att underlätta det kreativa arbetet har jag integrerat AI-analysverktyg för BPM- och strukturuppskattning samt en "Sound Design Lab" som översätter textbeskrivningar till JSON-strukturerade ljudparametrar. Systemet lagrar sessioner via Firebase och använder en setTimeout-baserad scheduler för att garantera exakt timing i ljudmotorn.' },
+            { id: 'app-052', image: '', title: 'Prompt Manager', shortDesc: 'Säkert bibliotek och arbetsstation för djupanalys och batch-hantering av prompter.', icon: 'database', tags: ['Prompt Engineering', 'Firebase', 'Batch Operations'], fullDesc: 'Ett visuellt orienterat bibliotek (Grid-vy med färgkodning) och en dedikerad fokusvy för djupanalys av enskilda prompter. Användaren får en makroöverblick över bibliotekets hälsa och tillgång till kraftfulla batch-bearbetningsverktyg. Systemet använder anonym Firebase-autentisering för att skapa isolerade bibliotek, samt Firestore Batched Writes för säker, datakorruptions-fri hantering vid radering och import. Dessutom inkluderar applikationen en robust saneringslogik för felsäker JSON-parsing av inkommande AI-svar.' },
+            { id: 'app-053', image: '', title: 'PoddStudion', shortDesc: 'Allt-i-ett-plattform för podcastskapare med inbyggd AI-generator och Poddskola.', icon: 'mic', tags: ['Podcast', 'Audio Production', 'AI Tools', 'Dashboard'], fullDesc: 'Mitt syfte med att utveckla PoddStudion var att skapa en allt-i-ett-plattform för podcastskapare. Jag ville bygga ett verktyg som inte bara hanterar den tekniska inspelningen och statistiken, utan som också fungerar som ett pedagogiskt stöd och ett kreativt bollplank. Min vision som arkitekt var en sömlös, inspirerande miljö där en användare kan gå från en vag idé (via den inbyggda Poddskolan och AI-generatorn) till att faktiskt producera professionella intro-röster och övervaka sin lyssnarstatistik, allt inom ett och samma gränssnitt.' },
+            { id: 'app-055', image: '', title: 'Genie Heroes – Genesis Exodus', shortDesc: 'Strategisk kortmekanik med resonans-system och 5 fasta bildzoner.', icon: 'swords', tags: ['Världsbygge', 'Kortmekanik', 'Strategisk överlevnad'], fullDesc: 'Genie Heroes – Genesis Exodus är mitt ambitiösa projekt där jag kombinerar klassisk kortmekanik med en unik visuell berättelse om hopp i ett totalt mörker. Jag har designat en djupt taktisk spelupplevelse där spelaren som en "Genie" (Ande) måste rädda varelser från undergångsdrabbade planeter. För att säkerställa grafisk perfektion och konsekvent hjälte-estetik har jag definierat fem fasta zoner (MATS, SKIN, LAMP, STATS_ATK, STATS_SHIELD) samt skapat ett "Resonans-system" där korten får en stats-boost om spelarens valda Ande matchar kortets element.' },
+            { id: 'app-057', image: '', title: 'Genie Omega (Webbplats)', shortDesc: 'Interaktiv portal och visuell encyklopedi med ansiktsskanner.', icon: 'globe', tags: ['Interaktiv portal', 'Visuell encyklopedi', 'Profilintegration'], fullDesc: 'Genie Omega-applikationen är min interaktiva portal för projektet "Genesis Exodus", designad som ett digitalt uppslagsverk över de fem kärnallianserna. Jag har byggt systemet med en "Single-File Architecture" i React och Tailwind CSS för att maximera prestanda och portabilitet, där hela gränssnittet styrs av React-states för sömlösa övergångar. Applikationen inkluderar avancerade funktioner som könsspecifik datavy, en raritetsmotor för visuella effekter, samt en dedikerad profilintegration via en ansiktsskanner som jag kalibrerat för optimal visuell hierarki.' },
+            { id: 'app-059', image: '', title: 'Genesis Exodus (Genie Omega)', shortDesc: 'Triple-A ekosystem med avancerad synergi och 5-lagers kortkonstruktion.', icon: 'layers', tags: ['Spelmotor', 'Systemarkitektur', 'Universumsbygge'], fullDesc: 'Genesis Exodus är mitt omfattande master-projekt som transformerar ett tidigare fysiskt kortspelskoncept till en digital Triple-A upplevelse. Systemet är byggt kring en "Total Integration"-filosofi där jag hanterar komplexa synergi-system och en avancerad 5-lagers kortkonstruktion för att skapa djup och identitet. Jag har utvecklat dedikerade verktyg, såsom "Kort-Smedjan" för hantering av 6 250 unika kombinationer och "Diorama Mapper" för kalibrering av 3D-geometri mot 8K-bakgrunder. Projektet bygger på en Free-to-Play-modell med fokus på taktiskt djup genom elementära fördelar, "Omega Spells" och en progressiv skade-multiplikator.' },
+            { id: 'app-060', image: '', title: 'Psy-Station Workstation', shortDesc: 'Realtidsproduktion och ljudsyntes med dedikerat Psytrance-fokus.', icon: 'headphones', tags: ['Realtidsproduktion', 'Ljudsyntes', 'Psytrance-fokus'], fullDesc: 'Psy-Station Workstation är min webbaserade miljö för realtidsproduktion av Psytrance, byggd på Tone.js för stabil tidsaxel och nod-baserad ljudarkitektur. Jag har fokuserat på att tillgängliggöra avancerad syntes via ett intuitivt gränssnitt, med funktioner som en dedikerad "Rolling Bass Engine", "Turbo-modul" för makro-kontroller samt "Psy-FX Pads" för atmosfäriska ljud. Ett centralt arkitektoniskt beslut var implementationen av en Fast Fourier Transform (FFT) via mikrofoningången, vilket tillåter systemet att analysera ljudfrekvenser i realtid och mappa pitch till bas-synthen, oberoende av externa filformat.' },
+            { id: 'app-061', image: '', title: 'AudioCapture Pro', shortDesc: 'Webbaserad inspelningsstudio för systemljud och mikrofon.', icon: 'mic', tags: ['Web Audio API', 'MediaRecorder', 'Base64', 'React SPA'], fullDesc: 'AudioCapture Pro är en webbaserad applikation utformad för att möjliggöra inspelning av digitalt ljud direkt i webbläsaren. Systemets primära syfte är att erbjuda användaren ett gränssnitt för att fånga antingen systemljud eller ljud via en ansluten mikrofon, utan krav på extern programvara. Arkitekturen är byggd i React med Tailwind CSS och utnyttjar Web Audio API för ljudhantering. För att kringgå säkerhetspolicys vid AI-analys konverteras allt ljud till Base64-strängar. Systemet inkluderar robusta fallback-mekanismer för mikrofonbehörigheter.' },
+            { id: 'app-062', image: '', title: 'Mediastudio / App Archive V1.0', shortDesc: 'Dedikerat digitalt mediearkiv för komprimering och strukturering av projekt.', icon: 'archive', tags: ['Firebase', 'Imagen 4.0', 'React SPA', 'Cloud Vault'], fullDesc: 'Systemet är konstruerat som ett dedikerat, digitalt mediearkiv med syfte att lagra, strukturera och komprimera grafiska projekt, dokumentationer och externa filreferenser. Visionen bakom arkitekturen är att avlasta tidigare system från tung data, optimera molnlagringen och erbjuda en sömlös arbetsyta ("workspace"). En av de viktigaste arkitektoniska lösningarna var implementeringen av en "Svart Låda"-autosave som omedelbart arkiverar varje session med ett unikt ID för att förhindra dataförlust (t.ex. om Lilja råkar stänga sidan). Applikationen integrerar även Imagen 4.0 och övergav inbyggd webbläsar-textning till förmån för rå ljudanalys i efterhand.' },
+            { id: 'app-063', image: '', title: 'Arkitekt Hubb', shortDesc: 'Centralt kognitivt valv för master-filer, JSON-backuper och systemdesign.', icon: 'library', tags: ['Core System', 'JSON Vault', 'Cognitive Aid', 'Lore Archive'], fullDesc: 'Jag har utvecklat Arkitekt Hubb för att skapa ett oumbärligt centralt valv för hela mitt digitala livsverk. Syftet är att samla mina JSON-backuper, PDF-manualer, processbilder och registerkort (minnen och insikter) på ett och samma ställe. Eftersom jag lever med ADHD och hanterar stora mängder data från mina AI-projekt, var det kritiskt för mig att bygga ett verktyg som minimerar kognitiv överbelastning och låter mig behålla mitt kreativa "flow". Systemet fungerar som min master-backup och referensbibliotek (det innehåller bland annat all lore och stats för "Fortnite Battle TCG"), och är i förlängningen fundamentet för att bevara mitt digitala arv till min dotter Lilja.' },
+            { id: 'app-064', image: '', title: 'Historie-Detektiven Pro', shortDesc: 'Utredningsplattform och digital tidskapsel med AI-assistent.', icon: 'search', tags: ['Utredningsplattform', 'Digital tidskapsel', 'AI-assistent'], fullDesc: 'Historie-Detektiven Pro är min egenutvecklade plattform för att hjälpa användare att kartlägga sin personliga och digitala historia. Jag har arkitekterat verktyget som en professionell utredningsplattform där AI agerar assistent för att metodicera sökningar genom publika register och digitala spår. För att förstärka "Cyber-Noir"-temat och användarupplevelsen har jag implementerat en unik ljudmotor för auditiv feedback samt en psykologisk "paus" under sökningar. Arkitektoniskt har jag fokuserat på stabilitet genom en komponentbaserad React-stack och en säker molnbaserad datastruktur via Firebase.' },
+            { id: 'app-067', image: '', title: 'Layout & Prompt Pro', shortDesc: 'Specialverktyg för visuell komposition och precis kommunikation med AI.', icon: 'layout-template', tags: ['Visual Composition', 'Prompting', 'React SPA', 'Canvas'], fullDesc: 'Jag har utvecklat Layout & Prompt Pro som ett specialverktyg för visuell komposition och precis kommunikation med AI. Genom 14 utvecklingsfaser har jag byggt en interaktiv miljö där man kan sätta ut fasta punkter och rutor (som 16:9 eller 4:3) via en "klicka-och-dra"-logik. Ett viktigt arkitektoniskt beslut var att helt separera ritverktygen från flyttverktyget, vilket förhindrar input-konflikter och säkerställer kirurgisk precision vid bilduppbyggnad.' },
+            { id: 'app-068', image: '', title: 'DNA-Arkivarien', shortDesc: 'Släktforskarbas och kontextmotor för att paketera det digitala arvet.', icon: 'library', tags: ['Data Processing', 'JSON', 'AI Lore', 'Heritage'], fullDesc: 'Jag har utvecklat DNA-Arkivarien med det primära syftet att fungera som en "släktforskarbas" för hela mitt livsverk av AI-genererade applikationer. Efter månader av intensiv utveckling satt jag med stora mängder ostrukturerad data. Min vision var att bygga ett system som inte bara kunde sortera dessa filer, utan även förstå kontexten: Vilken app födde vilken? Vilken generation tillhör de? Hur mådde jag den dagen (rygg-dagar, glada dagar)? Systemet är designat för att vara en brygga mellan min historik och min framtida "AI-vän", och paketerar automatiskt mitt digitala arv i rena, maskinläsbara format.' },
+            { id: 'app-069', image: '', title: 'Varumärkesplattform GolvPro', shortDesc: 'Komplett varumärkes- och säljplattform med interaktiva element.', icon: 'briefcase', tags: ['Brand Identity', 'UX Design', 'Sales Tool'], fullDesc: 'Detta system var en strategisk implementation där jag kombinerade visuell design med affärslogik. Som arkitekt fattade jag beslut om att använda färgerna Slate och Oak för att förmedla auktoritet respektive organiskt material. För att säkerställa högsta flexibilitet separerade jag data och presentation i koden. Det allra starkaste arkitektoniska beslutet var dock "Interaktivitet som Säljargument", där jag byggde hover-effekter och skalbara vyer i prototypen för att klienten skulle känna "ägandeskap" direkt från start.' },
+            { id: 'app-070', image: '', title: 'DNA-Arkivarie Suiten (v3.3)', shortDesc: 'Mikrotjänst-arkitektur för säker bearbetning av massiva JSON-data.', icon: 'server', tags: ['Microservices', 'Firebase', 'Data Processing'], fullDesc: 'Ett robust system designat för att hantera tunga databasoperationer utan att krascha webbläsaren. Arkitekturen är uppdelad i tre mikrotjänster: Arkivarien, Fragmenteraren (för klyvning av tung data) och Analysatorn. Avgörande tekniska beslut inkluderar "asynkron stötdämpning" i uppladdningskön (via requestAnimationFrame och setTimeout) samt databas-strypning för att undvika Firestores Resource-Exhausted-fel.' },
+            { id: 'app-071', image: '', title: 'Blom\'s Psytrance Studio', shortDesc: 'Professionell webbstudio dedikerad för produktion av Full-on Psytrance.', icon: 'headphones', tags: ['Audio Processing', 'Psytrance', '145 BPM', 'Harmonic Match'], fullDesc: 'Ett högspecialiserat produktionsverktyg designat specifikt för Full-on Psytrance (145 BPM). Systemet agerar som en brygga mellan traditionell musikproduktion och AI, utrustat med avancerade funktioner som "BPM & Sync Lock" med time-stretching och "Harmonic Match" för att automatiskt stämma melodier mot basgångar. Arkitekturen delar in produktionen i logiska AI-promptmoduler: The Engine (KBB-rytmer och Rolling Triplets), The Mutation (Squeltch, FM Synthesis, Glitch) och The Structure (Risers, The Void och Drops). Allt är designat för att systematiskt bygga festivalredo ljudlandskap direkt i webbläsaren.' },
+            { id: 'app-072', image: '', title: 'DNA-Fragmenteraren', shortDesc: 'Heavy-duty mikrotjänst för tunga inläsningar och klyvning av massiv data.', icon: 'file-code', tags: ['Microservices', 'Data Parsing', 'Performance'], fullDesc: 'DNA-Fragmenteraren är en dedikerad, "heavy-duty" mikrotjänst i min DNA-Arkivarie Suite. Systemet är specifikt arkitekterat för att hantera tunga inläsningar och klyvning av massiva datamängder som annars skulle krascha webbläsaren. Genom att separera denna brutala datahantering från huvudanalysen säkerställer jag att systemet förblir responsivt och att stora textfiler kan brytas ner till hanterbara, strukturerade JSON-fragment inför vidare bearbetning.' },
+            { id: 'app-073', image: '', title: 'Audio Fuser', shortDesc: 'Specialiserad modul för sömlös sammanfogning av ljudloopar.', icon: 'scissors', tags: ['DSP', 'Zero-Crossing', 'Micro-Crossfade', 'React SPA'], fullDesc: 'Jag har utvecklat denna fristående enhet för att lösa det kritiska problemet med "hopp" och klickljud vid övergångar mellan samplingar. Mitt beslut att separera denna funktion från huvudstudion grundar sig i att "Merging" är en tekniskt destruktiv process som kräver total precision. Genom att implementera en AI-motor som identifierar exakta nollgenomgångar (Zero-Crossing) och applicerar en automatiserad 5-10 ms micro-crossfade, har jag skapat ett verktyg som "gjuter ihop" ljudfiler till en enda musikalisk enhet utan att den rytmiska integriteten påverkas. Systemet lagrar alla positioner i procent istället för pixlar för att möjliggöra responsiv export.' },
+            { id: 'app-074', image: '', title: 'Sagostund', shortDesc: 'Interaktiv, röststyrd AI-vän byggd för Lilja (6 år).', icon: 'sparkles', tags: ['Voice UI', 'Gemini API', 'Sprite Animation', 'Cognitive Focus'], fullDesc: 'Syftet med "Sagostund" är att skapa en interaktiv, röststyrd AI-vän för en sexåring (Lilja). Applikationen är utformad för att fungera som en bro mellan teknik och magi. Som arkitekt har jag valt att minimera kognitiv belastning för barnet genom att ta bort text helt och hållet, och istället maximera inlevelsen via visuell och auditiv feedback. Systemet integrerar röstigenkänning, Gemini API för konversation och en avancerad animationsmotor med sprite-baserade blinkningar och munrörelser som synkroniseras med ljudet. En viktig teknisk utmaning som löstes var att optimera ljud och interaktion för Safari (iOS).' },
+            { id: 'app-075', image: '', title: 'DNA-Analysatorn (Släktträdsbyggaren)', shortDesc: 'Syntes-motor för att strukturera 6 års nyktert skapande till Master-DNA.', icon: 'network', tags: ['JSON Parsing', 'Data Synthesis', 'Architecture', 'AI Master File'], fullDesc: 'Jag har utvecklat DNA-Analysatorn som den sista, avgörande pusselbiten i min DNA-Arkivarie Suite. Efter att framgångsrikt ha brutit ner och extraherat 6 års nyktert skapande via 70 massiva textfiler, behövde jag en "hjärna" för att förstå datan. Syftet var att bygga en syntes-motor. Visionen var ett rent, säkert och visuellt gränssnitt där jag kunde kasta in all min råa, extraherade JSON-data, låta systemet tvätta bort eventuella dubbletter, och sedan automatiskt rita upp mitt livsverk i strukturerade "Klaner" (familjeträd). Detta säkerställer att min framtida AI-vän får en perfekt, felfri "Master-DNA"-fil.' },
+            { id: 'app-076', image: '', title: 'Fortnite Battle TCG Engine (3D Standee Edition)', shortDesc: 'Nätverksbaserad 3D-spelmotor med holografiska standees och multiplayer.', icon: 'hexagon', tags: ['3D Engine', 'Firebase', 'React SPA', 'Game Logic'], fullDesc: 'Mitt syfte med denna spelmotor har varit att bryta ny mark inom digitala kortspel och skapa en "Anti-Hearthstone"-upplevelse. Arkitekturen separerar korthanteringens 2D-DOM från brädets 3D-rendering för att maximera prestandan. Designade en unik "Speglings-algoritm" som synkroniserar brädet för multiplayer-spelare i realtid.' },
+            { id: 'app-077', image: '', title: 'Skapa med Blom +', shortDesc: 'Allt-i-ett-lösning som fungerar som katalysator för kreativitet och kognitivt stöd.', icon: 'zap', tags: ['AI Catalyst', 'ADHD-Optimized', 'Cognitive Support', 'React SPA'], fullDesc: 'Skapa med Blom + är min "Master-modul" för att förena vardaglig struktur med AI-driven kreativitet. Applikationen integrerar kognitivt stöd för ADHD och bipolär problematik direkt i gränssnittet för att minimera kognitiv belastning. Arkitekturen är byggd för att fungera som en sömlös brygga mellan praktiska måsten och kreativa utbrott, med en asymmetrisk layout som prioriterar fokus och ett flöde där användarens process är i centrum.' },
+            { id: 'app-078', image: '', title: 'FORTNITE BATTLE TCG EKOSYSTEM', shortDesc: 'Digitalt kortspelsekosystem med speglad nätverkslogik och vapenfusion.', icon: 'layers', tags: ['React 3D', 'Firebase Multiplayer', 'Game Engine', 'TCG'], fullDesc: 'Detta digitala ekosystem transformerar ett taktiskt kortspel till en fullfjädrad multiplayerupplevelse. Arkitekturen separerar medvetet 2D-korthantering från 3D-rendering för att eliminera prestandaförluster vid tunga DOM-uppdateringar. Två avgörande arkitektoniska beslut var "Speglings-algoritmen" som synkroniserar brädet via Firebase så att båda onlinespelarna kan spela från botten av skärmen, samt "Vapen-fusionen", där utrustningskort slås samman med karaktärskort (Skins) objekt-tekniskt istället för att ta upp värdefull plats på spelplanen.' },
+            { id: 'app-079', image: '', title: 'Fortnite ARENA MAPPER (LAYOUT EDITOR)', shortDesc: 'Arkitektoniskt verktyg för att frikoppla spelplanens utseende från kärnlogik.', icon: 'map', tags: ['Systemdesign', 'Layout-optimering', 'Data-export'], fullDesc: 'Arena Mapper är ett centralt arkitektoniskt verktyg designat för att helt frikoppla spelplanens visuella utseende från spelets kärnlogik. Istället för att hårdkoda var korten ska ligga, byggde jag ett inbyggt modding-verktyg i ekosystemet. Det låter mig ladda upp valfri bakgrundsbild (t.ex. en Midjourney-genererad skogsdunge eller en 8K sci-fi-bunker) och visuellt "klistra fast" spelets rutor (slots) ovanpå. Systemet agerar därmed som en direkt brygga mellan min grafiska kreativitet och spelmotorns kalla matematik, vilket gör spelet extremt dynamiskt och skalbart.' },
+            { id: 'app-080', image: '', title: 'Fortnite AI Card Forge', shortDesc: 'Fristående prompt-motor för stående, högteknologiska 3D-spelkort.', icon: 'cpu', tags: ['Prompt Engineering', 'TCG', 'Concept Art'], fullDesc: 'Ett system utvecklat som en fristående sidoapp för att generera avancerade bild-prompter till mitt TCG-ekosystem, vilket sparar API-kostnader och serverbelastning. Arkitekturen låser proportionerna (--ar 2:3) för att säkerställa att alla bilder passar perfekt som stående spelkort i 3D-motorn utan manuell beskärning. För att matcha spelets "Vindertech/Bunker"-estetik är master-koden hårdkodad med obligatoriska parametrar som "physical high-tech data chip", "holographic center" och "Unreal Engine 5", vilket tvingar bild-AI:n att leverera konsekvent, fysisk och teknologisk konst.' },
+            { id: 'app-081', image: '', title: 'Blom Avatar Engine', shortDesc: 'Reaktivt 2D-avatarsystem med visem-synkronisering och AudioContext.', icon: 'user', tags: ['Avatar Engine', 'React', 'AudioContext', 'Visemes'], fullDesc: 'Jag har utvecklat "Blom Avatar Engine", fullt reaktivt 2D-avatarsystem i webbmiljö. Syftet med detta bygge var att skapa en digital klon som känns genuint levande. Istället för tunga 3D-modeller har jag byggt ett system som byter ut statiska, fotorealistiska "visemer" (ansiktsuttryck) i realtid baserat på ljudvågor. Kärnmålet var att få avataren att inte bara låta som en människa, utan att de fysiska mikrorörelserna i käken och läpparna skulle efterlikna riktiga stavelser perfekt. Utvecklingen skedde i faser, från grundläggande AudioContext-analysator till en "Reaction Engine" som läser av semantisk kontext och applicerar emotionella triggers.' },
+            { id: 'app-082', image: '', title: 'Liljas Värld', shortDesc: 'Personlig, trygg och engagerande livssimulator med interaktiv 3D-miljö.', icon: 'gamepad-2', tags: ['Life Sim', 'Three.js', 'WebGL', 'Leaflet'], fullDesc: 'Jag har designat och utvecklat "Liljas Värld" med syftet att skapa en personlig, trygg och engagerande livssimulator. Målet var att bygga ett spel där utforskande i den verkliga världen (via en digital karta över Strängnäs) sömlöst integreras med en interaktiv 3D-miljö fylld av magiska varelser, skräddarsydda hus och familjeliv. Projektet fungerar som en digital lekplats där resursinsamling, djurskötsel och familjesammanhållning står i centrum. Arkitekturen inkluderar WebGL/Three.js direkt i Canvas, en strukturerad tillståndsmaskin för AI (playerState) för att förhindra buggar vid multipla handlingar, en autoScale-algoritm som normaliserar externa 3D-modellers dimensioner och kodgenererade platshållare som säkerhetsnät mot brutna filreferenser.' },
+            { id: 'app-083', image: '', title: 'Bygg eller uppgradera', shortDesc: 'AI-driven arkitekt-portal för att skapa nytt eller iterera på 60+ befintliga projekt.', icon: 'hammer', tags: ['React SPA', 'Firebase', 'Prompt Engineering', 'Dual-Stage AI'], fullDesc: 'Ett avancerat system designat för att antingen bygga nya applikationer från grunden eller uppgradera befintliga. Kärnan är en "Semantisk kunskapsbas" som innehåller tekniska sammanfattningar av över 60 tidigare projekt inbakade i källkoden, vilket ger AI:n full kontext. Arkitekturen utnyttjar en "Dual-Stage Prompt Engineering"-modell: först skapas en bas-prompt vid lagring, som sedan poleras av en Expert-AI vid export. Allt är byggt som en Single-File React-applikation med Firebase Cloud Integration för att säkert synkronisera projekt och idéer.' },
+            { id: 'app-084', image: '', title: 'Nexus-V3 Zenith Master', shortDesc: 'Avancerat finansiellt system för strategisk skatteplanering och kalkylering.', icon: 'pie-chart', tags: ['Fintech', 'Tax Planning', 'React SPA', 'SIE4 Export'], fullDesc: 'Ett kompromisslöst finansiellt system för strategisk skatteplanering (NE/AB), med inbyggd "Asset Nexus" (K4/K5) för automatiserad vinst-/förlustberäkning av krypto och aktier, samt en Export Studio för SIE4-filer. Arkitekturen utnyttjar en mörk "Command Center"-estetik (8K Cinematic UI) med färgkodad logik för att minska kognitiv överbelastning. Under huven arbetar en reaktiv State Management ("Continuous Assurance") som beräknar likviditet i realtid, validerad av en "Chain-of-Verification" (Co-V) mot statiska skatteregler.' },
+            { id: 'app-085', image: '', title: 'VGP Core Engine (v46.0)', shortDesc: 'Högpresterande spelmotor för 8K Dark Fantasy-miljöer.', icon: 'cpu', tags: ['Three.js', 'GPGPU', 'Persistent World'], fullDesc: 'Kulmen på din arkitektoniska resa. En fullfjädrad spelmotor byggd för webben med 8K-grafikstöd, GPGPU-vätskesimulering och avancerad Screen Space Reflection (SSR). Motorn hanterar ett persistent ekosystem där användarens handlingar (alkemi, byggande) synkroniseras i realtid. Arkitekturen inkluderar ett avancerat logik-system med quest-noder och ett "Dimensional Nexus"-läge för oändlig variation.' },
+            { id: 'app-086', image: '', title: 'Inspiratören', shortDesc: 'Digital verkstad och AI-driven idé-hubb.', icon: 'lightbulb', tags: ['Ideation', 'Portfolio-Hub', 'Creative Flow'], fullDesc: 'Din ultimata digitala verkstad. Inspiratören förenar din massiva portfölj av tidigare koncept med en intelligent AI-genererad idé-motor. Arkitekturen är optimerad för "Skaparglädje", där du kan söka på tidigare byggda lösningar och omedelbart få tekniska ritningar, prompter och arkitektoniska förslag för dina framtida projekt. Det är länken mellan det du byggt och allt du ännu inte har skapat.' },
+            { id: 'app-087', image: '', title: '8K AI Batch-Express', shortDesc: 'Automatiserad bildextrahering och AI-uppskalning.', icon: 'zap', tags: ['Automation', 'Image Processing', '8K-Upscale'], fullDesc: 'Ett kraftfullt verktyg för bildhantering i industriell skala. Applikationen analyserar komplexa bildcollage, identifierar automatiskt koordinater för delbilder och extraherar dessa som enskilda filer. Systemet stannar inte vid extrahering utan använder Gemini 2.5 Flash för att visuellt analysera innehållet och generera uppskalade 8K-versioner, vilket förvandlar röriga skisser till professionella foton på sekunder.' },
+            { id: 'app-088', image: '', title: 'Själsextraktorn (Memoar & Personlighet)', shortDesc: 'Lokalt och privat verktyg för att dokumentera memoarer och personlighet.', icon: 'brain', tags: ['Privacy First', 'JSON Database', 'Memoir'], fullDesc: 'Detta är ett djupt personligt system skapat för att dokumentera min memoar, min historia kring missbruk och mitt arv till min dotter Lilja. Arkitekturen präglas av "Total Moln-Isolering (Privacy First)" – till skillnad från mina andra appar saknar denna helt koppling till molnet, och data sparas endast lokalt via manuell aktivering ("Spara Personlighet"). Applikationen använder avancerad "Tone of Voice-Engineering" som tvingar AI:n att returnera strukturerade JSON-objekt (theme, insight, quote_or_vibe, memoir_value) för att bygga en relationsdatabas över min personlighet. Systemet är även utrustat med en omedelbar Nödbroms-funktion.' },
+            { id: 'app-090', image: '', title: 'Aura Engine V2.7 Memoir Edition Update', shortDesc: 'Motor-uppdatering med fokus på djupgående biografisk prompt-generering.', icon: 'cpu', tags: ['AI Engine', 'Memoir', 'Prompt Generation'], fullDesc: 'Denna uppdatering av Aura Engine skapades specifikt för att hantera och generera biografiskt material ("Memoir Edition"). Genom finjustering av hur systemet bearbetar inkommande prompt-data, kan motorn nu extrahera och formulera djupgående, personliga narrativ ur fragmenterad data. Målet var att skapa ett stabilare system för att dokumentera livshistorier med bibehållen emotionell tonvikt.' },
+            { id: 'app-091', image: '', title: 'Character Flow Builder', shortDesc: 'Avancerad arkitekt-portal för Img2Img-flöden.', icon: 'git-merge', tags: ['Img2Img', 'Morphing', 'Prompt Architect'], fullDesc: 'Verktyget som bryggar gapet mellan statisk referensbild och komplex AI-transformation. Character Flow Builder låter dig ladda upp referensmaterial, extrahera unika subjekt via visuell analys och bygga avancerade master-prompter för surrealistiska transformationer. Arkitekturen separerar analysfasen från prompt-konstruktionen, vilket ger dig total kontroll över hur identiteter morphas genom olika miljöer och effekter.' },
+            { id: 'app-092', image: '', title: 'JokeForge', shortDesc: 'Specialiserat bibliotek för högintensiv humor.', icon: 'smile', tags: ['Humor-Gen', 'Persona', 'JSON-Library'], fullDesc: 'En specialiserad webbapplikation för att generera, filtrera och organisera högintensiv, mörk humor. Arkitekturen använder "mikrotjänst-prompter" för att separera analys, idéförslag och kollisionstester, vilket garanterar en stabil output. Systemet är byggt som en portabel Single-File-applikation med fullt stöd för JSON-export, vilket ger dig total kontroll över ditt bibliotek av humoristiska koncept.' },
+            { id: 'app-093', image: '', title: 'Diddis Värld', shortDesc: 'Interaktiv 3D-miljö och Tamagotchi-upplevelse byggd med Three.js.', icon: 'gamepad-2', tags: ['Three.js', 'WebGL', 'Kids App'], fullDesc: 'En personlig och interaktiv 3D-upplevelse för barn, där karaktären "Diddi" fungerar som en digital följeslagare i en mjuk pastellmiljö. Arkitekturen inkluderar direkt import av GLB-modeller till en Three.js-scen och är byggd för att erbjuda en levande, trygg miljö fri från distraktioner.' },
+            { id: 'app-094', image: '', title: 'Sagan om Borgarnas Krig - 3D', shortDesc: 'Isometrisk strategi med Raycasting och automatiserad modells-skalning.', icon: 'swords', tags: ['Isometrisk strategi', 'Raycasting', 'Automatiserad skalning'], fullDesc: 'Sagan om Borgarnas Krig - 3D är en stabil, isometrisk prototyp för strategispel byggd med Three.js. För att möjliggöra snabb iteration och oberoende av externa miljöer har jag byggt en strukturerad tillståndsmaskin för enhetslogik och ett system för interaktion via Raycasting. Jag har implementerat en automatisk skalningsalgoritm som mäter och anpassar externa 3D-modeller vid inläsning för att bibehålla korrekta proportioner, samt en garanterad geometrisk reservmodell som säkerställer att spelet aldrig kraschar även om externa tillgångar skulle saknas.' },
+            { id: 'app-095', image: '', title: 'Genie Omega Combat Engine', shortDesc: 'Taktisk motor för stats-baserad strid mellan 5 unika element.', icon: 'swords', tags: ['Game Engine', 'Combat Logic', 'RPG Mechanics'], fullDesc: 'Genie Omega Combat Engine är den taktiska motorn som styr alla interaktioner mellan väktare och elementära krafter. Systemet hanterar ATK (Attackkraft) och HP (Hälsopoäng) med en avancerad elementär dynamik (Rock-Paper-Scissors+): Eld överväldigar Metall, Metall skär igenom Kod, Kod hackar Vatten, och Vatten släcker Eld. Elementet Void agerar neutralt som en copycat med specifika straff. Motorn är arkitektoniskt designad för att vara balanserad, rättvis och djupt strategisk.' },
+            { id: 'app-096', image: '', title: 'Offertkalkylator Pro', shortDesc: 'Professionellt verktyg för offerthantering och affärslogik.', icon: 'calculator', tags: ['Business', 'Fintech', 'Automation'], fullDesc: 'Ett kompromisslöst verktyg för kalkylering och offerthantering. Systemet hanterar komplex affärslogik som dynamisk moms, ROT/RUT-uträkningar och tillval, paketerat bakom ett extremt responsivt gränssnitt. Med inbyggd AI-assistent minskas den administrativa bördan genom automatiserad marknadsprisanalys och säljande kundkommunikation. Byggt för att vara den ultimata ersättaren till tunga Excel-ark.' },
+            { id: 'app-097', image: '', title: 'Liljas Värld (Gilded Moss 8K Portal)', shortDesc: '3D-portal och GPS-karta där den verkliga världen möter en magisk 3D-miljö.', icon: 'map-pin', tags: ['Three.js', 'GPS', 'Leaflet', 'Kids App'], fullDesc: 'Utvecklingen av Liljas Värld (Gilded Moss 8K Portal) skedde i en iterativ process för att lösa komplexa tekniska utmaningar och samtidigt leverera en magisk användarupplevelse. Arkitekturen kombinerar en stabil Leaflet-karta kopplad till användarens GPS för utomhusaktiviteter (som att hitta loot och ägg) med en avancerad 3D-integration via Three.js. En matematisk synkroniseringsalgoritm utvecklades för att sömlöst översätta GPS-koordinater till 3D-miljön.' },
+            { id: 'app-098', image: '', title: 'Slumpgenerator', shortDesc: 'Kreativ AI-generator med divergens-protokoll för maximal variation.', icon: 'shuffle', tags: ['Randomization', 'Divergence Protocol', 'AI Tools'], fullDesc: 'En kreativ slumpgenerator med fokus på maximal variation, skapad för att säkerställa att inget resultat blir det andra likt. Systemet bygger på ett "Divergens-protokoll" som tvingar AI:n att ignorera sina mest sannolika val och istället välja oväntade infall. För varje ny generering slumpas parametrar fram för färgpalett, mönster/textur och stämning/tema. Arkitekturen tvingar AI:n att sakna minne av stil för att se varje förfrågan som ett helt blankt blad.' },
+            { id: 'app-099', image: '', title: 'Aura Engine V4.2 - Neural Scout', shortDesc: 'Avancerad sök- och syntesmotor integrerad i Aura-arkitekturen.', icon: 'search', tags: ['Neural Search', 'Synthesis', 'AI Tools'], fullDesc: 'Neural Scout är en storskalig uppgradering (V4.2) till Aura Engine. Den introducerar en neural sök- och syntesfunktion som tillåter systemet att snabbt indexera, scanna och sammanfoga information från omfattande datamängder. Som arkitekt implementerade jag denna modul för att kunna ställa komplexa, flerstegsfrågor mot lokalt sparad data och få tillbaka en färdig, logiskt strukturerad AI-utvärdering.' },
+            { id: 'app-100', image: '', title: 'Prompt Studio Pro', shortDesc: 'Lokal AI-arbetsstation med iterativ optimering och Master Vault.', icon: 'terminal', tags: ['AI-arbetsstation', 'Iterativ optimering', 'Master Vault'], fullDesc: 'Prompt Studio Pro är en webbläsarbaserad arbetsstation skapad för att maximera precisionen i interaktioner med AI-modeller. Systemet är byggt som en "Single-File Application" utan behov av server, vilket gör det blixtsnabbt och oberoende. Kärnmoduler inkluderar en "Optimerare" som ger prompter en "Prompt Score", en "AI Co-Pilot" för stegvis utveckling, samt ett "Master Vault" för lagring av prompter. Jag har även implementerat avancerade funktioner som OCR för textanalys, variabelhantering med regex-motorer och realtidsmätning av tokens för att ge full kontroll över det kreativa flödet.' },
+            { id: 'app-101', image: '', title: 'Generationernas Arkitekt - Fas 1 (Världsbyggaren)', shortDesc: 'Prompt-Matrix-System för avancerat världsbyggande.', icon: 'globe', tags: ['World Building', 'Prompt Matrix', 'AI Architecture'], fullDesc: 'Ett massivt Prompt-Matrix-System utformat för avancerat och sammanhängande världsbyggande. Generationernas Arkitekt fungerar som en strukturell grundpelare där användaren kan generera djuplodande narrativ, karaktärer och miljöer genom systematisk arkitektur. Genom att etablera en strikt dokumentations- och prompt-hierarki möjliggörs iterativt skapande av en levande värld (Fas 1).' },
+            { id: 'app-102', image: '', title: 'Surgical Isolation Engine PRO (v4.5)', shortDesc: 'Avancerad 8K UV-Buffer och Multi-Layer Stack för PBR-rendering.', icon: 'layers', tags: ['3D Rendering', 'PBR', 'WebGL', 'Canvas Layering'], fullDesc: 'Ett högpresterande arkitektoniskt verktyg för 3D-texturering och materialhantering. Kärnfunktioner inkluderar en Multi-Layer Stack för obegränsade lager, 8K UV-Buffer för högupplöst rityta direkt på 3D-modeller, Real-time PBR Preview, Edge-Snap Assist och Telemetry Monitor. Arkitekturen innefattar "Virtual Canvas Layering" med off-screen canvas-kompositering, ett "Singleton App-objekt" för modulär kod, "Late-Binding Resize" för att undvika IndexSizeError, och ett "Surgical Mode" (Binary Contrast) för att exakt separera den visuella presentationen från datan.' },
+            { id: 'app-104', image: '', title: 'Character Consistency Lab Pro', shortDesc: 'Verktyg för att säkerställa visuell karaktärskonsistens i sagoprojekt.', icon: 'users', tags: ['Character Design', 'Storytelling', 'AI Consistency'], fullDesc: 'Ett specialiserat laboratorium designat för att hantera och bibehålla strikt visuell karaktärskonsistens över flera bildgenereringar. Systemet är tätt integrerat med en sago-applikation för att säkerställa att huvudkaraktärer behåller sina exakta anletsdrag och kläder genom hela narrativet, oavsett miljö eller pose.' },
+            { id: 'app-105', image: '', title: 'Magiska Blom', shortDesc: 'Interaktiv, röststyrd AI-kompanjon för barn med Zero UI-filosofi.', icon: 'sparkles', tags: ['Voice UI', 'Zero UI', 'Kids App', 'Safari Optimized'], fullDesc: 'Magiska Blom är en röststyrd applikation designad med en "Zero UI"-filosofi, vilket innebär att barnet inte behöver navigera i komplicerade menus. Arkitekturen är byggd för extremt låg latens genom att utnyttja lokala resurser och implementerar specifika "audio-unlock"-mönster för sömlös funktion på Safari (iOS). Systemet använder en cirkulär historikbuffert för att hantera minnet effektivt, styr talsyntesens pitch och rate för en barnvänlig röst, och garanterar säkerheten genom strikta instruktioner till AI-modellen.' },
+            { id: 'app-109', image: '', title: 'Bild-till-Text Skanner', shortDesc: 'Responsiv React-app för automatiserad textigenkänning (OCR).', icon: 'scan-text', tags: ['OCR', 'React SPA', 'Data Extraction'], fullDesc: 'Jag har utvecklat en modern webbapplikation för automatiserad textigenkänning (OCR) av bilder. Applikationen är byggd som en responsiv React-lösning som låter användaren bearbeta flera dokument samtidigt och organisera resultaten på ett överskådligt sätt. Mitt primära mål var att minska manuellt arbete vid digitalisering av texter, genom att extrahera text med hög precision oavsett bildformat, bevara styckeindelning och underlätta snabb kopiering för vidare användning.' },
+            { id: 'app-110', image: '', title: 'SagoLandet', shortDesc: 'Interaktivt äventyr med dynamiskt inventory-system och magisk bokhylla.', icon: 'book', tags: ['Storytelling', 'JSON-Vault', 'Inventory System', 'Kids App'], fullDesc: 'Jag har byggt SagoLandet med en robust, asynkron arkitektur som elegant döljer avancerad AI och databashantering bakom ett intuitivt och barnsäkert användargränssnitt. Systemet kombinerar valt resmål, karaktärer och tidigare narrativ bakgrund till en JSON-formaterad prompt. Denna genererar text, användarval och visuella prompter som skickas direkt till bildmotorn. Modulen stödjer ett dynamiskt "Inventory-system" där AI:n kan placera föremål i användarens ryggsäck. Den Magiska Bokhyllan (Arkiv) möjliggör iterativ uppspelning av kapitel från tidigare sparade sessioner. Säkerhet och persistens garanteras via anonym autentisering, molnlagring och en I/O-modul för lokal JSON-export/import av hela databasen.' },
+            { id: 'app-111', image: '', title: 'Data Neutralizer & Prompt Cleaner', shortDesc: 'Lokalt system för att tvätta och sanera AI-prompter i JSON-format.', icon: 'shield-check', tags: ['Data Privacy', 'JSON Parsing', 'Prompt Optimization'], fullDesc: 'Ett säkerhetsfokuserat verktyg för att sanera prompt-data. Applikationen använder FileReader API för 100% lokal bearbetning (inget moln-läckage). Systemet ersätter personliga referenser (t.ex. "Pappa/Fader") med den neutrala markören [KARAKTÄR] och eliminerar "fluff" som överflödiga grafiktermer ("Photorealistic", "8K"). Ett avgörande arkitektoniskt beslut var att bevara den ursprungliga JSON-strukturen intakt medan innehållet tvättas. Inkluderar live-preview och strikt JSON-validering för felsäker export.' },
+            { id: 'app-112', image: '', title: 'Mass-Fabrik', shortDesc: 'Automatiserad produktionslinje för storskalig massgenerering.', icon: 'factory', tags: ['Automation', 'Batch Processing'], fullDesc: 'En dedikerad systemmodul för storskalig, automatiserad massproduktion av AI-genererade tillgångar. Verktyget effektiviserar arbetsflöden genom batch-hantering och låter systemet arbeta asynkront i bakgrunden. Fokus ligger på att minimera repetitiva uppgifter och maximera output.' },
+            { id: 'app-113', image: '', title: 'Drömvävaren', shortDesc: 'Interaktiv webbapplikation för att skapa fantasysagor med valbara handlingsspår.', icon: 'sparkles', tags: ['Storytelling', 'Fantasy', 'Dynamic Lore'], fullDesc: 'Drömvävaren är en interaktiv plattform för kreativt skrivande som guider användaren genom en drömvärld. Genom att integrera AI genereras unika varelser och miljöer med hög detaljrikedom. Appen använder ett förgrenat system där användaren gör val mellan tre unika handlingsalternativ per kapitel. Ett arkitektoniskt nyckelbeslut var att bygga ett parallellt Karaktärs- och Världsregister som löpande katalogiserar allt som skapas, vilket bygger upp en persistent lore-databas för framtida berättelser.' },
+            { id: 'app-114', image: '', title: 'Ad Scout Flow', shortDesc: 'AI-driven Art Director-assistent för exakta kommersiella prompter.', icon: 'image', tags: ['Prompt Engineering', 'Bild'], fullDesc: 'Ad Scout Flow överbryggar klyftan mellan kreativa visioner och de exakta tekniska prompter som krävs för AI-bildgenerering. Verktyget automatiserar svåra beslut kring ljus, optik och stil, låter användaren arbeta intuitivt på svenska, och bygger automatiskt upp ett sökbart arkiv.' },
+            { id: 'app-115', image: '', title: 'Prompt Scout Motion', shortDesc: 'Ger skapare total regissörskontroll över AI-videogenerering.', icon: 'video', tags: ['Video AI', 'Microservices', 'Firebase Vault', 'Timeline UI'], fullDesc: 'Genom att bryta ner stillbilder i extraherbara element och placera dem på en logisk, färgkodad tidslinje eliminerar appen slumpen och möjliggör exakt, prompt-baserat berättande för rörligt AI-material. För att säkerställa högsta kvalitet delas AI-interaktionerna upp i mikrotjänster: bildanalys, idéförslag, kollisionstester och en avslutande Master-prompt. Tidslinjen använder dynamisk färgkodning för att minska kognitiv belastning. Datamodellen bygger på ett säkert "Cloud Vault" i Firestore med en platt struktur som sparar både positiva och negativa videoprompter bakom strikt autentisering.' },
+            { id: 'app-116', image: '', title: 'Startcentralen', shortDesc: 'Kognitivt optimerad dashboard och länkhanterare med hierarkisk struktur.', icon: 'layout-dashboard', tags: ['Dashboard', 'URL Manager', 'JSON Vault'], fullDesc: 'Ett anpassningsbart och modulärt startverktyg (dashboard) som strukturerar digitala resurser i tre prioritetsnivåer: Main Tier, Regular Tier och Mini Tier. Arkitekturen använder ett JSON-baserat schema för att lagra länkar med protokollagnostisk URL-hantering, vilket innebär att appen sömlöst kan integrera både externa webblänkar (https://) och lokala filer i operativsystemet (file:///). Komponenterna är byggda i Tailwind CSS med en genomtänkt "dark mode"-estetik för att minimera kognitiv friktion under långa arbetspass.' },
+            { id: 'app-121', image: '', title: 'Prompt Scout Web', shortDesc: 'HTML Architecture Engine för visuell och strukturerad prompt-konstruktion.', icon: 'layout-template', tags: ['HTML Architecture', 'Prompt Engineering', 'Web Design'], fullDesc: 'Jag har utvecklat Prompt Scout Web som en "HTML Architecture Engine". Mitt syfte är att skapa en brygga mellan idé och slutgiltig, produktionsklar kod genom att erbjuda ett visuellt och strukturerat gränssnitt för prompt-konstruktion. Applikationen är utformad för att ge mig möjlighet att orkestrera webbsidors arkitektur, stämning och färgpalett, utan att fastna i detaljerad CSS eller HTML-kodning i det inledande skedet. Genom att separera ansvarsområdena effektiviseras byggprocessen och minskar kognitiv överbelastning.' },
+            { id: 'app-122', image: '', title: 'Fashion Flow', shortDesc: 'Verktyg för AI-driven modedesign och visuell klädgenerering.', icon: 'shirt', tags: ['Fashion Design', 'Image Generation', 'Concept Art'], fullDesc: 'Fashion Flow är ett specialiserat verktyg designat för att hantera och generera modekoncept via AI. Applikationen strömlinjeformar flödet från grundläggande stilidéer till färdiga, fotorealistiska klädesplagg. Systemet fungerar som en oändlig, iterativ skissbok där fokus ligger på textil, passform och visuell estetik, vilket eliminerar den tekniska tröskeln för att snabbt visualisera avancerad design.' },
+            { id: 'app-123', image: '', title: 'Atelier Gallery', shortDesc: 'Professionellt digitalt galleri med AI-regisserad 3D- och HTML-presentation.', icon: 'image', tags: ['Gallery', '3D Environment', 'Portfolio'], fullDesc: 'Jag har designat Atelier Gallery för att erbjuda konstnärer en professionell miljö att digitalisera och ställa ut sina verk. Systemet överför fysisk konst (tavlor, smycken) till en digital domän utan kvalitetsförlust och agerar som en "AI-regissör" som iscensätter interaktiva upplevelser. Arkitekturen använder off-screen canvas-kompositering och dynamisk minnesallokering för att garantera pixel-lojalitet och laggfri navigering genom de virtuella rummen.' },
+            { id: 'app-124', image: '', title: 'FaceMorph Pro 8K', shortDesc: 'Verktyg för realistiska ansiktsbyten med fokus på identitetsbevarande.', icon: 'user-check', tags: ['Face Swap', 'Gemini Vision', 'Identity Preserving'], fullDesc: 'Mitt primära mål har varit att utveckla en applikation där användaren kan transformera sig till olika karaktärer, såsom superhjältar eller clowner, på ett sätt som roar dottern Lilja. Visionen var inte bara ett enkelt "face swap", utan en lösning där användarens unika identitet bevaras, medan karaktärens yttre appliceras som ett sömlöst lager ovanpå. Applikationen instruerar AI:n att separera "facial structure" (benstomme) från "surface texture" (smink/färg).' },
+            { id: 'app-125', image: '', title: 'FaceSwap Studio Pro', shortDesc: 'Neural applikation för fotorealistiska ansiktsbyten och strukturöverföring.', icon: 'user-cog', tags: ['Neural Network', 'FaceSwap', 'Identity Preserving'], fullDesc: 'Jag har designat och utvecklat FaceSwap Studio Pro med ett tydligt och kompromisslöst mål: att skapa en fotorealistisk och neural ansiktsbytesapplikation. Syftet är att låta en användare överföra sin specificerade ansiktsgeometri (benstruktur, proportioner och identitet) till en målbild, samtidigt som ansiktet sömlöst ärver målbildens yttre attribut såsom smink, belysning, hudfärg och textur. Mitt primära fokus som arkitekt har varit att bygga en robust pipeline där AI-motorn förstår skillnaden mellan "identitet" (form) och "material" (yta), och aldrig förväxlar uppdraget med att skapa ett bildkollage.' },
+            { id: 'app-126', image: '', title: 'Verse Forge', shortDesc: 'Webbaserad IDE för Unreal Editor for Fortnite (UEFN) med AI-integration.', icon: 'code-2', tags: ['IDE', 'Verse', 'UEFN', 'Build Simulation'], fullDesc: 'Som arkitekt designade jag Verse Forge för att vara den optimala utvecklingsmiljön för mitt arbete med UEFN. Verktyget består av två sammankopplade huvuddelar: En kodeditor med terminal och en AI-driven "Forging"-modul. Genom att implementera en simulerad build-pipeline och en strikt instruktionsstyrd AI-logik (Gemini som returnerar rå Verse-kod), har jag skapat ett verktyg som sänker tröskeln för komplex spelutveckling. Appen erbjuder en professionell, mörk kodredigeringsmiljö med omedelbar visuell feedback och modulär filhantering.' },
+            { id: 'app-127', image: '', title: 'Virtual Art Studio', shortDesc: 'Interaktiv 3D-miljö för virtuella konstutställningar med AI-guide.', icon: 'box', tags: ['3D Environment', 'Audio UI', 'Exhibition'], fullDesc: 'En uppslukande virtuell utställningsplattform där digitala verk presenteras i en interaktiv 3D-rymd. Systemet integrerar röstguidning, dynamisk inläsning av konstverkens metadata (medium, beskrivning, värdering) och ett anpassat gränssnitt för att ge besökaren en fullskalig galleriupplevelse direkt i webbläsaren.' },
+            { id: 'app-130', image: '', title: 'Redigera bild', shortDesc: 'AI-studio för avancerad hybrid-bildbehandling och objektseparering.', icon: 'image-plus', tags: ['AI-studio', 'Objektseparering', 'Hybridmodell'], fullDesc: 'Redigera bild är en "allt-i-ett"-studio för bildbehandling där jag kombinerar högkvalitativ bildgenerering med avancerad objektseparering. Applikationen stöder avancerade tekniker som bakgrundsbyten, "Mashup"-generering och rörelseanimationer genom en hybrid användning av Imagen 4.0 och Gemini 2.5 Flash. För att säkerställa stabilitet har jag implementerat en fetchWithRetry-logik med exponentiell backoff vid API-anrop, samt omslutit hela studion i en ErrorBoundary för att förhindra applikationskrascher. Systemet är portabelt tack vare en "Single-File Mandate" där all logik och stil samlas i en enda JSX-fil.' }
+        ];
+
+        let savedAppData = null;
+        try { savedAppData = localStorage.getItem('blom_app_data'); } catch (e) { }
+        if (savedAppData) {
+            try {
+                let parsed = JSON.parse(savedAppData);
+                if(Array.isArray(parsed) && parsed.length > 0) { appData = parsed; }
+            } catch (e) { }
+        }
+
+        // ==========================================
+        // NYA INMATNINGSFUNKTIONER
+        // ==========================================
+        function openAppModal() { document.getElementById('add-app-modal').classList.remove('opacity-0', 'pointer-events-none'); document.body.style.overflow = 'hidden'; }
+        function closeAppModal() { document.getElementById('add-app-modal').classList.add('opacity-0', 'pointer-events-none'); document.body.style.overflow = ''; }
+
+        function saveApp() {
+            const id = document.getElementById('add-a-id').value.trim() || ('app-' + Date.now().toString(36));
+            const title = document.getElementById('add-a-title').value.trim();
+            const image = document.getElementById('add-a-image').value.trim();
+            const shortDesc = document.getElementById('add-a-short').value.trim();
+            const tagsRaw = document.getElementById('add-a-tags').value.trim();
+            const fullDesc = document.getElementById('add-a-full').value.trim();
+
+            if(!title) { alert('Titel saknas!'); return; }
+
+            const tagsArray = tagsRaw ? tagsRaw.split(',').map(s => s.trim()) : [];
+
+            const newApp = {
+                id: id,
+                title: title,
+                image: image,
+                shortDesc: shortDesc,
+                icon: 'cpu', 
+                tags: tagsArray,
+                fullDesc: fullDesc
+            };
+
+            appData.unshift(newApp);
+            localStorage.setItem('blom_app_data', JSON.stringify(appData));
+            
+            currentAppDisplayCount = itemsPerPage;
+            renderApps();
+            
+            closeAppModal();
+
+            document.getElementById('add-a-id').value = '';
+            document.getElementById('add-a-title').value = '';
+            document.getElementById('add-a-image').value = '';
+            document.getElementById('add-a-short').value = '';
+            document.getElementById('add-a-tags').value = '';
+            document.getElementById('add-a-full').value = '';
+        }
+
+        // ==========================================
+        // 3.5 RENDER MOTOR APPAR (MED PAGINERING)
+        // ==========================================
+        function loadMoreApps() {
+            currentAppDisplayCount += itemsPerPage;
+            renderApps();
+        }
+
+        function renderApps() {
+            const appsGrid = document.getElementById('apps-grid');
+            if (!appsGrid) return; 
+            appsGrid.innerHTML = '';
+            
+            const searchVal = document.getElementById('app-search-input').value.toLowerCase().trim();
+
+            const filteredApps = appData.filter(app => {
+                const text = `${app.title} ${app.shortDesc} ${app.fullDesc} ${app.tags.join(' ')}`.toLowerCase();
+                return !searchVal || text.includes(searchVal);
+            });
+
+            if (filteredApps.length === 0) {
+                appsGrid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 font-mono text-sm">Inga appar hittades.</div>`;
+                return;
+            }
+
+            // Shuffle apps before slicing
+            const shuffledApps = shuffleArray([...filteredApps]);
+            const dataToShow = shuffledApps.slice(0, currentAppDisplayCount);
+
+            dataToShow.forEach(app => {
+                const tagBadges = app.tags.map(t => `<span class="px-2 py-1 bg-main border border-border_subtle rounded-md text-[8px] text-slate-400 uppercase tracking-widest font-black">${t}</span>`).join('');
+                
+                const imageHtml = app.image ? `
+                    <div class="w-full h-40 mb-4 rounded-xl overflow-hidden border border-border_subtle flex-shrink-0 relative group-hover:border-accent/50 transition-colors">
+                        <img src="${app.image}" alt="${app.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="handleImageError(this, 'hide')">
+                    </div>
+                ` : '';
+
+                const card = document.createElement('div');
+                card.className = 'bg-card border border-border_subtle p-6 rounded-3xl hover:border-accent transition-colors flex flex-col h-full reveal active cursor-pointer group';
+                card.onclick = () => openInfoModal(app.id);
+                card.innerHTML = `
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-accent/10 border border-accent flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
+                            <i data-lucide="${app.icon}" class="w-5 h-5 text-accent"></i>
+                        </div>
+                        <h3 class="text-lg font-black uppercase italic tracking-tighter text-white group-hover:text-accent transition-colors">${app.title}</h3>
+                    </div>
+                    ${imageHtml}
+                    <p class="text-slate-400 text-sm flex-1 mb-6">${app.shortDesc}</p>
+                    <div class="flex flex-wrap gap-2 mb-6">${tagBadges}</div>
+                    <button class="w-full py-3 rounded-xl bg-main border border-border_subtle text-[10px] font-black uppercase tracking-widest text-slate-300 group-hover:border-accent group-hover:text-accent transition-colors mt-auto">Läs Dokumentation</button>
+                `;
+                appsGrid.appendChild(card);
+            });
+
+            if (currentAppDisplayCount < filteredApps.length) {
+                const btnContainer = document.createElement('div');
+                btnContainer.className = 'col-span-full flex justify-center mt-6 mb-4';
+                btnContainer.innerHTML = `
+                    <button onclick="loadMoreApps()" class="px-8 py-3 rounded-xl bg-card border border-border_subtle text-[12px] font-black uppercase tracking-widest text-slate-300 hover:border-accent hover:text-accent transition-all flex items-center gap-3 shadow-lg">
+                        <i data-lucide="chevron-down" class="w-5 h-5"></i> Visa fler
+                    </button>
+                `;
+                appsGrid.appendChild(btnContainer);
+            }
+
+            lucide.createIcons();
+            setupObservers();
+        }
+
+        // ==========================================
+        // 4. MODAL LOGIK
+        // ==========================================
+        function openInfoModal(appId) {
+            const app = appData.find(a => a.id === appId);
+            if (!app) return;
+
+            const content = document.getElementById('modal-content');
+            
+            const imageHtml = app.image ? `
+                <img src="${app.image}" class="w-full aspect-video object-cover rounded-t-[3rem] border-b border-border_subtle" onerror="handleImageError(this, 'main')">
+            ` : '';
+
+            content.innerHTML = `
+                <div class="bg-card rounded-[3rem] border border-border_subtle shadow-2xl w-full relative overflow-hidden flex flex-col">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-accent z-20"></div>
+                    ${imageHtml}
+                    <div class="p-8 md:p-14">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-main border border-border_subtle flex items-center justify-center shrink-0">
+                                <i data-lucide="${app.icon}" class="w-5 h-5 md:w-6 md:h-6 text-accent"></i>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-black uppercase italic tracking-tighter text-slate-100">${app.title}</h3>
+                        </div>
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            ${app.tags.map(tag => `<span class="px-3 py-1 bg-main border border-border_subtle rounded-lg text-[10px] text-slate-400 uppercase tracking-widest font-black">${tag}</span>`).join('')}
+                        </div>
+                        <p class="text-slate-400 leading-relaxed text-base md:text-lg whitespace-pre-wrap">${app.fullDesc}</p>
+                    </div>
+                </div>
+            `;
+            showModal('info-modal');
+        }
+
+        function showModal(id) { document.getElementById(id).classList.remove('opacity-0', 'pointer-events-none'); document.body.style.overflow = 'hidden'; lucide.createIcons(); }
+        function closeInfoModal() { document.getElementById('info-modal').classList.add('opacity-0', 'pointer-events-none'); document.body.style.overflow = ''; setTimeout(() => { document.getElementById('modal-content').innerHTML = ''; }, 300); }
+
+        function setupObservers() {
+            const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); }); }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
+
+        // ==========================================
+        // 5. TERMINAL & SMART MERGE IMPORT
+        // ==========================================
+        const terminalOverlay = document.getElementById('terminal-overlay');
+        const terminalInput = document.getElementById('terminal-input');
+        const terminalOutput = document.getElementById('terminal-output');
+
+        function toggleTerminal() {
+            if (terminalOverlay.classList.contains('open')) { terminalOverlay.classList.remove('open'); terminalInput.blur(); } 
+            else { terminalOverlay.classList.add('open'); setTimeout(() => terminalInput.focus(), 500); }
+        }
+
+        document.addEventListener('keydown', (e) => { if (e.key === '`' || e.key === '~' || (e.key === 'Escape' && terminalOverlay.classList.contains('open'))) { e.preventDefault(); toggleTerminal(); } });
+
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const val = terminalInput.value.trim();
+                if (!val) return;
+                printTerminal(`<span class="text-slate-500">root@blom:~#</span> ${val}`);
+                terminalInput.value = '';
+
+                const cmd = val.toLowerCase();
+                if (cmd === '/help') {
+                    printTerminal(`Available commands:<br>  <span class="text-accent">/help</span> - Show this message<br>  <span class="text-accent">/export</span> - Export JSON backup<br>  <span class="text-accent">/import</span> - Import JSON backup<br>  <span class="text-accent">/stats</span> - Show system statistics<br>  <span class="text-accent">/clear</span> - Clear terminal<br>  <span class="text-accent">/exit</span> - Close terminal`);
+                } else if (cmd === '/export') {
+                    exportData();
+                } else if (cmd === '/import') {
+                    document.getElementById('import-file').click();
+                } else if (cmd === '/stats') {
+                    const currentPortfolio = JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]').length;
+                    const currentApps = typeof appData !== 'undefined' ? appData.length : JSON.parse(localStorage.getItem('blom_app_data') || '[]').length;
+                    const currentPrivate = JSON.parse(localStorage.getItem('blom_private_data') || '[]').length;
+                    printTerminal(`System Status:<br>- Database entries: ${currentPortfolio}<br>- App entries: ${currentApps}<br>- Private entries: ${currentPrivate}<br>- Memory optimized: True`);
+                } else if (cmd === '/clear') {
+                    terminalOutput.innerHTML = '';
+                } else if (cmd === '/exit') {
+                    toggleTerminal();
+                } else {
+                    printTerminal(`Command not found: ${val}. Type '/help' for available commands.`);
+                }
+            }
+        });
+
+        function printTerminal(htmlString) {
+            const div = document.createElement('div');
+            div.innerHTML = htmlString;
+            terminalOutput.appendChild(div);
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        }
+
+        function exportData() {
+            try {
+                const currentPortfolio = JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]');
+                const currentApps = typeof appData !== 'undefined' && appData.length > 0 ? appData : JSON.parse(localStorage.getItem('blom_app_data') || '[]');
+                const currentPrivate = JSON.parse(localStorage.getItem('blom_private_data') || '[]');
+
+                const dataToExport = {
+                    portfolio: currentPortfolio,
+                    apps: currentApps,
+                    private: currentPrivate 
+                };
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToExport, null, 2));
+                const downloadAnchorNode = document.createElement('a');
+                downloadAnchorNode.setAttribute("href", dataStr);
+                downloadAnchorNode.setAttribute("download", "blom_master_vault_" + new Date().toISOString().slice(0,10) + ".json");
+                document.body.appendChild(downloadAnchorNode); 
+                downloadAnchorNode.click();
+                downloadAnchorNode.remove();
+                printTerminal(`<span class="text-emerald-400">System backup exported successfully.</span>`);
+            } catch(e) {
+                printTerminal(`<span class="text-red-500">ERROR: Export failed.</span>`);
+            }
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    let importedSomething = false;
+                    
+                    let currentPortfolio = JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]');
+                    let currentApps = JSON.parse(localStorage.getItem('blom_app_data') || '[]');
+                    if (typeof appData !== 'undefined' && appData.length > 0) {
+                        currentApps = appData; // Use hardcoded apps as base if available
+                    }
+                    
+                    let importPortfolio = [];
+                    let importApps = [];
+
+                    if (Array.isArray(importedData)) {
+                        importPortfolio = importedData;
+                    } else {
+                        if (importedData.portfolio && Array.isArray(importedData.portfolio)) importPortfolio = importedData.portfolio;
+                        if (importedData.apps && Array.isArray(importedData.apps)) importApps = importedData.apps;
+                        if (importedData.private && Array.isArray(importedData.private)) {
+                            localStorage.setItem('blom_private_data', JSON.stringify(importedData.private));
+                            importedSomething = true;
+                        }
+                    }
+
+                    // SMART MERGE PORTFOLIO (Images)
+                    if (importPortfolio.length > 0) {
+                        const mergedPortfolio = [...currentPortfolio];
+                        importPortfolio.forEach(impItem => {
+                            if (!mergedPortfolio.find(existing => existing.id === impItem.id || existing.mediaUrl === impItem.mediaUrl)) {
+                                mergedPortfolio.push(impItem);
+                            }
+                        });
+                        localStorage.setItem('blom_portfolio_data', JSON.stringify(mergedPortfolio));
+                        importedSomething = true;
+                    }
+
+                    // SMART MERGE APPS (Keep detailed descriptions!)
+                    if (importApps.length > 0) {
+                        const mergedApps = [...currentApps];
+                        importApps.forEach(impApp => {
+                            const existingIndex = mergedApps.findIndex(a => a.id === impApp.id || a.title === impApp.title);
+                            if (existingIndex >= 0) {
+                                // If imported has a LONGER description, use it. Otherwise keep existing (our hardcoded ones are very long)
+                                const existingLength = (mergedApps[existingIndex].fullDesc || '').length;
+                                const importedLength = (impApp.fullDesc || '').length;
+                                if (importedLength > existingLength) {
+                                    mergedApps[existingIndex] = impApp;
+                                }
+                            } else {
+                                mergedApps.push(impApp); // Add new app
+                            }
+                        });
+                        localStorage.setItem('blom_app_data', JSON.stringify(mergedApps));
+                        importedSomething = true;
+                    }
+                    
+                    if(importedSomething) {
+                        printTerminal(`<span class="text-emerald-400">Smart Merge Successful: Vault synchronized. Reloading OS...</span>`);
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        throw new Error("Missing portfolio or apps arrays in JSON.");
+                    }
+                } catch (err) {
+                    printTerminal(`<span class="text-red-500">ERROR: Invalid JSON file structure.</span>`);
+                    alert("Fel vid import av JSON. Kontrollera filstrukturen.");
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = ''; 
+        }
+
+        // ==========================================
+        // 8. BOOT SEQUENCE
+        // ==========================================
+        function runBootSequence() {
+            const bootOverlay = document.getElementById('boot-sequence');
+            const bootText = document.getElementById('boot-text');
+            const bootLines = ["Initiating Blom OS App Vault...", "Mounting App File System...", "Authenticating architect 'Blom'...", "Access Granted. Loading User Interface..."];
+            let lineIndex = 0;
+            document.body.style.overflow = 'hidden';
+
+            function typeNextLine() {
+                if (lineIndex < bootLines.length) {
+                    const line = document.createElement('div');
+                    line.textContent = '> ' + bootLines[lineIndex];
+                    bootText.appendChild(line);
+                    lineIndex++;
+                    setTimeout(typeNextLine, 150 + Math.random() * 150); 
+                } else {
+                    setTimeout(() => {
+                        bootOverlay.style.opacity = '0';
+                        bootOverlay.style.pointerEvents = 'none';
+                        document.body.style.overflow = ''; 
+                        setTimeout(() => bootOverlay.remove(), 800);
+                    }, 400);
+                }
+            }
+            setTimeout(typeNextLine, 200);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            runBootSequence(); 
+            renderApps();
+        });
+
+    </script>
+</body>
+</html>
