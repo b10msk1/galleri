@@ -618,19 +618,6 @@
       "subtitle": "Logg 421"
     },
     {
-      "id": "proj-mqcznlhe",
-      "type": "image",
-      "mediaUrl": "https://i.imgur.com/5gCIW3C.jpeg",
-      "processThumbnails": [
-        "https://i.imgur.com/M0Zbwpm.jpeg"
-      ],
-      "mainPrompt": "Högst upplöst 8K-mästerverk utfört med teknisk precision: En biomekanisk hybridvarelse som förenar den mytiska silhuetten av en enhörning och en fenix genom avancerad Neural Style Transfer baserad på Giger-metoden. Genom att applicera arkitektonisk logik från en förtränad VGG-19-modell har de råa, organiska och mekaniska stil-egenskaperna från H.R. Giger extraherats och sömlöst integrerats i varelsens anatomi för maximal visuell koherens.\n\nVarelsen presenteras som en storslagen \"Ur-fader\" (pappa) av syntetiskt liv, med en struktur bestående av ryggradsliknande rör, hydrauliska senor och ett exoskelett i polerad obsidian och benvit polymer. Enhörningens horn är transformerat till en fraktal, vass metallspiral med pulserande kablar, medan fenixens vingar består av överlappande, rakbladsvassa rör och genomskinliga membran som droppar av mörk viskositet. \n\nYtan växlar mellan slemmig organisk mjukhet och kall industriell hårdhet. Belysningen är utförd i dramatisk chiaroscuro, där djupa skuggor döljer komplexa mekaniska kammare och framhäver den tekniska texturen. Atmosfären är mörk, monokrom och auktoritär, präglad av en känsla av arkitektoniskt ursprung och teknologisk evolution. Extrem detaljrikedom, makrofokus på biomekaniska kopplingar, fotorealistisk rendering av syntetisk materia, filmisk komposition.",
-      "description": "",
-      "title": "Högst upplöst 8K-mästerverk utfört med t...",
-      "tags": [],
-      "subtitle": "Logg 420"
-    },
-    {
       "id": "proj-mqczmnkw",
       "type": "image",
       "mediaUrl": "https://i.imgur.com/fiiZHI9.jpeg",
@@ -840,19 +827,6 @@
       "title": "[SYSTEM_INIT: ARKITEKTUR_MODUL_EVOLUTION...",
       "tags": [],
       "subtitle": "Logg 404"
-    },
-    {
-      "id": "proj-mqcz04w5",
-      "type": "image",
-      "mediaUrl": "https://i.imgur.com/Va7LXSQ.jpeg",
-      "processThumbnails": [
-        "https://i.imgur.com/4hpAlCo.jpeg"
-      ],
-      "mainPrompt": "[SYSTEM_INIT: ARKITEKTUR_MODUL_EVOLUTION_8K]\nBehåll ansikts detaljerna\n**ROLL:** Du är en Visionär Bio-Arkitekt och Exobiolog med expertis inom spekulativ evolution och avancerad biomekanik.\n\n**UPPDRAG:** Generera en hyperdetaljerad visuell och strukturell ritning av ett klassiskt sagoväsen som har genomgått årtusenden av adaptiv evolution på en specifik sci-fi-planet. Du ska dekonstruera varelsens mytologiska form och återuppbygga den med obeveklig teknisk och biologisk logik.\n\n**KÄRNLOGIK (MILJÖBASERAD ANPASSNING):**\n1. **Gravitations-Matris:** Justera varelsens fysiologi baserat på planetens tyngdkraft. \n   - *Låg gravitation (Low-G):* Extremt förlängda extremiteter, spindelliknande benstruktur, minskad muskelmassa men ökad draghållfasthet i senor.\n   - *Hög gravitation (High-G):* Kompakt, pansarliknande benstomme, hydraulisk muskelstruktur, låg tyngdpunkt.\n2. **Materialvetenskaplig Biologi:** Integrera planetens resurser i varelsens anatomi. Exempel: kolfiberförstärkta hovar, kiselbaserad hud, eller magnetiska sensororgan.\n3. **Atmosfärisk Analys:** Anpassa andningsorgan och sensoriska receptorer (t.ex. infraröd syn för mörka nebulosavärldar eller bio-elektriska fält).\n\n**TEKNISK SPECIFIKATION FÖR MODELLERING:**\n- **Visualisering:** 8K UHD, fotorealistisk rendering, Unreal Engine 5.2 teknisk estetik, makrofotografering av biologiska texturer.\n- **Detaljnivå:** Synliga cellulära strukturer, sub-dermala implantat av evolutionärt ursprung, kinematiskt korrekta leder.\n- **Kontext (Pappa-Auktoritet):** Designen ska utstråla stabilitet, skydd och en fundamental, uråldrig kraft – en \"pappa-figur\" i ekosystemet; den dominerande, beskyddande och mest anpassade alfa-arkitekten.\n\n**EXEMPEL-INPUT (ENHÖRNING / LÅG GRAVITATION):**\n- **Struktur:** Omvandla enhörningens klassiska hästkropp till en eterisk men robust Low-G-enhet.\n- **Ben:** Förlängda, smala kolfiber-ben för logisk förflyttning över vidsträckta dammslätter.\n- **Hovar:** Nano-texturerade kolfiberklövar för maximalt grepp i vertikal terräng.\n- **Hornet:** Omdefinieras som en elektromagnetisk antenn i kristallin kvarts för att navigera genom jonstormar.\n\n**PROMPT-STRUKTUR FÖR EXEKVERING:**\n\"Skapa en [VÄSEN] anpassad för [PLANETTYP/GRAVITATION]. Implementera biologisk ingenjörskonst där [SPECIFIK ANPASSNING] dominerar. Visualisera med 8K-precision, fokusera på den biomekaniska logiken i [LEDSYSTEM/HUDSTRUKTUR] och säkerställ att varelsen ser ut som en naturlig, kraftfull evolutionär slutpunkt i en sci-fi-miljö.\"",
-      "description": "",
-      "title": "[SYSTEM_INIT: ARKITEKTUR_MODUL_EVOLUTION...",
-      "tags": [],
-      "subtitle": "Logg 403"
     },
     {
       "id": "proj-mqcyvn8n",
@@ -5422,19 +5396,6 @@
     },
     {
       "type": "image",
-      "mediaUrl": "https://i.imgur.com/t6kLUaX.mp4",
-      "processThumbnails": [
-        "https://i.imgur.com/P7rMs9g.jpeg"
-      ],
-      "mainPrompt": "Cinematic slow motion in a solid black endless void as the bald athletic man in his heavy muddled wool coat sits on his metal industrial stool and belts out a dramatic opera piece while conducting with his tapered wooden stick. A curious monkey the size of the stool enters from the right frame and attempts a clumsy leap onto a nearby stool but misses and tumbles backward in a slow-motion flail as it passes the man. From 3 to 8 seconds the background chaos intensifies as an orchestral musician trips and crashes into the percussion section sending white sheet music flying through the air like confetti while a female opera singer in a large billowing dress trips over a rug in the foreground with an extreme comedic expression of shock. The scene is lit by a single powerful overhead spotlight creating sharp rim lighting on the mans head and the swirling thick fog with high-contrast shadows and a humorous slapstick atmosphere. Audio includes a powerful operatic tenor voice punctuated by crashing percussion and a comedic slide whistle.",
-      "id": "proj-mqcwb9uv-2q4lpjmt",
-      "subtitle": "Logg 045",
-      "tags": [],
-      "title": "Cinematic slow motion in a solid black e...",
-      "description": "Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **angivna parametrar** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."
-    },
-    {
-      "type": "image",
       "mediaUrl": "https://i.imgur.com/3C2OuHR.jpeg",
       "processThumbnails": [
         "https://i.imgur.com/AsAgs41.jpeg"
@@ -6617,5 +6578,6 @@
       ],
       "fullDesc": "En uppslukande virtuell utställningsplattform där digitala verk presenteras i en interaktiv 3D-rymd. Systemet integrerar röstguidning, dynamisk inläsning av konstverkens metadata (medium, beskrivning, värdering) och ett anpassat gränssnitt för att ge besökaren en fullskalig galleriupplevelse direkt i webbläsaren."
     }
-  ]
+  ],
+  "private": []
 }
