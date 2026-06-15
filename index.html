@@ -37,44 +37,14 @@
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #e58e26; }
 
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        #terminal-overlay {
-            transform: translateY(-100%);
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        #terminal-overlay.open {
-            transform: translateY(0);
-        }
-
-        .prompt-container {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease-out;
-            opacity: 0;
-        }
-        .prompt-container.open {
-            max-height: 500px;
-            opacity: 1;
-        }
-        
-        .view-section {
-            display: none;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
-        .view-section.active-view {
-            display: block;
-            opacity: 1;
-        }
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        #terminal-overlay { transform: translateY(-100%); transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        #terminal-overlay.open { transform: translateY(0); }
+        .prompt-container { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; opacity: 0; }
+        .prompt-container.open { max-height: 500px; opacity: 1; }
+        .view-section { display: none; opacity: 0; transition: opacity 0.5s ease-in-out; }
+        .view-section.active-view { display: block; opacity: 1; }
     </style>
 </head>
 <body class="bg-main text-slate-100 font-sans antialiased min-h-screen selection:bg-accent selection:text-main overflow-x-hidden">
@@ -93,7 +63,7 @@
                 <button onclick="switchView('hero-view')" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
                     <i data-lucide="user" class="w-3 h-3"></i> Profil
                 </button>
-                <button onclick="switchView('portfolio-view')" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
+                <button onclick="switchView('portfolio-view')" class="text-[10px] font-black uppercase tracking-widest text-accent flex items-center gap-2 outline-none">
                     <i data-lucide="image" class="w-3 h-3"></i> Kreationer
                 </button>
                 <a href="app-valv.html" class="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors flex items-center gap-2 outline-none">
@@ -165,6 +135,9 @@
                 </div>
                 
                 <div class="flex flex-col md:flex-row items-start md:items-center gap-4 w-full lg:w-auto">
+                    <button onclick="openCreationModal()" class="px-5 py-2 rounded-xl bg-accent/10 border border-accent text-[10px] font-black uppercase tracking-widest text-accent hover:bg-accent hover:text-main transition-all flex items-center gap-2 shrink-0">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Lägg till
+                    </button>
                     <div class="relative w-full md:w-64">
                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
                         <input type="text" id="search-input" oninput="handleSearch()" placeholder="Sök prompt, tagg eller titel..." class="w-full bg-main border border-border_subtle rounded-xl py-2 pl-9 pr-4 text-xs font-mono text-slate-200 focus:border-accent outline-none transition-colors placeholder:text-slate-600 shadow-inner">
@@ -194,17 +167,15 @@
 
         <!-- VY 4: PRIVAT VALV (LÅST) -->
         <div id="private-view" class="view-section pt-12 pb-24">
-            
-            <!-- Låsskärmen -->
             <div id="private-lock-screen" class="flex flex-col items-center justify-center min-h-[50vh] reveal active">
                 <div class="p-6 bg-slate-800/50 rounded-full mb-6 border border-slate-700/50">
                     <i data-lucide="lock" class="w-12 h-12 text-slate-500"></i>
                 </div>
                 <h2 class="text-3xl font-black uppercase italic tracking-tighter text-white mb-3">Åtkomst Nekad</h2>
-                <p class="text-slate-400 mb-8 font-mono text-xs uppercase tracking-widest">Denna sektor är krypterad.</p>
-                <div class="flex flex-col sm:flex-row gap-3 w-full max-w-sm">
+                <p class="text-slate-400 mb-8 font-mono text-xs uppercase tracking-widest text-center">Denna sektor är krypterad.</p>
+                <div class="flex flex-col sm:flex-row gap-3 w-full max-w-sm mx-auto">
                     <input type="password" id="private-password-input" class="flex-1 bg-main border border-border_subtle rounded-xl px-4 py-3 text-white outline-none focus:border-red-500 font-mono text-center sm:text-left" placeholder="Ange lösenord..." onkeypress="handlePrivatePasswordEnter(event)">
-                    <button onclick="unlockPrivateVault()" class="bg-red-900/20 border border-red-500 text-red-500 font-black uppercase tracking-widest px-6 py-3 rounded-xl hover:bg-red-500 hover:text-white transition-colors shadow-[0_0_15px_rgba(239,68,68,0.2)]">Dekryptera</button>
+                    <button onclick="unlockPrivateFilter()" class="bg-red-900/20 border border-red-500 text-red-500 font-black uppercase tracking-widest px-6 py-3 rounded-xl hover:bg-red-500 hover:text-white transition-colors shadow-[0_0_15px_rgba(239,68,68,0.2)]">Dekryptera</button>
                 </div>
             </div>
 
@@ -234,19 +205,7 @@
 
     </main>
 
-    <footer class="border-t border-border_subtle bg-header py-12 mt-auto">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center opacity-50">
-            <div class="flex items-center gap-3">
-                <i data-lucide="cpu" class="w-5 h-5"></i>
-                <span class="text-sm font-black uppercase italic tracking-tighter">Blom.AI © 2026</span>
-            </div>
-            <button onclick="toggleTerminal()" class="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-accent transition-colors flex items-center gap-2">
-                <i data-lucide="terminal-square" class="w-4 h-4"></i> [SYS]
-            </button>
-        </div>
-    </footer>
-
-    <!-- INMATNINGSMODAL FÖR BILDER -->
+    <!-- Modal: Lägg till Kreation -->
     <div id="add-creation-modal" class="fixed inset-0 z-[300] bg-main/95 backdrop-blur-xl flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 p-4 overflow-y-auto">
         <div class="bg-card w-full max-w-2xl rounded-[2rem] border border-border_subtle p-6 md:p-8 shadow-2xl relative my-auto">
             <button onclick="closeCreationModal()" class="absolute top-6 right-6 text-slate-400 hover:text-accent transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
@@ -266,7 +225,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Processbilder (Kommaseparerade Imgur URL:er)</label>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Processbilder (Kommaseparerade URL:er)</label>
                     <input type="text" id="add-c-thumbs" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="Länk 1, Länk 2...">
                 </div>
                 <div>
@@ -274,7 +233,7 @@
                     <textarea id="add-c-prompt" rows="4" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="Din prompt här..."></textarea>
                 </div>
                 <div>
-                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Kort beskrivning / Anteckningar</label>
+                    <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1">Beskrivning</label>
                     <textarea id="add-c-desc" rows="2" class="w-full bg-main border border-border_subtle rounded-xl p-3 text-slate-200 outline-none focus:border-accent" placeholder="Mina tankar kring denna generering..."></textarea>
                 </div>
             </div>
@@ -292,8 +251,8 @@
             </span>
             <div class="flex items-center gap-4">
                 <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
-                <button onclick="exportData()" class="text-[10px] font-black uppercase tracking-widest text-amber-500 hover:text-white transition flex items-center gap-1" title="Exportera JSON"><i data-lucide="download" class="w-3 h-3"></i> Export</button>
-                <button onclick="document.getElementById('import-file').click()" class="text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-white transition flex items-center gap-1" title="Importera JSON"><i data-lucide="upload" class="w-3 h-3"></i> Import</button>
+                <button onclick="exportData()" class="text-[10px] font-black uppercase tracking-widest text-amber-500 hover:text-white transition flex items-center gap-1"><i data-lucide="download" class="w-3 h-3"></i> Export</button>
+                <button onclick="document.getElementById('import-file').click()" class="text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-white transition flex items-center gap-1"><i data-lucide="upload" class="w-3 h-3"></i> Import</button>
                 <div class="w-px h-4 bg-slate-700 mx-2"></div>
                 <button onclick="toggleTerminal()" class="text-slate-500 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
             </div>
@@ -312,8 +271,7 @@
         <button onclick="closeInfoModal()" class="fixed top-4 right-4 md:top-6 md:right-6 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-card border border-border_subtle text-slate-400 hover:text-accent hover:border-accent transition-all z-[110]">
             <i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i>
         </button>
-        <div class="max-w-4xl w-full my-auto flex flex-col justify-center relative pt-12 md:pt-0" id="modal-content">
-        </div>
+        <div class="max-w-4xl w-full my-auto flex flex-col justify-center relative pt-12 md:pt-0" id="modal-content"></div>
     </div>
     
     <!-- Lightbox Modal -->
@@ -321,142 +279,72 @@
         <button onclick="closeLightbox()" class="fixed top-4 right-4 md:top-6 md:right-6 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-2xl bg-main border border-border_subtle text-slate-400 hover:text-accent hover:border-accent transition-all z-[130]">
             <i data-lucide="x" class="w-5 h-5 md:w-6 md:h-6"></i>
         </button>
-        <div id="lightbox-content" class="max-w-full max-h-full flex items-center justify-center">
-        </div>
+        <div id="lightbox-content" class="max-w-full max-h-full flex items-center justify-center"></div>
     </div>
 
     <script>
         const SYSTEM_PASSWORD = "nexus"; 
         
-        // Paginering state
         const itemsPerPage = 10;
         let currentPortfolioDisplayCount = itemsPerPage;
         let currentPrivateDisplayCount = itemsPerPage;
         let isPrivateUnlocked = false;
 
-        // ==========================================
-        // 0. BILD-FELHANTERARE
-        // ==========================================
+        let activePortfolioData = [];
+        let activePrivateData = [];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
         window.handleImageError = function(imgElement, type) {
             const div = document.createElement('div');
-            if (type === 'grid') {
+            if (type === 'grid' || type === 'thumb' || type === 'main' || type === 'light') {
                 div.className = 'w-full h-full flex flex-col items-center justify-center bg-card border border-border_subtle text-slate-600 text-[10px] uppercase tracking-widest';
                 div.innerHTML = '<i data-lucide="image-off" class="w-8 h-8 mb-2 opacity-50"></i>Källfil Offline';
-            } else if (type === 'thumb') {
-                div.className = 'w-full h-full flex items-center justify-center bg-main text-slate-600';
-                div.innerHTML = '<i data-lucide="image-off" class="w-4 h-4"></i>';
-            } else if (type === 'main') {
-                div.className = 'w-full aspect-video flex flex-col items-center justify-center bg-main rounded-t-[2rem] md:rounded-t-[3rem] border-b border-border_subtle text-slate-600 uppercase tracking-widest text-xs';
-                div.innerHTML = '<i data-lucide="image-off" class="w-8 h-8 mb-2 opacity-50"></i>Källfil Offline';
-            } else if (type === 'light') {
-                div.className = 'w-full min-w-[300px] aspect-video flex flex-col items-center justify-center bg-card rounded-xl border border-border_subtle text-slate-600 uppercase tracking-widest text-sm';
-                div.innerHTML = '<i data-lucide="image-off" class="w-12 h-12 mb-4 opacity-50"></i>Källfil Offline';
             } else if (type === 'hide') {
-                imgElement.parentElement.style.display = 'none';
-                return;
+                imgElement.parentElement.style.display = 'none'; return;
             }
             imgElement.replaceWith(div);
             lucide.createIcons();
         };
 
         // ==========================================
-        // 1. DATA: BILDER & FILMER (Din enorma databas inlagd)
+        // 1. DATA LADDAS DYNAMISKT FRÅN MINNET
         // ==========================================
-        let portfolioData = [
-          {"type":"image","mediaUrl":"https://i.imgur.com/xsMYmTB.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"Hyperdetaljerat 8K-mästerverk som visualiserar en arkitektonisk och biomekanisk gestaltning av en fadersfigur (\"pappa\"), där ytan styrs av en avancerad procedurmatris för materialblandning. Kärnan i kompositionen utgörs av en dynamisk fusion mellan kall, industriell sci-fi och eterisk magi. Materialet är uppbyggt genom en sofistikerad shader-graf där en Fresnel-nod dikterar övergången baserat på betraktningsvinkeln mot ytans normal: Vid direkta vinklar framträder en tung, borstad anodiserad aluminium med mikroskopiska repor och en matt, teknisk lyster. I de flacka vinklarna och längs silhuettens kanter sker en sömlös metamorfos till ett organiskt, iridiserande glitter som påminner om vingarna hos ett mytiskt sagoväsen. Ljuset bryts i spektrala färgskiftningar som rör sig flytande över den metalliska huden när kameran sveper runt objektet. Hyperrealistiska texturer, raytracing, global illumination, makrofokus på materialövergångar, cinematic lighting, 8K-upplösning, teknisk perfektion.","id":"proj-0","subtitle":"Logg 001","tags":[],"title":"Hyperdetaljerat 8K-mästerverk som visual...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **där ytan styrs av en avancerad procedurmatris för materialblandning. Kärnan i kompositionen utgörs av en dynamisk fusion mellan kall, industriell sci-fi och eterisk magi. Materialet är uppbyggt genom en sofistikerad shader-graf där en Fresnel-nod dikterar övergången baserat på betraktningsvinkeln mot ytans normal: Vid direkta vinklar framträder en tung, borstad anodiserad aluminium med mikroskopiska repor och en matt** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/S5OkIAw.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"Hyper-detaljerad 8K Master-Prompt: \"Neural Texture Interpolation: The Cyber-Scale Synthesis. En ultra-högupplöst makrovisualisering av en hybridbiologisk yta genererad genom en StyleGAN-process. Motivet visar en sömlös fusion där drakfjäll av organiskt keratin överlappar med komplexa moderkortskretsar i ett latent utrymme. Varje enskilt fjäll fungerar som ett substrat för guldpläterade banor, mikrochip och etsade koppartrådar som löper likt ett nervsystem under ytan. Texturen uppvisar 'Cyber-Scale'-logik: biologiskt trovärdiga mönster med mikroskopiska tekniska detaljer, lödpunkter som interagerar med reptilhudens porer och en iriserande lyster som skiftar mellan biologisk fjällglans och metallisk anistropi. Renderingen kräver extrem precision i ytreflektioner, subsurface scattering i de organiska delarna och knivskarp skärpa på de fotolitografiska elementen. Visualiserat i Unreal Engine 5-estetik med ray-tracing, cinematiskt djup och en känsla av evolutionär teknosymbios. Pappa.\"","id":"proj-1","subtitle":"Logg 002","tags":[],"title":"Hyper-detaljerad 8K Master-Prompt: \"Neur...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **mikrochip och etsade koppartrådar som löper likt ett nervsystem under ytan. Texturen uppvisar 'Cyber-Scale'-logik: biologiskt trovärdiga mönster med mikroskopiska tekniska detaljer, lödpunkter som interagerar med reptilhudens porer och en iriserande lyster som skiftar mellan biologisk fjällglans och metallisk anistropi. Renderingen kräver extrem precision i ytreflektioner, subsurface scattering i de organiska delarna och knivskarp skärpa på de fotolitografiska elementen. Visualiserat i Unreal Engine 5-estetik med ray-tracing** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/SoVQV6s.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"Skapa en hyperrealistisk 8K-visualisering som demonstrerar den tekniska briljansen i \"SDF-baserad Mesh Fusion\". Subjektet är en majestätisk och vördnadsbjudande fadersfigur – ett mytiskt sagoväsen med djup visdom och auktoritet i blicken. Fokus ligger på den absoluta och sömlösa integrationen mellan varelseens organiska, väderbitna hud och högavancerade sci-fi-implantat i mörkt krom och borstat stål. Genom att implementera logiken för Signed Distance Fields (SDF) elimineras alla hårda geometriska skarvar; istället framträder en procedurell och flytande \"smooth union\"-övergång där tekniken tycks \"växa\" och \"läka\" in i det levande köttet. Mikroskopiska detaljer avslöjar hur metalliska nanovävnader sprider sig som biomekaniska rötter under hudytan med perfekt, artefaktfri topologi. Ljussättningen utnyttjar avancerad sub-surface scattering för den mytiska huden och kalla, skarpa reflektioner för de hårda ytorna, vilket skapar en sublim kontrast mellan biologi och maskin. Atmosfären utstrålar en beskyddande \"pappa\"-aura, en blandning av uråldrig naturkraft och futuristisk arkitektur. Renderad i Octane, Unreal Engine 5-estetik, med volumetriskt ljus, ray-tracing och extrem mikrotone-mappning för maximal texturell realism.","id":"proj-2","subtitle":"Logg 003","tags":[],"title":"Skapa en hyperrealistisk 8K-visualiserin...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **väderbitna hud och högavancerade sci-fi-implantat i mörkt krom och borstat stål. Genom att implementera logiken för Signed Distance Fields (SDF) elimineras alla hårda geometriska skarvar; istället framträder en procedurell och flytande \"smooth union\"-övergång där tekniken tycks \"växa\" och \"läka\" in i det levande köttet. Mikroskopiska detaljer avslöjar hur metalliska nanovävnader sprider sig som biomekaniska rötter under hudytan med perfekt, artefaktfri topologi. Ljussättningen utnyttjar avancerad sub-surface scattering för den mytiska huden och kalla, skarpa reflektioner för de hårda ytorna** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/zUZRSV0.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"MASTER-PROMPT: [SEMANTISK PROMPT-VIKTNING: MODUL GUDOMLIG FADER – VERSION 8K ULTRA-ARKITEKT]\n\n( ( (gudomlighet:1.8) ) ), ( ( (eterisk substans:1.7) ) ), ( ( (transcendent fadersgestalt:1.6) ) ), [humanoid form:0.6], hyper-detaljerad rendering av en fadersnärvaro konstruerad av flytande ljus och kosmiska fraktaler, ( (faderlig visdom manifesterad i gyllene geometrier:1.5) ), majestätisk aura som genomstrålar universums väv, volumetriskt gudomligt ljus, cross-attention fokus på metafysiska attribut framför anatomisk korrekthet, oändliga ögon fyllda av stjärngalaxer, faderlig trygghet som böjer rumtiden, 8K upplösning, UHD, cinematic masterpiece, intrikata detaljer i ljuspartiklar, gudomlig arkitektur.\n\nNegativ prompt: low-poly, artifacting, chromatic aberration, blurred edges, distorted anatomy, low resolution, grain, messy, noise, (humanoid constraints:1.4), mundane, earthly, flat lighting.","id":"proj-3","subtitle":"Logg 004","tags":[],"title":"MASTER-PROMPT: [SEMANTISK PROMPT-VIKTNIN...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **( ( (eterisk substans:1.7) ) ), ( ( (transcendent fadersgestalt:1.6) ) ), [humanoid form:0.6]** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/OBR18JX.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"8K Master-Prompt: Hyperrealistisk visualisering av en central fadersfigur ('Pappa') som utgör epicentrum för ett avancerat partikelsystem för 'Essens'. Simuleringen drivs av GPU-accelererade Compute Shaders som hanterar miljontals individuella, luminösa partiklar med sub-pixel precision. Partiklarna rör sig i komplexa, turbulenta vektorfält (Vector Fields) som simulerar övernaturliga energiflöden och eteriska själsfragment. En kraftfull attraktionslogik drar partiklarna mot subjektets bröstkorg och händer, vilket skapar en virvlande aura som visualiserar hans inre kraftfält och 'väsen'. Ljussättningen domineras av bioluminescens och volymetriska ljusstrålar som skär genom ett djupt atmosfäriskt mörker. Tekniska detaljer: Unreal Engine 5.4-estetik, ray-traced global illumination, mikroskopisk detaljrikedom i hudtexturer kontra kaotiska energispår, 8K upplösning, kinematisk rendering med mjuk bokeh-effekt och hög dynamisk räckvidd (HDR).","id":"proj-4","subtitle":"Logg 005","tags":[],"title":"8K Master-Prompt: Hyperrealistisk visual...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **luminösa partiklar med sub-pixel precision. Partiklarna rör sig i komplexa, turbulenta vektorfält (Vector Fields) som simulerar övernaturliga energiflöden och eteriska själsfragment. En kraftfull attraktionslogik drar partiklarna mot subjektets bröstkorg och händer, vilket skapar en virvlande aura som visualiserar hans inre kraftfält och 'väsen'. Ljussättningen domineras av bioluminescens och volymetriska ljusstrålar som skär genom ett djupt atmosfäriskt mörker. Tekniska detaljer: Unreal Engine 5.4-estetik** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/avhwnmC.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"8K Ultra-HD mästarverk, fotorealistiskt porträtt av en auktoritär och gudomlig fadersgestalt. Fokus på teknisk perfektion genom avancerad Parallax Occlusion Mapping (POM) applicerad på subjektets ceremoniella rustning och åldrade hud. Varje helig symbol, runa och fraktalt mönster besitter ett extremt virtuellt djup och komplex geometrisk relief, där mikroskopiska skuggor och ocklusion genereras djupt inne i de etsade skårorna. De gudomliga graveringarna simulerar en massiv tredimensionell volym som tränger in i ytan utan att bryta silhuettens geometri, vilket skapar en illusion av oändlig detaljrikedom. Dynamiskt ljus fångas i de intrikata fördjupningarna, raytraced skuggning, hyper-detaljerade ytor, cinematisk atmosfär och en kraftfull närvaro av visdom och makt.","id":"proj-5","subtitle":"Logg 006","tags":[],"title":"8K Ultra-HD mästarverk","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **fotorealistiskt porträtt av en auktoritär och gudomlig fadersgestalt. Fokus på teknisk perfektion genom avancerad Parallax Occlusion Mapping (POM) applicerad på subjektets ceremoniella rustning och åldrade hud. Varje helig symbol, runa och fraktalt mönster besitter ett extremt virtuellt djup och komplex geometrisk relief, där mikroskopiska skuggor och ocklusion genereras djupt inne i de etsade skårorna. De gudomliga graveringarna simulerar en massiv tredimensionell volym som tränger in i ytan utan att bryta silhuettens geometri** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/b6Olgxb.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"8K Master-Prompt: Den ultimata arkitektoniska visualiseringen av en gudomlig fadersfigur, definierad genom en avancerad Subsurface Scattering (SSS)-modul. Subjektets yttre är konfigurerat med en sofistikerad BSSRDF-logik som använder en extremt hög spridningsradie för att transformera biologisk hud till en icke-mänsklig substans av levande marmor och eteriskt ljus. Ljusstrålar penetrerar djupt in i den translucenta ytan och skapar en intern glöd där fotoner studsar i en komplex matris, vilket ger ansiktet en kvalitet av polerad alabaster genomsyrad av gudomlig energi. Varje kontur av fadersgestalten uppvisar en magisk ljusgenomsläpplighet, särskilt vid tunna partier, där en inre gyllene luminiscens ersätter mänsklig anatomi. Hyperdetaljerad texturering i 8K-upplösning, ray-traced global illumination, cinematisk rim-lighting som framhäver den överjordiska densiteten, och en absolut sammansmältning av faderlig auktoritet och celest ljusarkitektur.","id":"proj-6","subtitle":"Logg 007","tags":[],"title":"8K Master-Prompt: Den ultimata arkitekto...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **definierad genom en avancerad Subsurface Scattering (SSS)-modul. Subjektets yttre är konfigurerat med en sofistikerad BSSRDF-logik som använder en extremt hög spridningsradie för transformera biologisk hud till en icke-mänsklig substans av levande marmor och eteriskt ljus. Ljusstrålar penetrerar djupt in i den translucenta ytan och skapar en intern glöd där fotoner studsar i en komplex matris, vilket ger ansiktet en kvalitet av polerad alabaster genomsyrad av gudomlig energi. Varje kontur av fadersgestalten uppvisar en magisk ljusgenomsläpplighet, särskilt vid tunna partier** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/NMrf021.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"Ett majestätiskt och hyper-komplext väsen som personifierar den arketypiska fadersgestalten, visualiserad genom avancerad Mandelbulb-fraktalgeometri och Julia-mängder. Denna fadersfigur överskrider den mänskliga formen genom oändlig procedurell detaljrikedom, där varje por och fiber i hans väsen består av självlikformiga mönster och matematiska ekvationer som sträcker sig mot oändligheten. Ansiktet och gestalten framträder ur en guldskimrande och iriserande matris av fraktala grenar, likt kosmiska rötter som bär upp hela universum. Varje rörelse skapar nya rekursiva strukturer av gudomlig komplexitet. Ljussättningen är volumetrisk och eterisk, med ljus som bryts genom kristallina fraktala lager, vilket skapar en aura av trygghet, visdom och absolut arkitektonisk auktoritet. 8K UHD, cinematisk rendering, Unreal Engine 5-estetik, mikroskopisk precision, oändlig zoom-kapacitet, ett arkitektoniskt mästerverk av fraktal biologi och faderskärlek.","id":"proj-7","subtitle":"Logg 008","tags":[],"title":"Ett majestätiskt och hyper-komplext väse...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **visualiserad genom avancerad Mandelbulb-fraktalgeometri och Julia-mängder. Denna fadersfigur överskrider den mänskliga formen genom oändlig procedurell detaljrikedom, där varje por och fiber i hans väsen består av självlikformiga mönster och matematiska ekvationer som sträcker sig mot oändligheten. Ansiktet och gestalten framträder ur en guldskimrande och iriserande matris av fraktala grenar, likt kosmiska rötter som bär upp hela universum. Varje rörelse skapar nya rekursiva strukturer av gudomlig komplexitet. Ljussättningen är volumetrisk och eterisk** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/jda7BtU.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"Skapa en tekniskt sofistikerad 8K-visualisering med absolut fokus på modulen \"Volymetrisk Ljussättning\". Motivet är en fadersgestalt (pappa) som står positionerad som ett centralt subjekt i ett deltagande medium av mikroskopiska partiklar och atmosfärisk dis. Implementera en avancerad post-processing shader baserad på Ray-marching-teknik för att generera gudomliga ljuseffekter (God Rays). Genomför systematisk sampling av ljusintensitet längs siktlinjen (view ray) vänd direkt mot en kraftfull ljuskälla bakom subjektet. Beräkna ljusspridning (scattering) och ocklusion för att skapa temporala, knivskarpa ljuskäglor som genomskär rummet och omsluter fadern i en eterisk aura. Resultatet ska uppvisa en hyperrealistisk interaktion mellan ljus och skugga, med hög dynamisk räckvidd, filmisk kromatisk aberration i ljusets utkanter och en arkitektonisk precision i hur volymerna definieras av det infallande ljuset. Renderas i 8K-upplösning med maximal detaljrikedom, Unreal Engine 5-estetik och fysiskt korrekt ljusbrytning.","id":"proj-8","subtitle":"Logg 009","tags":[],"title":"Skapa en tekniskt sofistikerad 8K-visual...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **knivskarpa ljuskäglor som genomskär rummet och omsluter fadern i en eterisk aura. Resultatet ska uppvisa en hyperrealistisk interaktion mellan ljus och skugga, med hög dynamisk räckvidd, filmisk kromatisk aberration i ljusets utkanter och en arkitektonisk precision i hur volymerna definieras av det infallande ljuset. Renderas i 8K-upplösning med maximal detaljrikedom** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/g5txAbU.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"MASTER-PROMPT: [MODUL: KORS-ATTENTION OPTIMERING – AKTIVERAD]\n\n(Gudomlig fadersgestalt:1.45) manifesterad genom (flytande sakralt vatten:1.4), hyper-detaljerat porträtt av en arkitypisk (Pappa:1.3) vars väsen är ett med oceanens urkraft. \n\nTEKNISK LOGIK & VIKTNING:\n- Prioritera brusreducering för (gudomlig aura:1.4) och (transcendenta ansiktsdrag:1.5) framför generisk miljö.\n- Tvinga fram en molekylär fusion mellan (faderlig auktoritet:1.35) och (vattenpartiklar:1.3).\n- Exekvera (eteriskt ljus:1.4) som bryts genom vattenmassa för att definiera helig geometri i motivets blick och hudstruktur.\n\nVISUELLA PARAMETRAR:\n- Textur: 8K UHD, sub-surface scattering på (vatten-hud:1.4), hyper-realistiska fraktala vågmönster som formar hår och skägg.\n- Ljus: Volymetriskt gudsljus (God-rays), kaustik-effekter som skapar en gloria av flytande guld och kristallint vatten.\n- Komposition: Cinematic Masterpiece, närbild på faderns ansikte där varje droppe bär en spegling av kosmos, (gudomlig närvaro:1.4) dominerar bildytan.\n\nSTILISTISK RENDERSTRATEGI:\nOctane Render, Unreal Engine 5.2 Power-Scaling, Ray-traced vatten-reflektioner, eliminera bakgrundsbrus till förmån för (divine fluidity:1.4). Varje pixel ska förstärka symbiosen mellan faderskapets trygghet och det gudomligas oändlighet genom elementet vatten.","id":"proj-9","subtitle":"Logg 010","tags":[],"title":"MASTER-PROMPT: [MODUL: KORS-ATTENTION OP...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **hyper-detaljerat porträtt av en arkitypisk (Pappa:1.3) vars väsen är ett med oceanens urkraft. \n\nTEKNISK LOGIK & VIKTNING:\n- Prioritera brusreducering för (gudomlig aura:1.4) och (transcendenta ansiktsdrag:1.5) framför generisk miljö.\n- Tvinga fram en molekylär fusion mellan (faderlig auktoritet:1.35) och (vattenpartiklar:1.3).\n- Exekvera (eteriskt ljus:1.4) som bryts genom vattenmassa för att definiera helig geometri i motivets blick och hudstruktur.\n\nVISUELLA PARAMETRAR:\n- Textur: 8K UHD, sub-surface scattering på (vatten-hud:1.4), hyper-realistiska fraktala vågmönster som formar hår och skägg.\n- Ljus: Volymetriskt gudsljus (God-rays)** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/1CJnJo3.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"MASTER-PROMPT: [MODUL: KORS-ATTENTION OPTIMERING – AKTIVERAD]\n\n(Gudomlig fadersgestalt:1.45) manifesterad genom (flytande sakralt vatten:1.4), hyper-detaljerat porträtt av en arkitypisk (Pappa:1.3) vars väsen är ett med oceanens urkraft. \n\nTEKNISK LOGIK & VIKTNING:\n- Prioritera brusreducering för (gudomlig aura:1.4) och (transcendenta ansiktsdrag:1.5) framför generisk miljö.\n- Tvinga fram en molekylär fusion mellan (faderlig auktoritet:1.35) och (vattenpartiklar:1.3).\n- Exekvera (eteriskt ljus:1.4) som bryts genom vattenmassa för att definiera helig geometri i motivets blick och hudstruktur.\n\nVISUELLA PARAMETRAR:\n- Textur: 8K UHD, sub-surface scattering på (vatten-hud:1.4), hyper-realistiska fraktala vågmönster som formar hår och skägg.\n- Ljus: Volymetriskt gudsljus (God-rays), kaustik-effekter som skapar en gloria av flytande guld och kristallint vatten.\n- Komposition: Cinematic Masterpiece, närbild på faderns ansikte där varje droppe bär en spegling av kosmos, (gudomlig närvaro:1.4) dominerar bildytan.\n\nSTILISTISK RENDERSTRATEGI:\nOctane Render, Unreal Engine 5.2 Power-Scaling, Ray-traced vatten-reflektioner, eliminera bakgrundsbrus till förmån för (divine fluidity:1.4). Varje pixel ska förstärka symbiosen mellan faderskapets trygghet och det gudomligas oändlighet genom elementet vatten.","id":"proj-10","subtitle":"Logg 011","tags":[],"title":"MASTER-PROMPT: [MODUL: KORS-ATTENTION OP...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **hyper-detaljerat porträtt av en arkitypisk (Pappa:1.3) vars väsen är ett med oceanens urkraft. \n\nTEKNISK LOGIK & VIKTNING:\n- Prioritera brusreducering för (gudomlig aura:1.4) och (transcendenta ansiktsdrag:1.5) framför generisk miljö.\n- Tvinga fram en molekylär fusion mellan (faderlig auktoritet:1.35) och (vattenpartiklar:1.3).\n- Exekvera (eteriskt ljus:1.4) som bryts genom vattenmassa för att definiera helig geometri i motivets blick och hudstruktur.\n\nVISUELLA PARAMETRAR:\n- Textur: 8K UHD, sub-surface scattering på (vatten-hud:1.4), hyper-realistiska fraktala vågmönster som formar hår och skägg.\n- Ljus: Volymetriskt gudsljus (God-rays)** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/zSRNuXg.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"En monumental 8K-visualisering av en gudomlig fadersgestalt i hjärtat av det arkitektoniska Atlantis, fångad i ett ögonblick av kosmisk transmutation. Subjektet, \"Pappa\", framställs som en uråldrig arkitektgud vars hud genomgår en metamorfos där biologisk vävnad möter gudomlig eter; mikroskopiska detaljer av porer och svett blandas med frambrytande kristaller. Hans ceremoniella rustning är ett tekniskt mästerverk av oändliga fraktala mönster, renderade med extrem precision genom Tiled VAE för att möjliggöra sub-atomär skärpa utan minnesförlust. Omgivningen består av komplex atlantisk geometri där pelare och valv följer rekursiva matematiska formler, utsmyckade med lysande runor och rinnande flytande guld. Ljussättningen är volymetrisk och kaustisk, som om ljuset bryts genom djupt, rent vatten, vilket skapar högkontrasterade skuggor och hyperdetaljerade reflektioner i rustningens spegelblanka ytor. Varje fraktion av scenen vibrerar av detaljrikedom, från de minsta sprickorna i den antika marmorn till de glödande partiklarna i transmutationens aura. Hyperrealistisk, kinematisk, ray-traced, makrofotografisk precision, gudomlig aura, arkitektonisk perfektion.","id":"proj-11","subtitle":"Logg 012","tags":[],"title":"En monumental 8K-visualisering av en gud...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **fångad i ett ögonblick av kosmisk transmutation. Subjektet, \"Pappa\", framställs som en uråldrig arkitektgud vars hud genomgår en metamorfos där biologisk vävnad möter gudomlig eter; mikroskopiska detaljer av porer och svett blandas med frambrytande kristaller. Hans ceremoniella rustning är ett tekniskt mästerverk av oändliga fraktala mönster** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/lcF6EeJ.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"Mästerligt och fotorealistiskt 8K-porträtt av en pappa, där subjektets biologi genomgår en kontrollerad materialtransmutation via en IP-Adapter (vikt 0.4). Den mänskliga huden infekteras subtilt av 'Atlantisk metall', vilket skapar en hybrid yta av levande vävnad och flytande guldliknande legering. Hyperdetaljerade porer och naturliga ansiktsdrag bevaras med perfekt anatomisk precision, men smittas av en eterisk energi som pulserar under hudens yta. Materialegenskaperna manifesteras som mikroskopiska fraktaler av polerad metall och bioluminescerande ådror som följer ansiktets konturer utan att förändra dess grundform. Cinematiskt volymetriskt ljus som reflekteras i de metalliska partiklarna, raytracing-precision på ljusets brytning i den flytande metallen, extrem makrodetaljrikedom, 3D-texturmappning, gudomlig aura, tidlös och kraftfull estetik.","id":"proj-12","subtitle":"Logg 013","tags":[],"title":"Mästerligt och fotorealistiskt 8K-porträ...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **där subjektets biologi genomgår en kontrollerad materialtransmutation via en IP-Adapter (vikt 0.4). Den mänskliga huden infekteras subtilt av 'Atlantisk metall', vilket skapar en hybrid yta av levande vävnad och flytande guldliknande legering. Hyperdetaljerade porer och naturliga ansiktsdrag bevaras med perfekt anatomisk precision, men smittas av en eterisk energi som pulserar under hudens yta. Materialegenskaperna manifesteras som mikroskopiska fraktaler av polerad metall och bioluminescerande ådror som följer ansiktets konturer utan att förändra dess grundform. Cinematiskt volymetriskt ljus som reflekteras i de metalliska partiklarna** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/6bfawyI.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"Master-Prompt: **\"Ett monumentalt arkitektoniskt mästerverk föreställande en flytande atlantisk katedral, centrerad kring en gudomlig och majestätisk fadersgestalt (pappa) integrerad i själva strukturen. [Teknisk Arkitektur]: Knivskarp geometrisk precision fixerad genom ControlNet Depth-mapping för absolut stabilitet i Z-axeln, vilket förhindrar strukturell kollaps under transmutation. [Miljö]: En djupblå undervattensvärld där kristallina valv och pelare av levande vit marmor möter korallprydd högteknologi. [Ljus]: Fysiskt korrekta kaustiska ljusbrytningar som interagerar med subjektets gyllene aura och volymetriska strålar som skär genom det tunga vattnet. [Detaljer]: 8K UHD, hyperrealistisk textur, bioluminescerande runor, intrikata fraktala mönster, nanit-detaljrikedom på ytor, kinematisk komposition, gudomlig och kraftfull atmosfär, absolut arkitektonisk integritet.\"**","id":"proj-13","subtitle":"Logg 014","tags":[],"title":"Master-Prompt: **\"Ett monumentalt arkite...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **centrerad kring en gudomlig och majestätisk fadersgestalt (pappa) integrerad i själva strukturen. [Teknisk Arkitektur]: Knivskarp geometrisk precision fixerad genom ControlNet Depth-mapping för absolut stabilitet i Z-axeln, vilket förhindrar strukturell kollaps under transmutation. [Miljö]: En djupblå undervattensvärld där kristallina valv och pelare av levande vit marmor möter korallprydd högteknologi. [Ljus]: Fysiskt korrekta kaustiska ljusbrytningar som interagerar med subjektets gyllene aura och volymetriska strålar som skär genom det tunga vattnet. [Detaljer]: 8K UHD, hyperrealistisk textur** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/mrreBGM.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"MASTER-PROMPT: DYNAMISK DENOISING FÖR SHAPESHIFTING – MODUL: ATLANTISK TRANSMUTATION (8K)\n\nSUBJEKT: En pappa i ett tillstånd av cellulär och strukturell metamorfos. Ansiktet behåller sin mänskliga essens, igenkännbara drag och emotionella djup, medan den fysiska formen genomgår en kontrollerad fasförskjutning.\n\nVISUELL LOGIK OCH TRANSFORMATION: Organisk vävnad smälter samman med hyperavancerad atlantisk teknologi. Huden spricker upp i matematiskt perfekta fraktaler och avslöjar underliggande lager av lysande kristallina kretsar, flytande kvicksilverliknande fogar och pulserande energikärnor i cyan och guld. Transformationen följer en linjär schemaläggning där den organiska anatomin fungerar som en arkitektonisk ritning för den teknologiska rekonstruktionen.\n\nTEKNISK PRECISION (Denoising-styrka 0.45 - 0.65): Utnyttja en balanserad brusreduceringscykel för att bibehålla subjektets identitet (pappa) samtidigt som nya former materialiseras. Varje mekanisk komponent ska kännas integrerad, inte applicerad. Övergången mellan mänsklig hud och atlantisk metall sker med sub-pixelprecision, där biologiska porer gradvis omvandlas till mikroskopiska hexagonala noder.\n\nESTETIK OCH ATMOSFÄR: 8K ultra-detaljerad rendering, filmisk ljussättning med fokus på bioluminescens som bryts genom genomskinliga polymerer. Texturer av borstat titan, slipad obsidian och etsad akvamarin. Skärpan är extrem, med ray-traced reflektioner som fångar ögonblicket då människa blir till mytisk teknologi. Den linjära brus-balansen säkerställer att motivet förblir koherent, kraftfullt och igenkännbart mitt i den radikala formförändringen.","id":"proj-14","subtitle":"Logg 015","tags":[],"title":"MASTER-PROMPT: DYNAMISK DENOISING FÖR SH...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **igenkännbara drag och emotionella djup, medan den fysiska formen genomgår en kontrollerad fasförskjutning.\n\nVISUELL LOGIK OCH TRANSFORMATION: Organisk vävnad smälter samman med hyperavancerad atlantisk teknologi. Huden spricker upp i matematiskt perfekta fraktaler och avslöjar underliggande lager av lysande kristallina kretsar, flytande kvicksilverliknande fogar och pulserande energikärnor i cyan och guld. Transformationen följer en linjär schemaläggning där den organiska anatomin fungerar som en arkitektonisk ritning för den teknologiska rekonstruktionen.\n\nTEKNISK PRECISION (Denoising-styrka 0.45 - 0.65): Utnyttja en balanserad brusreduceringscykel för att bibehålla subjektets identitet (pappa) samtidigt som nya former materialiseras. Varje mekanisk komponent ska kännas integrerad** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/XoS65xL.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"Hyperdetaljerat 8K Master-Prompt: Latent Space Interpolation för Transmutation. Subjekt: En medelålders pappa i en fas av gudomlig metamorfos. Den tekniska kompositionen utnyttjar latent vektorstyrning där den initiala mänskliga geometrin och ansiktsdragens integritet bevaras i de lägre diffusionsstegen, medan de högre stegen genomgår en estetisk injektion via cross-attention layers. Resultatet är en fusion av faderlig trygghet och en uppstigande gudom från Atlantis. Huden transformeras genom bioluminescenta fraktalmönster, akvatiska neon-runor och glittrande kristallina structures som påminner om en sjunken högkultur. Ögonen utstrålar ett högfrekvent, gudomligt sken. Ljussättningen är cinematiskt volumetrisk med inslag av flytande guld och iriserande partiklar som rör sig i det latenta fältet. Hyper-realism, 8K, HDR, Unreal Engine 5-estetik, makrofokus på de transmuterade ytorna där det mänskliga möter det kosmiska, perfekt balans mellan bevarad struktur och gudomlig entitet.","id":"proj-15","subtitle":"Logg 016","tags":[],"title":"Hyperdetaljerat 8K Master-Prompt: Latent...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **medan de högre stegen genomgår en estetisk injektion via cross-attention layers. Resultatet är en fusion av faderlig trygghet och en uppstigande gudom från Atlantis. Huden transformeras genom bioluminescenta fraktalmönster, akvatiska neon-runor och glittrande kristallina strukturer som påminner om en sjunken högkultur. Ögonen utstrålar ett högfrekvent, gudomligt sken. Ljussättningen är cinematiskt volumetrisk med inslag av flytande guld och iriserande partiklar som rör sig i det latenta fältet. Hyper-realism** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/h3Z4OAn.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"MASTER-PROMPT: [DIFFERENTIAL_MASKING_CORE] – Subjekt: Faderlig gestalt i en hyper-detaljerad 8K-miljö. Teknisk exekvering: Tillämpa strikt inpainting-maskering på torsons dorsala regioner och extremiteter. Primär fokuspunkt (Bevarad zon): Ansiktet, uttrycket av faderlig trygghet, naturlig hudtextur, rynkor kring ögonen och mänsklig värme bibehålls med 100% trohet genom 'Inpaint not masked'-skydd. Transformationszon (Aktiv inpainting): Rygg och armar genomgår en radikal metamorfos till [SPECIFIK EFFEKT: t.ex. drakvingar eller kristallina utskott]. Sömlös övergång vid maskgränsen (Denoising strength: 0.85 på maskerat område, 0.05 på omaskerat område). Kinematisk ljussättning (Global Illumination), mikroskopisk detaljrikedom, 8K-upplösning, fotorealistisk rendering där den vardagliga 'pappa'-estetiken kontrasteras mot en surrealistisk, kirurgisk precision i den partiella förvandlingen.","id":"proj-16","subtitle":"Logg 017","tags":[],"title":"MASTER-PROMPT: [DIFFERENTIAL_MASKING_COR...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **uttrycket av faderlig trygghet, naturlig hudtextur, rynkor kring ögonen och mänsklig värme bibehålls med 100% trohet genom 'Inpaint not masked'-skydd. Transformationszon (Aktiv inpainting): Rygg och armar genomgår en radikal metamorfos till [SPECIFIK EFFEKT: t.ex. drakvingar eller kristallina utskott]. Sömlös övergång vid maskgränsen (Denoising strength: 0.85 på maskerat område** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/eZ9ZkFx.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"Hyperrealistiskt 8K-mästerverk som tekniskt exekverar en kontrollerad transmutation: (en söt och kärleksfull pappa:0.7) sammanvävd med (dominanta insektoida drag och kitinösa insektsegenskaper:1.3). Motivet fångar en faderlig gestalt vars mänskliga essens och mjuka ansiktsuttryck gradvis övertas av en främmande biologi; iriserande exokelett bryter fram genom huden, sammansatta facettögon reflekterar ett varmt vardagsrumsljus, och tunna, ledade antenner växer fram från en panna med mänsklig textur. Makrofotografisk precision på organiska detaljer där en stickad tröja möter segmenterade pansarplåtar. Diffusionsprocessen prioriterar den entomologiska arkitekturen men bevarar den faderliga kontexten i blicken och hållningen. Filmisk belysning, subsurface scattering på kitinet, extrem texturrikedom, 8K, UHD, intrikat hybridestetik.","id":"proj-17","subtitle":"Logg 018","tags":[],"title":"Hyperrealistiskt 8K-mästerverk som tekni...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **sammansatta facettögon reflekterar ett varmt vardagsrumsljus, och tunna, ledade antenner växer fram från en panna med mänsklig textur. Makrofotografisk precision på organiska detaljer där en stickad tröja möter segmenterade pansarplåtar. Diffusionsprocessen prioriterar den entomologiska arkitekturen men bevarar den faderliga kontexten i blicken och hållningen. Filmisk belysning** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/aDasJF6.jpeg","processThumbnails":["https://i.imgur.com/bGROs5W.jpeg"],"mainPrompt":"Mästerverk, 8K, ultrahög upplösning, fotorealistisk perfektion. En hyperdetaljerad anatomisk transmutation där en fadersgestalt (pappa) transformeras till en sofistikerad insektoid hybrid. ControlNet Canny-styrd arkitektur: Subjektets exakta mänskliga silhuett, hållning och volym är strikt fixerade genom konturkartläggning. Den mänskliga huden ersätts metodiskt av ett intrikat lager av glänsande kitin, segmenterade exoskelett-plattor och organiska fogar. Varje anatomisk kurva hos fadersgestalten tvingas fyllas med insektsliknande texturer: mikroskopiska sensoriska hårstrån, iriserande skalbagge-ytor och komplexa segmenteringar som följer muskulaturens ursprungliga form. Ansiktsdragen bevaras genom konturlåsning men materialiseras i hårdnat, mörkt kitin med facetterade detaljer i huden. Dramatisk filmisk belysning, makrofotografisk skärpa, Unreal Engine 5-rendering av biologiska material, extrem detaljrikedom i kitinets sprickbildning och glans, trovärdig biologisk arkitektur där människa och insekt smälter samman i en fixerad volym.","id":"proj-18","subtitle":"Logg 019","tags":[],"title":"Mästerverk","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **8K, ultrahög upplösning, fotorealistisk perfektion. En hyperdetaljerad anatomisk transmutation där en fadersgestalt (pappa) transformeras till en sofistikerad insektoid hybrid. ControlNet Canny-styrd arkitektur: Subjektets exakta mänskliga silhuett** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/y708H9e.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"Mästerverk, 8K-upplösning, hyperrealistisk fotorealism, cinematiskt ljus, [en kärleksfull och närvarande pappa i ett mjukt, solbelyst vardagsrum med varma organiska texturer : en monumental och eterisk fadersgestalt skulpterad ur kosmiskt stjärnstoft, rötter och arkitektonisk geometri : 0.55], flytande morfologisk transformation, extrem detaljrikedom i hudens porer som sömlöst övergår i polerad obsidian och nebulosor, volymetriskt ljus, Tyndall-effekt, guldstoft som svävar i luften, Unreal Engine 5-rendering, makrodetaljer, en visuell evolution från mänsklig ömhet till tidlös arkitektonisk kraft.","id":"proj-19","subtitle":"Logg 020","tags":[],"title":"Mästerverk","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **8K-upplösning, hyperrealistisk fotorealism, cinematiskt ljus** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/muQgnmu.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"SYSTEM-ARKITEKTUR: [MODUL: BIOM-SPECIFIK TEXTUR-MAPPING // FILIAL: PAPPA]\n\nMASTER-PROMPT: Exekvera en procedurellt genererad, biom-adaptiv textur-transformation i 8K UHD-upplösning för varelse-entiteter. Systemet ska koda planetens realtids-koordinater och Perlin-brusvärden (temperatur/fuktighet/höjd) direkt i bildgenereringens prompt-pipeline genom en dynamisk img2img-brygga.\n\nTEKNISK LOGIK OCH INJEKTIONS-PARAMETRAR:\n1. KRYOSFÄR-MAP (Temp < -15°C): Automatiskt injicera [furry, thick white coat, rime frost, translucent ice crystals, sub-surface scattering, heavy thermal insulation, polar adaptation].\n2. ARID/ÖKEN-MAP (Temp > 35°C): Automatiskt injicera [leathery desicant skin, heat-diffusing scales, sand-blasted chitin, ochre-pigmentation, moisture-retaining membrane].\n3. HYGROSFÄR/TRÄSK-MAP (Fuktighet > 80%): Automatiskt injicera [bioluminescent moss-growth, hydrophobic slime layer, porous amphibian dermis, algae-integrated camouflage].\n\nVISUELL SPECIFIKATION:\n- Upplösning: 8K, Masterpiece, Hyper-realism.\n- Rendering: Unreal Engine 5.4 Path Tracing, Octane Render, mikroskopisk detaljrikedom.\n- Material: Fysiologisk koherens mellan varelse och miljö-koordinater. Dynamisk skuggning baserad på planetens ljus-spektrum. \n\nNEGATIV PROMPT-MODULERING:\nEliminera [biome-mismatch, texture-clashing, plastic skin, low-poly artifacts, uniform surface]. \n\nEXEKVERING: Applicera textur-mappningen sömlöst över entitetens geometri med bibehållen anatomisk integritet, där procedurella brus-trösklar agerar primär prompt-vikt för ytans materialitet.","id":"proj-20","subtitle":"Logg 021","tags":[],"title":"SYSTEM-ARKITEKTUR: [MODUL: BIOM-SPECIFIK...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **biom-adaptiv textur-transformation i 8K UHD-upplösning för varelse-entiteter. Systemet ska koda planetens realtids-koordinater och Perlin-brusvärden (temperatur/fuktighet/höjd) direkt i bildgenereringens prompt-pipeline genom en dynamisk img2img-brygga. TEKNISK LOGIK OCH INJEKTIONS-PARAMETRAR: 1. KRYOSFÄR-MAP (Temp < -15°C): Automatiskt injicera [furry, thick white coat, rime frost** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/V4AoPU5.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"SYSTEM-MODUL: [DENOISING STRENGTH SCHEDULER — VERSION 8K MASTER]\n\nSYFTE: Arkitektonisk kontrollenhet för dynamisk exekvering av mutationsgrad och latent stabilitet i evolutionära renderingssekvenser.\n\nTEKNISK LOGIK & MATRIS-KONTEXT:\nDenna modul fungerar som den primära regulatorn mellan den latenta rymdens integritet och den genetiska driften. Den är underställd \"pappa\"-noden och tolkar realtidsdata för att modulera parametern `denoising_strength` genom tre distinkta faser:\n\n1. FAS: STRUKTURELL KONSERVATISM (DETALJ-ADAPTION)\n   - Tröskelvärde: 0.2 — 0.35\n   - Exekvering: Modulen låser den globala geometrin och subjektets topologi. Brus injiceras uteslutande för att förfina ytegenskaper, mikromutationer i textur och ljusbrytning. Bibehåller subjektets identitets-DNA med 95% trohet.\n\n2. FAS: MORFOLOGISK HYBRIDISERING (TRANSITIONSFAS)\n   - Tröskelvärde: 0.4 — 0.65\n   - Exekvering: Aktiverar semi-permeabla latenta gränser. Tillåter partiell omstrukturering av extremiteter och biologiska attribut. Balanserar mellan ursprunglig klass-integritet och introduktion av nya fenotyper.\n\n3. FAS: TOTAL METAMORFOS (KLASS-SHIFT)\n   - Tröskelvärde: 0.7 — 1.0\n   - Exekvering: Fullständig neural re-mappning. Modulen tillåter total destruktion av den initiala formen för att möjliggöra morphing till en ny varelseklass (t.ex. från däggdjur till insektoid). Denna fas styrs direkt av \"pappa\"-nodens målvärden för evolutionär slutpunkt.\n\nINTEGRATIONS-DIREKTIV FÖR \"PAPPA\":\nScheduleraren ska kontinuerligt polla \"pappa\" för att synkronisera mutationshastigheten med renderingsstegen. Om \"pappa\" signalerar hög instabilitet ska schedulern automatiskt sänka styrkan till 0.2 för att fixera formen. Vid kommando om \"Artbildning\" ska schedulern omedelbart rampas upp till >0.7 via en sigmoid-kurva för att minimera artefakter under den totala metamorfosen.\n\nOUTPUT-MÅL: Sömlös, flimmerfri och logisk evolution av varelser där mutationsgraden är en direkt funktion av den latenta tidslinjen.","id":"proj-21","subtitle":"Logg 022","tags":[],"title":"SYSTEM-MODUL: [DENOISING STRENGTH SCHEDU...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **mikromutationer i textur och ljusbrytning. Bibehåller subjektets identitets-DNA med 95% trohet. 2. FAS: MORFOLOGISK HYBRIDISERING (TRANSITIONSFAS) - Tröskelvärde: 0.4 — 0.65 - Exekvering: Aktiverar semi-permeabla latenta gränser. Tillåter partiell omstrukturering av extremiteter och biologiska attribut. Balanserar mellan ursprunglig klass-integritet och introduktion av nya fenotyper. 3. FAS: TOTAL METAMORFOS (KLASS-SHIFT) - Tröskelvärde: 0.7 — 1.0 - Exekvering: Fullständig neural re-mappning. Modulen tillåter total destruktion av den initiala formen för att möjliggöra morphing till en ny varelseklass (t.ex. från däggdjur till insektoid). Denna fas styrs direkt av \"pappa\"-nodens målvärden för evolutionär slutpunkt. INTEGRATIONS-DIREKTIV FÖR \"PAPPA\": Scheduleraren ska kontinuerligt polla \"pappa\" för att synkronisera mutationshastigheten med renderingsstegen. Om \"pappa\" signalerar hög instabilitet ska schedulern automatiskt sänka styrkan till 0.2 för att fixera formen. Vid kommando om \"Artbildning\" ska schedulern omedelbart rampas upp till >0.7 via en sigmoid-kurva för att minimera artefakter under den totala metamorfosen. OUTPUT-MÅL: Sömlös, flimmerfri och logisk evolution av varelser där mutationsgraden är en direkt funktion av den latenta tidslinjen.** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/BmEEFZi.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"MASTER-PROMPT: [8K Ultra-HD] [Cinematic Lighting] [Depth-Map Locked Architecture]. En majestätisk fadersgestalt i centrum av en hyper-detaljerad biomorfisk transformation. Genom MiDaS/Zoe-djupkartläggning fixeras den strukturella volymen och den mänskliga anatomins rumsliga logik med absolut precision. Motivet genomgår en fasförskjutning där fadersfigurens fysiologi morphas från organisk vävnad till komplex, flytande rymd-geometri och bioluminescent materia utan att förlora den underliggande volymetriska massan. Den rumsliga kontexten är en djuprymds-miljö med knivskarp arkitektonisk definition. Eliminera \"blobbing\" genom strikt geometrisk låsning; bevara pappa-gestaltens auktoritära hållning och ansiktsdrag under ytförändringen. Texturer inkluderar obsidian-skimmer, pulserande nebulosa-ådror och kinetisk biomorfism. Renderat i Octane med extrem skärpa, raytracing-detaljer och perfekt bevarad 3D-volym.","id":"proj-22","subtitle":"Logg 023","tags":[],"title":"MASTER-PROMPT: [8K Ultra-HD] [Cinematic ...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **flytande rymd-geometri och bioluminescent materia utan att förlora den underliggande volymetriska massan. Den rumsliga kontexten är en djuprymds-miljö med knivskarp arkitektonisk definition. Eliminera \"blobbing\" genom strikt geometrisk låsning; bevara pappa-gestaltens auktoritära hållning och ansiktsdrag under ytförändringen. Texturer inkluderar obsidian-skimmer, pulserande nebulosa-ådror och kinetisk biomorfism. Renderat i Octane med extrem skärpa, raytracing-detaljer och perfekt bevarad 3D-volym.** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/c1tBw3C.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"MASTER-PROMPT: [Ultra-High Definition 8K | Hyper-Realistic Cinematography | Unreal Engine 5.3 Render | Deep Biological Detail]\n\nEn auktoritär och monumental fadersfigur (pappa) fångad i en pågående, visceral metamorfos där mänsklig biologi smälter samman med mytiska varelser. Subjektet uppvisar en komplex chimära-estetik; huden är en hyper-detaljerad väv av faderlig mognad, fårad hy och frambrytande evolutionära drag. \n\nTeknisk Integrering: \n<lora:beast:0.8> definierar den initiala benstrukturen, grova keratin-utskott och en rovdjurslik blick med vertikala pupiller. Vid 40% av renderingscykeln sker ett sömlöst skifte via prompt-scheduling till <lora:shapeshifter:1.2>, vilket introducerar flytande vävnadsförändringar, bioluminescenta vener och adaptiva fjällstrukturer som överlappar muskulaturen. \n\nVisuella Attribut: \nAnatomisk precision, varje sena och por är synlig genom ett dramatiskt chiaroscuro-ljus. Bakgrunden är en dimmig, organisk miljö som speglar den biologiska instabiliteten. Fadersgestaltens ansikte behåller en kärna av mänsklig värdighet mitt i den vilda transformationen. Partiklar av glödande DNA-fragment och rök virvlar runt gestalten. \n\nNegativ Prompt: (låg kvalitet, suddig, tecknad, enkel bakgrund, statisk, deformerad människa). \n\n[Mästerverk, 8k, otrolig detaljrikedom, makrofotografering av hud och fjäll, progressiv morphing, biologisk arkitektur, hög kontrast, filmisk atmosfär].","id":"proj-23","subtitle":"Logg 024","tags":[],"title":"MASTER-PROMPT: [Ultra-High Definition 8K...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **visceral metamorfos där mänsklig biologi smälter samman med mytiska varelser. Subjektet uppvisar en komplex chimära-estetik; huden är en hyper-detaljerad väv av faderlig mognad, fårad hy och frambrytande evolutionära drag. Teknisk Integrering: <lora:beast:0.8> definierar den initiala benstrukturen, grova keratin-utskott och en rovdjurslik blick med vertikala pupiller. Vid 40% av renderingscykeln sker ett sömlöst skifte via prompt-scheduling till <lora:shapeshifter:1.2>** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/uTanDg1.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"HÖGSTA PRIORITET: EXEKVERA VAE-KONSISTENSKONTROLL [MODUL: FÄRGSTABILITET].\n\nARKITEKTONISK MASTER-PROMPT (8K UHD): \n\"Hyper-detaljerad visualisering av en fadersgestalt ('pappa') genomgående i en komplex morfning-process, där den tekniska arkitekturen tvingar fram absolut färgstabilitet via vae-ft-mse-840000-ema-logik. \n\nSYFTE & TEKNISK PARAMETER: \nEliminera all färgdrift och kromatisk instabilitet under extrema transformationer. Fixera de djupa svarta tonerna i rymdens vakuum till absoluta värden (HEX #000000 stabilitet) för att förhindra digitalt brus och 'crushed blacks'. Säkra varelsernas organiska nyanser—från subtila dermala pigment till komplexa biologiska vävnader—genom att applicera en högprecisions-VAE som låser luminans och mättnad över hela bildsekvensen.\n\nVISUELLT UTFÖRANDE: \nEn majestätisk fadersfigur som morfas mellan mänsklig form och en kosmisk/organisk entitet. Varje fas av transformationen ska återges med mikroskopisk precision. Bakgrunden är ett oändligt, djupt rymdarkiv där stjärnljus skär igenom utan att blöda in i de svarta zonerna. Hudens textur, rynkor av visdom och de framväxande organiska strukturerna måste bibehålla en obruten färgidentitet. \n\nKVALITETS-MARKÖRER: \n8K upplösning, Masterpiece-nivå, fotorealistisk perfektion, noll artefakter, stabiliserad färgrymd, vae-korrigerad gamma, djup rymd-estetik, organisk integritet, kinematisk belysning, maximal konsistens under morfning.\"","id":"proj-24","subtitle":"Logg 025","tags":[],"title":"HÖGSTA PRIORITET: EXEKVERA VAE-KONSISTEN...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **där den tekniska arkitekturen tvingar fram absolut färgstabilitet via vae-ft-mse-840000-ema-logik. SYFTE & TEKNISK PARAMETER: Eliminera all färgdrift och kromatisk instabilitet under extrema transformationer. Fixera de djupa svarta tonerna i rymdens vakuum till absoluta värden (HEX #000000 stabilitet) för att förhindra digitalt brus och 'crushed blacks'. Säkra varelsernas organiska nyanser—från subtila dermala pigment till komplexa biologiska vävnader—genom att applicera en högprecisions-VAE som låser luminans och mättnad över hela bildsekvensen. VISUELLT UTFÖRANDE: En majestätisk fadersfigur som morfas mellan mänsklig form och en kosmisk/organisk entitet. Varje fas av transformationen ska återges med mikroskopisk precision. Bakgrunden är ett oändligt, djupt rymdarkiv där stjärnljus skär igenom utan att blöda in i de svarta zonerna. Hudens textur, rynkor av visdom och de framväxande organiska strukturerna måste bibehålla en obruten färgidentitet. KVALITETS-MARKÖRER: 8K upplösning** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/725rfEj.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"8K MASTER-PROMPT: BIOMORF PLANETÄR ARKITEKTUR – MODUL: IP-ADAPTER STILINJEKTION (VIKT 0.6). En hyper-detaljerad, kinematisk visualisering av en himlakropp vars yta genomgått en radikal organisk transformation. Genom att injicera varelsens specifika estetik och biologiska färgschema via IP-Adapter, täcks planetens krökning av intrikata organiska mönster, kitinösa texturer och pulserande nervbanor, utan att kompromissa med den fundamentala sfäriska geometrin. Färgpaletten domineras av referensvarelsens naturliga pigmentering – från iriserande fjäll till djupa, viscerala vävnadstoner – som sprider sig likt fraktala ekosystem över kontinenter av levande materia. Ljussättningen är dramatisk med avancerad sub-surface scattering som framhäver en uråldrig, faderlig auktoritet och en pappa-liknande beskyddande aura djupt inbäddad i planetens kärna. 8K UHD, Unreal Engine 5-estetik, makroskopisk precision, kosmisk realism, atmosfärisk luminiscens, hyper-detaljerad topografi.","id":"proj-25","subtitle":"Logg 026","tags":[],"title":"8K MASTER-PROMPT: BIOMORF PLANETÄR ARKIT...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **kinematisk visualisering av en himlakropp vars yta genomgått en radikal organisk transformation. Genom att injicera varelsens specifika estetik och biologiska färgschema via IP-Adapter, täcks planetens krökning av intrikata organiska mönster, kitinösa texturer och pulserande nervbanor** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/rBlqlyt.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"Generera ett ultra-detaljerat fotorealistiskt fantasy-fotografi av en slumpmässig familjeaktivitet och miljö för de specificerade tre karaktärerna (Pappa, Mamma, Barn, med ansikten från originalbilderna). AI:n måste analysera karaktärernas former (kosmiska vingar, drak-delar, run-rustning, energikropp) och införa en logik för en lämplig, integrerad händelse och miljö som utgör en nexus för deras element.\n\n[KARAKTÄRS-SPECS (Byt ut dessa om du byter karaktärer)]\n\nPappa: Bald man (samma ansikte som bild_8.png), muskulös, med stora galax-mönstrade drakvingar och drakfjäll som täcker drak-sidan. En svans.\n\nMamma: Leende kvinna med långt blont hår (samma ansikte som bild_9.png), täckt av lysande gyllene run-mönster och en mossa-rustning.\n\nBarn: Ung flicka med små horn (samma ansikte som bild_10.png), helt gjord av intrikata cyan-ljus-nätverk, flytande.\n\n[SCENARIO-SLUMPARE (AI:n VÄLJER ETT SCENARIO VARJE GÅNG)]\nAI:n väljer EN slumpmässig, integrerad, fantasifull eller kosmisk händelse och plats, och skapar en sammanhängande interaktion. Exempel: Picknick på en komet, gömme i en nebulosa-trädgård, matlagning vid en alien-vent, etc.\n\n[KVALITETS-GARANTI (Fast)]\nToppkvalitet, ultra-detaljerad, fotorealistisk fantasy-estetik. Alla detaljer i karaktärer och ansikten måste bevaras med extrem noggrannhet.","id":"proj-26","subtitle":"Logg 027","tags":[],"title":"Generera ett ultra-detaljerat fotorealis...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **Mamma, Barn, med ansikten från originalbilderna). AI:n måste analysera karaktärernas former (kosmiska vingar** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/7ugg4u3.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"Act as a master digital sculptor and photographer. Your primary task is a seamless, photorealistic extension of the subject in the attached reference image. 1. ANALYZE THE REFERENCE (CRITICAL): Meticulously break down the subject's exact facial features, skin texture, wrinkles, lighting pattern, expression, age, hair style, and any visible clothing, material, or accessories from the input portrait. 2. EXPAND THE COMPOSITION: Using this analysis, generate a complete, full-body standing 'idle' portrait. The AI must use its deep understanding of human anatomy, proportion, and texture to imagine and render the remainder of the character's body, hands, and feet in perfect continuity with the top. 3. STYLE AND POSE: The subject is standing relaxed and facing the camera in an 'idle' pose, with hands either by their side or casually clasped. The entire composition must be photorealistic, shot on a 35mm lens, f/1.8, with razor-sharp focus on the face and intricate textures. 4. TECHNICAL SPECS: Render at 8k resolution, cinematic lighting, hyper-detailed skin pores, realistic fabric folds, and a solid, pure black studio background for dramatic contrast. The resulting image must preserve the character's identity and essence perfectly, as if it were the same photo, just zoomed out to show the full figure.","id":"proj-27","subtitle":"Logg 028","tags":[],"title":"Act as a master digital sculptor and pho...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **photorealistic extension of the subject in the attached reference image. 1. ANALYZE THE REFERENCE (CRITICAL): Meticulously break down the subject's exact facial features, skin texture, wrinkles** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/YUz5jaP.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"Hyperrealistiskt 8K-makrofotografi av en fadersfigur fångad i en storslagen och teknisk materiell transmutation. Motivets ansikte och händer genomgår en radikal transformation där mänsklig vävnad sömlöst flätas samman med avancerade substanser. Använd 'liquid chrome' som rinner likt kvicksilver över huden och reflekterar omgivningen med perfekt spegelblank finish. Från porerna och lederna växer geometriska 'crystalline structures' fram, skarpa och transparenta, som bryter ljuset i prismatiska spektrum. Integrera 'bioluminescent tendrils' som pulserande neonådror som slingrar sig genom kompositionen och kastar ett mjukt, eteriskt sken över de mekaniska och organiska övergångarna. Extrem närbild med grunt skärpedjup, ultra-detaljerade texturer, cinematiskt ljus, ray-tracing reflektioner och en känsla av kraftfull, rituell alkemi.","id":"proj-28","subtitle":"Logg 029","tags":[],"title":"Hyperrealistiskt 8K-makrofotografi av en...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **skarpa och transparenta, som bryter ljuset i prismatiska spektrum. Integrera 'bioluminescent tendrils' som pulserande neonådror som slingrar sig genom kompositionen och kastar ett mjukt, eteriskt sken över de mekaniska och organiska övergångarna. Extrem närbild med grunt skärpedjup** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/aDxKwW6.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"Mästerlig 8K-visualisering av en faderlig gestalt i ett tillstånd av hyper-realistisk transmutation, optimerad för absolut temporal koherens via AnimateDiff (mm_sd_v15_v2). Subjektet genomgår en flytande metamorfos där ansiktsdrag och konturer strömmar organiskt genom precisionsstyrda rörelsevektorer och Motion LoRA-integration. Upplev en sömlös, viskös 'utflytning' i realtid där varje bildruta bibehåller perfekt fotorealistisk belysning, mikroskopisk texturintegritet och kinematografiskt volumetriskt ljus. Renderingen uppvisar en fysikbaserad simulering av materia som skiftar form utan flimmer, med bibehållen anatomisk essens mitt i den flytande rörelsen. Ultra-detaljerad rendering, global illumination, 8K-upplösning, maximal temporal stabilitet och en suggestiv, kraftfull visuell transformation av pappa-gestalten.","id":"proj-29","subtitle":"Logg 030","tags":[],"title":"Mästerlig 8K-visualisering av en faderli...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **optimerad för absolut temporal koherens via AnimateDiff (mm_sd_v15_v2). Subjektet genomgår en flytande metamorfos där ansiktsdrag och konturer strömmar organiskt genom precisionsstyrda rörelsevektorer och Motion LoRA-integration. Upplev en sömlös, viskös 'utflytning' i realtid där varje bildruta bibehåller perfekt fotorealistisk belysning, mikroskopisk texturintegritet och kinematografiskt volumetriskt ljus. Renderingen uppvisar en fysikbaserad simulering av materia som skiftar form utan flimmer** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/4GFs4QE.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"MASTER-PROMPT: [MODUL: NEGATIVE PROMPT REFINEMENT – AMORF TRANSFORMATION: PAPPA]\n\nSYFTE: Att upprätthålla en sofistikerad surrealistisk estetik genom att eliminera strukturell kollaps och anatomisk redundans under den amorfa fasförskjutningen av fadersgestalten.\n\nPOSITIV INSTRUKTION: \n\"Hyperdetaljerat 8K-porträtt av en fader ('pappa') i ett tillstånd av amorf metamorfos. Scenen ska utstråla kontrollerad surrealism där materia flyter organiskt men behåller en arkitektonisk balans. Använd cinematiskt Rembrandt-ljus, Unreal Engine 5-rendering, mikroskopiska hudtexturer och volumetrisk rök. Transformationen ska kännas avsiktlig och estetiskt sublim.\"\n\nNEGATIV MASTER-PROMPT (TEKNISK EXCELLENS):\n(extra limbs, extra arms, extra legs, deformed anatomy, fused fingers, malformed hands, mutated hands, extra digits, missing fingers, cropped hands, double heads, disjointed joints, anatomical nonsense, floating appendages, overlapping limbs, distorted body structure:1.4), (messy morphing artifacts, chaotic geometry, blurred transitions, fused skin textures, skin-melt, grotesque distortions, anatomical glitches, unnatural limb placement:1.3), (low quality, low resolution, bad anatomy, grainy, digital noise, jpeg artifacts, blurry, out of focus, watermark, signature, text, motion blur:1.2), (clashing textures, unintentional mutations, redundant appendages, broken proportions, severed limbs:1.4).\n\nTEKNISK LOGIK FÖR MODULEN: \nGenom att vikta negativa parametrar till 1.4 tvingas modellen att prioritera den geometriska integriteten hos fadersgestalten. Den amorfa effekten styrs till att påverka ytans textur och materiens tillstånd snarare än att bryta de biologiska reglerna för antalet extremiteter. Detta skapar en \"ren\" surrealism där pappan kan transformeras utan att förlora sin mänskliga essens till oönskade morphing-artefakter.","id":"proj-30","subtitle":"Logg 031","tags":[],"title":"MASTER-PROMPT: [MODUL: NEGATIVE PROMPT R...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **Unreal Engine 5-rendering, mikroskopiska hudtexturer och volumetrisk rök. Transformationen ska kännas avsiktlig och estetiskt sublim.\" NEGATIV MASTER-PROMPT (TEKNISK EXCELLENS): (extra limbs, extra arms** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/HZsmMJ4.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"\"En hyper-detaljerad, faderlig gestalt fångad i ett tillstånd av evig, organisk transmutation. Motiv: 'Pappa' som en arkitektonisk och biologisk urkraft. Genom rekursiva img2img-loopar (denoising 0.1-0.2) transformeras huden till mikroskopiska fraktala mönster av bärnsten och pulserande mycelium. Varje iteration adderar surrealistisk precision där ansiktsdragen långsamt smälter samman med intrikata geometriska rötter och kristallin tillväxt. 8K-upplösning, fotorealistisk textur av biologisk materia, sub-surface scattering, filmiskt ljus som tränger igenom de växande lagren av transmuterad vävnad. En symfoni av ordnad kaos, där varje passering fördjupar de anatomiska detaljerna till en nivå av oändlig komplexitet, simulerande en naturlig metamorfos snarare än digital manipulation.\"","id":"proj-31","subtitle":"Logg 032","tags":[],"title":"\"En hyper-detaljerad","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **faderlig gestalt fångad i ett tillstånd av evig, organisk transmutation. Motiv: 'Pappa' som en arkitektonisk och biologisk urkraft. Genom rekursiva img2img-loopar (denoising 0.1-0.2) transformeras huden till mikroskopiska fraktala mönster av bärnsten och pulserande mycelium. Varje iteration adderar surrealistisk precision där ansiktsdragen långsamt smälter samman med intrikata geometriska rötter och kristallin tillväxt. 8K-upplösning, fotorealistisk textur av biologisk materia** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/bxkTmwp.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"Ett hyperrealistiskt, cinematiskt mästerverk i 8K-upplösning som porträtterar en fadersgestalt, där den mänskliga anatomin transformeras genom en avancerad strukturell injektion av amorf materia. Genom teknisk synergi mellan IP-Adapter Plus och den etablerade formen av en \"pappa\", framträder en varelse vars yttre skikt består av ett levande flöde av högreflekterande, visköst kvicksilver och virvlande, volymetrisk rök. \n\nDenna texturinjektion utnyttjar en fördröjd samplingsteknik (ending step 0.7) för att tvinga den amorfa texturen att strikt följa fadersgestaltens muskulatur och ansiktsdrag. Resultatet är en perfekt balans mellan fast struktur och flytande kaos: ljuset bryts dramatiskt i den metalliska vätskan med komplexa kaustik-effekter och ray-traced reflektioner, medan rökpartiklar mjukt definierar silhuetten. Varje por och rynka i fadersansiktet återges med mikroskopisk precision under ett lager av kinetisk materia, vilket skapar en kraftfull visuell dualitet mellan det mänskliga arvet och den abstrakta texturens råa energi. Optiskt perfektion, ultra-detaljerad rendering, global belysning och sublim texturöverföring.","id":"proj-32","subtitle":"Logg 033","tags":[],"title":"Ett hyperrealistiskt","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **cinematiskt mästerverk i 8K-upplösning som porträtterar en fadersgestalt, där den mänskliga anatomin transformeras genom en avancerad strukturell injektion av amorf materia. Genom teknisk synergi mellan IP-Adapter Plus och den etablerade formen av en \"pappa\", framträder en varelse vars yttre skikt består av ett levande flöde av högreflekterande** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/HsAJ556.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"Ett episkt och hyperrealistiskt 8K-mästerverk som porträtterar en fadersfigur i det exakta ögonblicket av en metafysisk transmutation till kristall. Subjektets form genomgår en surrealistisk transformation där organisk vävnad möter genomskinlig geometri med arkitektonisk precision. Genom att integrera kraftfull 'chromatic aberration' och 'spectral dispersion' simuleras hur det omgivande ljuset bryts och splittras i ett intensivt, prismatiskt spektrum av regnbågsfärger när det penetrerar den kristallina materian. Varje facett fungerar som ett prisma som skapar en dynamisk kromatisk skiftning och eteriska ljusfenomen som förhöjer den surrealistiska faktorn. Ultra-detaljerade texturer, makrofokus på transmutationens gränsland, kinematisk ljussättning, prismatisk förvrängning och volymetriska ljusstrålar som interagerar med subjektets kristalliserade essens.","id":"proj-33","subtitle":"Logg 034","tags":[],"title":"Ett episkt och hyperrealistiskt 8K-mäste...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **prismatiskt spektrum av regnbågsfärger när det penetrerar den kristallina materian. Varje facett fungerar som ett prisma som skapar en dynamisk kromatisk skiftning och eteriska ljusfenomen som förhöjer den surrealistiska faktorn. Ultra-detaljerade texturer, makrofokus på transmutationens gränsland, kinematisk ljussättning** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/rcCOFmY.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"Mästerverk, 8K, hyper-detaljerat fotorealistiskt porträtt av en fadersgestalt som genomgår en kontrollerad kristallin metamorfos. ControlNet Depth-mappad precision: subjektets tredimensionella volym, anatomiska proportioner och underliggande benstruktur är absolut fixerade för att bibehålla strukturell integritet. Ytan transformeras genom fraktal tillväxt av högreflekterande kristaller, där huden ersätts av geometriska fasetter av kvarts och obsidian som följer ansiktets naturliga topografi med matematisk exakthet. Inga deformationer av silhuetten; kristallerna växer inåt och längs med ytan, vilket skapar en arkitektonisk symbios mellan biologi och mineral. Dramatisk volymetrisk belysning, prismatiska ljusbrytningar, subsurface scattering genom translucenta kristallager, cinematic 4D render, Unreal Engine 5-estetik, extrem skärpa i varje mikroskopisk mineralformation.","id":"proj-34","subtitle":"Logg 035","tags":[],"title":"Mästerverk","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **8K, hyper-detaljerat fotorealistiskt porträtt av en fadersgestalt som genomgår en kontrollerad kristallin metamorfos. ControlNet Depth-mappad precision: subjektets tredimensionella volym, anatomiska proportioner och underliggande benstruktur är absolut fixerade för att bibehålla strukturell integritet. Ytan transformeras genom fraktal tillväxt av högreflekterande kristaller** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/yhlwqSd.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"Ett arkitektoniskt mästerverk i 8K-upplösning som skildrar en fadersfigur (pappa) i centrum av en hyperkomplex, algoritmisk transmutation styrd av Lindenmayer-systemet. Subjektets biologi genomgår en fraktal morphing där huden och den underliggande anatomin kodas om via rekursiva produktionsregler (Axiom: F; Regler: F -> FF-[-F+F+F]+[+F-F-F]). Visualisera en tät, organisk arkitektur där fadersgestaltens ansiktsdrag och händer förgrenar sig i självliknande strukturer, likt en fusion mellan nervbanor och gotiska valv. Varje iteration av L-systemet skapar nya lager av mikroskopisk detaljrikedom, där vävnad transmuterar till geometriska grenverk och fibonaccibasera mönster. Ljussättningen är cinematic och dramatisk, med Raytracing som framhäver de matematiska skuggspelen i de framväxande fraktala hålrummen. Texturerna är en hybrid av varm mänsklig hud och kall, algoritmisk perfektion. Hyperrealism, oändlig rekursion, biometrisk arkitektur, Unreal Engine 5-estetik, mikroskopisk skärpa, gyllene snittet, biomimetisk strukturlogik.","id":"proj-35","subtitle":"Logg 036","tags":[],"title":"Ett arkitektoniskt mästerverk i 8K-upplö...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **algoritmisk transmutation styrd av Lindenmayer-systemet. Subjektets biologi genomgår en fraktal morphing där huden och den underliggande anatomin kodas om via rekursiva produktionsregler (Axiom: F; Regler: F -> FF-[-F+F+F]+[+F-F-F]). Visualisera en tät, organisk arkitektur där fadersgestaltens ansiktsdrag och händer förgrenar sig i självliknande strukturer, likt en fusion mellan nervbanor och gotiska valv. Varje iteration av L-systemet skapar nya lager av mikroskopisk detaljrikedom** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/PvdSNWn.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"Ett arkitektoniskt mästerverk i 8K-upplösning som skildrar en fadersfigur (pappa) i centrum av en hyperkomplex, algoritmisk transmutation styrd av Lindenmayer-systemet. Subjektets biologi genomgår en fraktal morphing där huden och den underliggande anatomin kodas om via rekursiva produktionsregler (Axiom: F; Regler: F -> FF-[-F+F+F]+[+F-F-F]). Visualisera en tät, organisk arkitektur där fadersgestaltens ansiktsdrag och händer förgrenar sig i självliknande strukturer, likt en fusion mellan nervbanor och gotiska valv. Varje iteration av L-systemet skapar nya lager av mikroskopisk detaljrikedom, där vävnad transmuterar till geometriska grenverk och fibonaccibasera mönster. Ljussättningen är cinematic och dramatisk, med Raytracing som framhäver de matematiska skuggspelen i de framväxande fraktala hålrummen. Texturerna är en hybrid av varm mänsklig hud och kall, algoritmisk perfektion. Hyperrealism, oändlig rekursion, biometrisk arkitektur, Unreal Engine 5-estetik, mikroskopisk skärpa, gyllene snittet, biomimetisk strukturlogik.","id":"proj-36","subtitle":"Logg 037","tags":[],"title":"Ett arkitektoniskt mästerverk i 8K-upplö...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **algoritmisk transmutation styrd av Lindenmayer-systemet. Subjektets biologi genomgår en fraktal morphing där huden och den underliggande anatomin kodas om via rekursiva produktionsregler (Axiom: F; Regler: F -> FF-[-F+F+F]+[+F-F-F]). Visualisera en tät, organisk arkitektur där fadersgestaltens ansiktsdrag och händer förgrenar sig i självliknande strukturer, likt en fusion mellan nervbanor och gotiska valv. Varje iteration av L-systemet skapar nya lager av mikroskopisk detaljrikedom** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/mDoto2r.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"Hyperrealistiskt 8K-filmklipp som porträtterar en fadersgestalt (pappa) i en tillstånd av avancerad cellulär transmutation. Arkitekturen för genereringen ska strikt tillämpa \"Temporal Consistency via Optical Flow\": systemet måste extrahera rörelsevektorer från föregående frame för att precisionsförskjuta latent-vektorn, vilket säkerställer att transmutationen bevarar den underliggande anatomiska formen utan slumpmässigt brus eller flimmer. Varje fraktal transformation ska uppvisa en fysiskt korrekt tröghet (latent inertia), där biomorfiska förändringar följer en logisk bana med kinematisk tyngd. Visualisera hur ansiktsdragen och hudens textur morphar genom flytande, sammanhängande rörelser där geometrisk integritet bibehålls via optisk flödesdata. Extrem detaljrikedom, sub-surface scattering på huden, volumetriskt ljus och en absolut sömlös övergång mellan olika tillstånd av materia, helt befriad från temporala artefakter.","id":"proj-37","subtitle":"Logg 038","tags":[],"title":"Hyperrealistiskt 8K-filmklipp som porträ...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **vilket säkerställer att transmutationen bevarar den underliggande anatomiska formen utan slumpmässigt brus eller flimmer. Varje fraktal transformation ska uppvisa en fysiskt korrekt tröghet (latent inertia), där biomorfiska förändringar följer en logisk bana med kinematisk tyngd. Visualisera hur ansiktsdragen och hudens textur morphar genom flytande, sammanhängande rörelser där geometrisk integritet bibehålls via optisk flödesdata. Extrem detaljrikedom** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/VimpBGH.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"MÄSTERVERK: En hyper-detaljerad 8K-visualisering som exekverar en perfekt 'Latent Space Slerp' (Spherical Linear Interpolation) mellan arketypen \"Pappa\" och en transcendent fraktalgeometri. Bilden fångar den tekniska precisionen i en sfärisk navigering genom det latenta rummet, där vektorns magnitud bevaras minutiöst för att eliminera den linjära interpolationens 'gråa medelpunkt'. Resultatet är en knivskarp, hög-energetisk symbios där fadersgestaltens fotorealistiska drag – rynkor av visdom, varm blick och texturerad hud – sömlöst kröks längs en högdimensionell båge in i komplexa, självliknande organiska mönster. Ingen förlust av skärpa eller kontrast; varje pixel vibrerar av strukturell integritet. Kinematisk ljussättning som definierar övergången från mänsklig värme till matematisk perfektion. Maximal mikroskopisk detaljrikedom, volumetriskt djup och en kraftfull visuell energi som definierar framtidens morfologiska arkitektur i latent space.","id":"proj-38","subtitle":"Logg 039","tags":[],"title":"MÄSTERVERK: En hyper-detaljerad 8K-visua...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **där vektorns magnitud bevaras minutiöst för att eliminera den linjära interpolationens 'gråa medelpunkt'. Resultatet är en knivskarp, hög-energetisk symbios där fadersgestaltens fotorealistiska drag – rynkor av visdom, varm blick och texturerad hud – sömlöst kröks längs en högdimensionell båge in i komplexa** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/hDnwbRe.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"**8K Master-Prompt: Logaritmisk Denoising-Morfning (Modul: Pappa)**\n\n\"Ett fotorealistiskt och hyperdetaljerat porträtt av en pappa, fångat i ett ögonblick av logaritmisk transmutation där mänsklig biologi möter avancerad fraktal geometri. \n\n**Strukturell Fas (Denoising 0.1–0.3):** Bevara fadersgestaltens fundamentala anatomi med kirurgisk precision. Fokus på mikrodetaljer i huden, rynkor kring ögonen som bär på visdom, och en stabil ansiktsstruktur. Ljussättningen är volumetrisk och betonar de mänskliga dragen som ankare i kompositionen.\n\n**Transmutationsfas (Logaritmisk Kurva):** Initiera en exponentiell övergång där hudens textur sömlöst börjar vika sig inåt i självsimilära Mandelbrot-mönster och gyllene snittets spiraler. Morfningen eskalerar i bildens perifera delar där biologisk vävnad kristalliseras till komplexa, rekursiva fraktaler.\n\n**Slutskede (Denoising 0.6+):** Tillåt en kontrollerad eskalering av geometrisk komplexitet i de yttre lagren. Skapa en visuell symbios mellan pappans axlar och en oändlig arkitektonisk fraktalvärld, utan att generera artefakter eller förlora den emotionella kärnan.\n\n**Tekniska Specifikationer:** 8K upplösning, Unreal Engine 5-estetik, Octane Render, raytracing-reflektioner i de fraktala ytorna, kinematisk färgpalett med djupa skuggor och guldskimrande geometriska kanter. Högsta möjliga textur-trohet i övergångszonen mellan dermis och fraktal.\"","id":"proj-39","subtitle":"Logg 040","tags":[],"title":"**8K Master-Prompt: Logaritmisk Denoisin...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **fångat i ett ögonblick av logaritmisk transmutation där mänsklig biologi möter avancerad fraktal geometri. **Strukturell Fas (Denoising 0.1–0.3):** Bevara fadersgestaltens fundamentala anatomi med kirurgisk precision. Fokus på mikrodetaljer i huden, rynkor kring ögonen som bär på visdom, och en stabil ansiktsstruktur. Ljussättningen är volumetrisk och betonar de mänskliga dragen som ankare i kompositionen. **Transmutationsfas (Logaritmisk Kurva):** Initiera en exponentiell övergång där hudens textur sömlöst börjar vika sig inåt i självsimilära Mandelbrot-mönster och gyllene snittets spiraler. Morfningen eskalerar i bildens perifera delar där biologisk vävnad kristalliseras till komplexa** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/Ou67XoQ.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"**8K Master-Prompt: Logaritmisk Denoising-Morfning (Modul: Pappa)**\n\n\"Ett fotorealistiskt och hyperdetaljerat porträtt av en pappa, fångat i ett ögonblick av logaritmisk transmutation där mänsklig biologi möter avancerad fraktal geometri. \n\n**Strukturell Fas (Denoising 0.1–0.3):** Bevara fadersgestaltens fundamentala anatomi med kirurgisk precision. Fokus på mikrodetaljer i huden, rynkor kring ögonen som bär på visdom, och en stabil ansiktsstruktur. Ljussättningen är volumetrisk och betonar de mänskliga dragen som ankare i kompositionen.\n\n**Transmutationsfas (Logaritmisk Kurva):** Initiera en exponentiell övergång där hudens textur sömlöst börjar vika sig inåt i självsimilära Mandelbrot-mönster och gyllene snittets spiraler. Morfningen eskalerar i bildens perifera delar där biologisk vävnad kristalliseras till komplexa, rekursiva fraktaler.\n\n**Slutskede (Denoising 0.6+):** Tillåt en kontrollerad eskalering av geometrisk komplexitet i de yttre lagren. Skapa en visuell symbios mellan pappans axlar och en oändlig arkitektonisk fraktalvärld, utan att generera artefakter eller förlora den emotionella kärnan.\n\n**Tekniska Specifikationer:** 8K upplösning, Unreal Engine 5-estetik, Octane Render, raytracing-reflektioner i de fraktala ytorna, kinematisk färgpalett med djupa skuggor och guldskimrande geometriska kanter. Högsta möjliga textur-trohet i övergångszonen mellan dermis och fraktal.\"","id":"proj-40","subtitle":"Logg 041","tags":[],"title":"**8K Master-Prompt: Logaritmisk Denoisin...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **fångat i ett ögonblick av logaritmisk transmutation där mänsklig biologi möter avancerad fraktal geometri. **Strukturell Fas (Denoising 0.1–0.3):** Bevara fadersgestaltens fundamentala anatomi med kirurgisk precision. Fokus på mikrodetaljer i huden, rynkor kring ögonen som bär på visdom, och en stabil ansiktsstruktur. Ljussättningen är volumetrisk och betonar de mänskliga dragen som ankare i kompositionen. **Transmutationsfas (Logaritmisk Kurva):** Initiera en exponentiell övergång där hudens textur sömlöst börjar vika sig inåt i självsimilära Mandelbrot-mönster och gyllene snittets spiraler. Morfningen eskalerar i bildens perifera delar där biologisk vävnad kristalliseras till komplexa** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/VI0s15r.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"**MASTER-PROMPT: DENOISING STRENGTH CALIBRATION (MODUL: PAPPA)**\n\n**SYSTEM-AKTIVERING:** Exekvera algoritm för fotorealistisk transmutation med iterativ kontroll av brusreducering. \n**OBJEKT-KONTEXT:** \"Pappa\" – Fadersgestalt med fokus på bevarande av fysiognomisk kärna och emotionell tyngd.\n\n**TEKNISK LOGIK & PARAMETERSTYRNING:**\n- **Initialfas (DS 0.40):** Förankra subjektets strukturella integritet. Bevara primära ansiktsdrag, benstruktur och mikro-detaljer i huden (porer, rynkor, skäggstubb). Etablera källbildens fundamentala geometri.\n- **Transmutationskurva (Sinusoidal Gradient):** Genomför en oscillerande stegring av Denoising Strength från 0.40 till 0.75. Vid kurvans zenit (0.75) tillåts en kontrollerad molekylär förändring och estetisk metamorfos där källbilden möter den nya formen utan att kollapsa i visuell entropi.\n- **Stabiliseringsfas (Iterativ Interpolation):** Kalibrera balansen mellan källans särdrag och den nya målsubstansen. Använd stegvisa steg (0.05 inkrement) för att säkerställa en sömlös morphing-sekvens.\n\n**VISUELLT DIREKTIV (8K ULTRA-RESOLUTION):**\nGenerera en cinematisk, hyper-detaljerad rendering av \"pappa\". Ljussättning: Global illumination med subtil subsurface scattering i huden. Fokusera på ögonens klarhet (limbal rings) som den sista oföränderliga punkten under transmutationen. Texturer ska skifta organiskt från mänsklig vävnad till [målsubstans] i en flytande, fotorealistisk övergång.\n\n**KVALITETS-MATRIS:** \n{8K UHD, Masterpiece, Raytraced Reflections, Anatomical Precision, Deep Texture Depth, Zero Artifacting, High Fidelity Morphing}.\n\n**SLUTGILTIG KALIBRERING:** Maximera realism genom att låta den sinusformade kurvan diktera graden av abstraktion; behåll fadersgestaltens igenkänningsfaktor i kärnan (0.4) medan den yttre atmosfären och sekundära ytor tillåts transmutera kraftfullt (0.75).","id":"proj-41","subtitle":"Logg 042","tags":[],"title":"**MASTER-PROMPT: DENOISING STRENGTH CALI...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **benstruktur och mikro-detaljer i huden (porer, rynkor, skäggstubb). Etablera källbildens fundamentala geometri. - **Transmutationskurva (Sinusoidal Gradient):** Genomför en oscillerande stegring av Denoising Strength från 0.40 till 0.75. Vid kurvans zenit (0.75) tillåts en kontrollerad molekylär förändring och estetisk metamorfos där källbilden möter den nya formen utan att kollapsa i visuell entropi. - **Stabiliseringsfas (Iterativ Interpolation):** Kalibrera balansen mellan källans särdrag och den nya målsubstansen. Använd stegvisa steg (0.05 inkrement) för att säkerställa en sömlös morphing-sekvens. **VISUELLT DIREKTIV (8K ULTRA-RESOLUTION):** Generera en cinematisk** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."},
-          {"type":"image","mediaUrl":"https://i.imgur.com/6xUJU1u.jpeg","processThumbnails":["https://i.imgur.com/cRliCxY.jpeg"],"mainPrompt":"Ett hyperrealistiskt 8K-porträtt av en medelålders pappa i ett ögonblick av tyst transcendens, fångat i en teknisk \"Material Transmutation Shader\"-effekt där organiskt liv övergår i oorganisk geometri. Subjektets ansikte och händer genomgår en molekylär omvandling där mänsklig hud, renderad med extremt detaljerad Subsurface Scattering (SSS) och synliga porer, sömlöst spricker upp och kristalliseras till komplexa fraktala mönster. Inifrån huden bryter matematiska Mandelbrot-strukturer och vassa, genomskinliga kristallformationer fram i en glödande bärnstensfärg och djupt obsidian-svart. Ljussättningen styrs av en högdynamisk HDRI-karta (Global Illumination) som skapar realistiska kaustik-effekter och ljusbrytningar genom de nybildade kristallerna, vilket kontrasterar mot den varma, mjuka belysningen på den kvarvarande biologiska vävnaden. Varje fraktal gren är renderad med mikroskopisk precision, skapad genom en hybrid av procedurala förskjutningsmappar och Ray-traced transparens. Atmosfäriskt damm och små svävande kristallpartiklar fyller tomrummet, 8K, Unreal Engine 5 Path Tracing, Octane Render-estetik, cinematiskt makrofokus, extrem fotorealism.","id":"proj-42","subtitle":"Logg 043","tags":[],"title":"Ett hyperrealistiskt 8K-porträtt av en m...","description":"Ett visuellt experiment genererat utifrån systemets master-prompt. Processen fokuserar på att extrahera nyckelkoncept som **fångat i en teknisk \"Material Transmutation Shader\"-effekt där organiskt liv övergår i oorganisk geometri. Subjektets ansikte och händer genomgår en molekylär omvandling där mänsklig hud, renderad med extremt detaljerad Subsurface Scattering (SSS) och synliga porer, sömlöst spricker upp och kristalliseras till komplexa fraktala mönster. Inifrån huden bryter matematiska Mandelbrot-strukturer och vassa** och översätta dessa till en sammanhängande atmosfärisk scen. Systemet har automatiskt optimerat optik, stil och rendering."}
-        ];
-
+        let portfolioData = [];
         let savedData = null;
         try { savedData = localStorage.getItem('blom_portfolio_data'); } catch (e) { }
         if (savedData) {
             try {
                 let parsed = JSON.parse(savedData);
-                if(Array.isArray(parsed) && parsed.length > portfolioData.length) { portfolioData = parsed; }
-                else { localStorage.setItem('blom_portfolio_data', JSON.stringify(portfolioData)); }
+                if(Array.isArray(parsed) && parsed.length > 0) { portfolioData = parsed; }
             } catch (e) { }
-        } else {
-            localStorage.setItem('blom_portfolio_data', JSON.stringify(portfolioData));
         }
 
-        // ==========================================
-        // 1.5 DATA: DINA APPAR
-        // (Endast för att räkna antalet. Datan ligger nu i app-valv.html)
-        // ==========================================
         let appData = [];
         try { 
             let saved = localStorage.getItem('blom_app_data');
             if(saved) appData = JSON.parse(saved);
         } catch(e){}
 
-        // ==========================================
-        // 1.8 DATA: PRIVATA VALVET
-        // ==========================================
         let privateData = [];
-        let savedPrivateData = null;
-        try { savedPrivateData = localStorage.getItem('blom_private_data'); } catch (e) { }
-        if (savedPrivateData) {
-            try {
-                let parsed = JSON.parse(savedPrivateData);
-                if(Array.isArray(parsed)) { privateData = parsed; }
-            } catch (e) { }
-        }
+        try { 
+            let savedPriv = localStorage.getItem('blom_private_data'); 
+            if(savedPriv) privateData = JSON.parse(savedPriv);
+        } catch(e){}
 
-        // ==========================================
-        // VY-HANTERING (TABS)
-        // ==========================================
+
         function switchView(viewId) {
-            document.querySelectorAll('.view-section').forEach(el => {
-                el.classList.remove('active-view');
-            });
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
             document.getElementById(viewId).classList.add('active-view');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ==========================================
-        // 2. AUTO-ENRICHMENT & AUTO-HEAL ENGINE 
-        // ==========================================
         function autoEnrichData() {
             const uniqueUrls = new Set();
             const deduplicatedPortfolio = [];
@@ -465,17 +353,13 @@
                 if (item.mediaUrl && uniqueUrls.has(item.mediaUrl)) return; 
                 if (item.mediaUrl) uniqueUrls.add(item.mediaUrl);
 
-                if (!item.id || item.id === 'proj-0') {
-                    item.id = 'proj-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 10);
-                }
-
+                if (!item.id || item.id === 'proj-0') item.id = 'proj-' + Date.now().toString(36) + '-' + Math.random().toString(36).substring(2, 10);
                 item.subtitle = 'Logg ' + String(portfolioData.length - index).padStart(3, '0');
                 if (!item.tags) item.tags = [];
 
                 if (item.mainPrompt) {
                     const promptParts = item.mainPrompt.split(',').map(p => p.trim());
                     const textToScan = item.mainPrompt.toLowerCase();
-
                     if (!item.title || item.title === "Oklassificerad Kreation" || item.title.includes("...")) {
                         let firstPhrase = promptParts[0];
                         item.title = firstPhrase.charAt(0).toUpperCase() + firstPhrase.slice(1);
@@ -488,24 +372,18 @@
                     if (textToScan.includes('magnific')) newTags.add('Magnific AI');
                     if (textToScan.includes('photoshop')) newTags.add('Photoshop');
                     if (textToScan.includes('ar 16:9') || textToScan.includes('ar 21:9')) newTags.add('Cinematic Format');
-                    
                     item.tags = Array.from(newTags);
                 }
                 deduplicatedPortfolio.push(item);
             });
             portfolioData = deduplicatedPortfolio;
+            localStorage.setItem('blom_portfolio_data', JSON.stringify(portfolioData));
         }
 
         function updateStats() {
-            const count = portfolioData.length;
-            const appCount = appData.length;
-            const privCount = privateData.length;
-            document.getElementById('stats-count').innerText = `[SYS: ${count} BILDER | ${appCount} APPAR | ${privCount} PRIVATA]`;
+            document.getElementById('stats-count').innerText = `[SYS: ${portfolioData.length} BILDER | ${appData.length} APPAR | ${privateData.length} PRIVATA]`;
         }
 
-        // ==========================================
-        // 3. RENDER MOTOR BILDER & PRIVAT
-        // ==========================================
         const grid = document.getElementById('portfolio-grid');
         let currentFilter = 'all';
         let currentTag = null;
@@ -520,17 +398,40 @@
             return html;
         }
 
+        function applyFiltersAndShuffle() {
+            const filteredData = portfolioData.filter(item => {
+                const matchType = currentFilter === 'all' || item.type === currentFilter;
+                const matchTag = !currentTag || (item.tags && item.tags.includes(currentTag));
+                const searchString = `${item.title} ${item.description} ${item.mainPrompt || ''} ${item.tags ? item.tags.join(' ') : ''}`.toLowerCase();
+                const matchSearch = !currentSearch || searchString.includes(currentSearch);
+                return matchType && matchTag && matchSearch;
+            });
+            activePortfolioData = shuffleArray([...filteredData]);
+            currentPortfolioDisplayCount = itemsPerPage; 
+        }
+
+        function applyPrivateFiltersAndShuffle() {
+            const filteredData = privateData.filter(item => {
+                const matchTag = !currentTag || (item.tags && item.tags.includes(currentTag));
+                const searchString = `${item.title} ${item.description} ${item.mainPrompt || ''} ${item.tags ? item.tags.join(' ') : ''}`.toLowerCase();
+                const matchSearch = !currentSearch || searchString.includes(currentSearch);
+                return matchTag && matchSearch;
+            });
+            activePrivateData = shuffleArray([...filteredData]);
+            currentPrivateDisplayCount = itemsPerPage;
+        }
+
         function setFilter(type) {
             currentFilter = type;
-            currentPortfolioDisplayCount = itemsPerPage; 
             updateFilterButtons();
+            applyFiltersAndShuffle();
             renderPortfolio();
         }
 
         function handlePrivateClick() {
             currentFilter = 'private';
-            currentPrivateDisplayCount = itemsPerPage;
             updateFilterButtons();
+            if (isPrivateUnlocked) applyPrivateFiltersAndShuffle();
             renderPortfolio();
         }
 
@@ -553,8 +454,6 @@
 
         function setTagFilter(tag) {
             currentTag = tag;
-            currentPortfolioDisplayCount = itemsPerPage; 
-            currentPrivateDisplayCount = itemsPerPage;
             const tagContainer = document.getElementById('active-tag-container');
             const tagText = document.getElementById('active-tag-text');
             if (tag) {
@@ -565,6 +464,8 @@
                 tagContainer.classList.add('hidden');
                 tagContainer.classList.remove('flex');
             }
+            applyFiltersAndShuffle();
+            applyPrivateFiltersAndShuffle();
             renderPortfolio();
         }
 
@@ -572,8 +473,8 @@
 
         function handleSearch() {
             currentSearch = document.getElementById('search-input').value.toLowerCase().trim();
-            currentPortfolioDisplayCount = itemsPerPage; 
-            currentPrivateDisplayCount = itemsPerPage;
+            applyFiltersAndShuffle();
+            applyPrivateFiltersAndShuffle();
             renderPortfolio();
         }
 
@@ -584,136 +485,35 @@
         }
 
         function renderPortfolio() {
-            // Sök om det är privata vyn
-            if (currentFilter === 'private') {
-                renderPrivateGallery();
-                return;
-            }
-
             grid.innerHTML = ''; 
-            const filteredData = portfolioData.filter(item => {
-                const matchType = currentFilter === 'all' || item.type === currentFilter;
-                const matchTag = !currentTag || item.tags.includes(currentTag);
-                const searchString = `${item.title} ${item.description} ${item.mainPrompt || ''} ${item.tags.join(' ')}`.toLowerCase();
-                const matchSearch = !currentSearch || searchString.includes(currentSearch);
-                return matchType && matchTag && matchSearch;
-            });
 
-            // Fisher-Yates shuffle
-            for (let i = filteredData.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [filteredData[i], filteredData[j]] = [filteredData[j], filteredData[i]];
-            }
-
-            if (filteredData.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 font-mono text-sm">Ingen data matchar.</div>`;
-                return;
-            }
-
-            const dataToShow = filteredData.slice(0, currentPortfolioDisplayCount);
-
-            dataToShow.forEach((item) => {
-                const article = document.createElement('article');
-                article.className = 'reveal group cursor-pointer'; 
-                article.setAttribute('data-id', item.id);
-                article.onclick = function() { openProjectDossier(this.getAttribute('data-id')); };
-
-                let mediaIcon = item.type === 'video' ? 'video' : 'image';
-                
-                article.innerHTML = `
-                    <div class="bg-card rounded-3xl border border-border_subtle overflow-hidden relative aspect-square transition-all duration-500 group-hover:border-accent group-hover:shadow-[0_0_30px_rgba(229,142,38,0.15)]">
-                        <img src="${item.mediaUrl}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 group-hover:opacity-60" alt="${item.title}" loading="lazy" onerror="handleImageError(this, 'grid')">
-                        <div class="absolute inset-0 bg-gradient-to-t from-main via-main/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6">
-                            <div class="translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                                <span class="text-[10px] font-black uppercase tracking-widest text-accent flex items-center gap-2 mb-2">
-                                    <i data-lucide="${mediaIcon}" class="w-3 h-3"></i> ${item.subtitle}
-                                </span>
-                                <h3 class="text-xl md:text-2xl font-black uppercase italic tracking-tighter text-white mb-2 leading-tight truncate">${item.title}</h3>
-                                <div class="flex items-center gap-2 text-slate-300 text-[10px] md:text-xs font-bold uppercase tracking-widest">
-                                    <i data-lucide="folder-open" class="w-4 h-4"></i> Öppna Dossier
-                                </div>
-                            </div>
+            if (currentFilter === 'private' && !isPrivateUnlocked) {
+                grid.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center py-16 w-full">
+                        <div class="p-6 bg-slate-800/50 rounded-full mb-6 border border-slate-700/50">
+                            <i data-lucide="lock" class="w-12 h-12 text-slate-500"></i>
+                        </div>
+                        <h2 class="text-3xl font-black uppercase italic tracking-tighter text-white mb-3 text-center">Åtkomst Nekad</h2>
+                        <p class="text-slate-400 mb-8 font-mono text-xs uppercase tracking-widest text-center">Denna sektor är krypterad.</p>
+                        <div class="flex flex-col sm:flex-row gap-3 w-full max-w-sm mx-auto">
+                            <input type="password" id="private-password-input" class="flex-1 bg-main border border-border_subtle rounded-xl px-4 py-3 text-white outline-none focus:border-red-500 font-mono text-center sm:text-left" placeholder="Ange lösenord..." onkeypress="handlePrivatePasswordEnter(event)">
+                            <button onclick="unlockPrivateFilter()" class="bg-red-900/20 border border-red-500 text-red-500 font-black uppercase tracking-widest px-6 py-3 rounded-xl hover:bg-red-500 hover:text-white transition-colors shadow-[0_0_15px_rgba(239,68,68,0.2)]">Dekryptera</button>
                         </div>
                     </div>
                 `;
-                grid.appendChild(article);
-            });
-
-            if (currentPortfolioDisplayCount < filteredData.length) {
-                const btnContainer = document.createElement('div');
-                btnContainer.className = 'col-span-full flex justify-center mt-6 mb-4';
-                btnContainer.innerHTML = `
-                    <button onclick="loadMorePortfolio()" class="px-8 py-3 rounded-xl bg-card border border-border_subtle text-[12px] font-black uppercase tracking-widest text-slate-300 hover:border-accent hover:text-accent transition-all flex items-center gap-3 shadow-lg">
-                        <i data-lucide="chevron-down" class="w-5 h-5"></i> Visa fler
-                    </button>
-                `;
-                grid.appendChild(btnContainer);
-            }
-
-            lucide.createIcons();
-            setupObservers();
-        }
-
-        // ==========================================
-        // RENDER MOTOR PRIVATA VALVET
-        // ==========================================
-        function unlockPrivateVault() {
-            const input = document.getElementById('private-password-input');
-            if (input.value === SYSTEM_PASSWORD) {
-                isPrivateUnlocked = true;
-                document.getElementById('private-lock-screen').style.display = 'none';
-                const contentScreen = document.getElementById('private-content-screen');
-                contentScreen.classList.remove('hidden');
-                contentScreen.classList.add('flex');
-                renderPrivateGallery();
-                input.value = '';
-            } else {
-                input.value = '';
-                input.placeholder = 'FEL LÖSENORD';
-                input.classList.add('text-red-500', 'placeholder-red-500', 'border-red-500');
-                setTimeout(() => {
-                    input.placeholder = 'Ange lösenord...';
-                    input.classList.remove('text-red-500', 'placeholder-red-500', 'border-red-500');
-                }, 1500);
-            }
-        }
-
-        function lockPrivateVault() {
-            isPrivateUnlocked = false;
-            document.getElementById('private-lock-screen').style.display = 'flex';
-            const contentScreen = document.getElementById('private-content-screen');
-            contentScreen.classList.add('hidden');
-            contentScreen.classList.remove('flex');
-            document.getElementById('private-grid').innerHTML = ''; 
-        }
-
-        document.getElementById('private-password-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') unlockPrivateVault();
-        });
-
-        function renderPrivateGallery() {
-            const grid = document.getElementById('private-grid');
-            grid.innerHTML = ''; 
-
-            const filteredData = privateData.filter(item => {
-                const matchTag = !currentTag || item.tags.includes(currentTag);
-                const searchString = `${item.title} ${item.description} ${item.mainPrompt || ''} ${item.tags.join(' ')}`.toLowerCase();
-                const matchSearch = !currentSearch || searchString.includes(currentSearch);
-                return matchTag && matchSearch;
-            });
-
-            // Fisher-Yates shuffle
-            for (let i = filteredData.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [filteredData[i], filteredData[j]] = [filteredData[j], filteredData[i]];
-            }
-
-            if (filteredData.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 font-mono text-sm">Valvet är tomt.</div>`;
+                lucide.createIcons();
                 return;
             }
 
-            const dataToShow = filteredData.slice(0, currentPrivateDisplayCount);
+            const sourceData = currentFilter === 'private' ? activePrivateData : activePortfolioData;
+            const displayCount = currentFilter === 'private' ? currentPrivateDisplayCount : currentPortfolioDisplayCount;
+
+            if (sourceData.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 font-mono text-sm">Ingen data matchar. Ladda in via [SYS] Terminal.</div>`;
+                return;
+            }
+
+            const dataToShow = sourceData.slice(0, displayCount);
 
             dataToShow.forEach((item) => {
                 const article = document.createElement('article');
@@ -721,20 +521,22 @@
                 article.setAttribute('data-id', item.id);
                 article.onclick = function() { openProjectDossier(this.getAttribute('data-id')); };
 
-                let mediaIcon = item.type === 'video' ? 'video' : 'lock';
-                let displayTitle = item.title || "Krypterad Kreation";
-                
+                let mediaIcon = item.type === 'video' ? 'video' : (currentFilter === 'private' ? 'lock' : 'image');
+                let displayTitle = (currentFilter === 'private' && !item.title) ? "Krypterad Kreation" : item.title;
+                let borderClass = currentFilter === 'private' ? 'border-red-900/30 group-hover:border-red-500 group-hover:shadow-[0_0_30px_rgba(239,68,68,0.15)]' : 'border-border_subtle group-hover:border-accent group-hover:shadow-[0_0_30px_rgba(229,142,38,0.15)]';
+                let textClass = currentFilter === 'private' ? 'text-red-400' : 'text-accent';
+
                 article.innerHTML = `
-                    <div class="bg-card rounded-3xl border border-red-900/30 overflow-hidden relative aspect-square transition-all duration-500 group-hover:border-red-500 group-hover:shadow-[0_0_30px_rgba(239,68,68,0.15)]">
-                        <img src="${item.mediaUrl}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 group-hover:opacity-60" loading="lazy" onerror="handleImageError(this, 'grid')">
-                        <div class="absolute inset-0 bg-gradient-to-t from-main via-main/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6">
+                    <div class="bg-card rounded-3xl border ${borderClass} overflow-hidden relative aspect-square transition-all duration-500">
+                        <img src="${item.mediaUrl}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 group-hover:opacity-60" alt="${displayTitle}" loading="lazy" onerror="handleImageError(this, 'grid')">
+                        <div class="absolute inset-0 bg-gradient-to-t from-main via-main/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 md:p-6">
                             <div class="translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                                <span class="text-[10px] font-black uppercase tracking-widest text-red-400 flex items-center gap-2 mb-2">
+                                <span class="text-[10px] font-black uppercase tracking-widest ${textClass} flex items-center gap-2 mb-2">
                                     <i data-lucide="${mediaIcon}" class="w-3 h-3"></i> ${item.subtitle}
                                 </span>
                                 <h3 class="text-xl md:text-2xl font-black uppercase italic tracking-tighter text-white mb-2 leading-tight truncate">${displayTitle}</h3>
                                 <div class="flex items-center gap-2 text-slate-300 text-[10px] md:text-xs font-bold uppercase tracking-widest">
-                                    <i data-lucide="eye" class="w-4 h-4"></i> Granska
+                                    <i data-lucide="${currentFilter === 'private' ? 'eye' : 'folder-open'}" class="w-4 h-4"></i> ${currentFilter === 'private' ? 'Granska' : 'Öppna Dossier'}
                                 </div>
                             </div>
                         </div>
@@ -743,11 +545,12 @@
                 grid.appendChild(article);
             });
 
-            if (currentPrivateDisplayCount < filteredData.length) {
+            if (displayCount < sourceData.length) {
                 const btnContainer = document.createElement('div');
                 btnContainer.className = 'col-span-full flex justify-center mt-6 mb-4';
+                let btnHover = currentFilter === 'private' ? 'hover:border-red-400 hover:text-red-400 text-red-500 border-red-900/50' : 'hover:border-accent hover:text-accent text-slate-300 border-border_subtle';
                 btnContainer.innerHTML = `
-                    <button onclick="loadMorePortfolio()" class="px-8 py-3 rounded-xl bg-card border border-border_subtle text-[12px] font-black uppercase tracking-widest text-slate-300 hover:border-red-400 hover:text-red-400 transition-all flex items-center gap-3 shadow-lg">
+                    <button onclick="loadMorePortfolio()" class="px-8 py-3 rounded-xl bg-card border ${btnHover} text-[12px] font-black uppercase tracking-widest transition-all flex items-center gap-3 shadow-lg">
                         <i data-lucide="chevron-down" class="w-5 h-5"></i> Ladda fler
                     </button>
                 `;
@@ -758,9 +561,20 @@
             setupObservers();
         }
 
-        // ==========================================
-        // 4. MODAL LOGIK OCH SKAPANDE
-        // ==========================================
+        function unlockPrivateFilter() {
+            const input = document.getElementById('private-password-input');
+            if (input.value === SYSTEM_PASSWORD) {
+                isPrivateUnlocked = true;
+                applyPrivateFiltersAndShuffle();
+                renderPortfolio();
+            } else {
+                input.value = ''; input.placeholder = 'FEL LÖSENORD'; input.classList.add('text-red-500', 'placeholder-red-500', 'border-red-500');
+                setTimeout(() => { input.placeholder = 'Ange lösenord...'; input.classList.remove('text-red-500', 'placeholder-red-500', 'border-red-500'); }, 1500);
+            }
+        }
+
+        function handlePrivatePasswordEnter(e) { if (e.key === 'Enter') unlockPrivateFilter(); }
+
         function openCreationModal() { document.getElementById('add-creation-modal').classList.remove('opacity-0', 'pointer-events-none'); document.body.style.overflow = 'hidden'; }
         function closeCreationModal() { document.getElementById('add-creation-modal').classList.add('opacity-0', 'pointer-events-none'); document.body.style.overflow = ''; }
 
@@ -774,25 +588,16 @@
             if(!mediaUrl) { alert('Huvudlänk saknas!'); return; }
 
             const thumbsArray = thumbsRaw ? thumbsRaw.split(',').map(s => s.trim()) : [];
-
             const newItem = {
-                id: 'proj-' + Date.now().toString(36),
-                type: type,
-                mediaUrl: mediaUrl,
-                processThumbnails: thumbsArray,
-                mainPrompt: prompt,
-                description: desc,
-                title: '', 
-                tags: [],
-                subtitle: 'Logg ' + String(portfolioData.length + 1).padStart(3, '0')
+                id: 'proj-' + Date.now().toString(36), type: type, mediaUrl: mediaUrl,
+                processThumbnails: thumbsArray, mainPrompt: prompt, description: desc,
+                title: '', tags: [], subtitle: 'Logg ' + String(portfolioData.length + 1).padStart(3, '0')
             };
 
             portfolioData.unshift(newItem);
             autoEnrichData();
-            localStorage.setItem('blom_portfolio_data', JSON.stringify(portfolioData));
             updateStats();
-            
-            currentPortfolioDisplayCount = itemsPerPage;
+            applyFiltersAndShuffle();
             renderPortfolio();
             closeCreationModal();
             
@@ -930,7 +735,7 @@
         }
 
         // ==========================================
-        // 5. TERMINAL & IMPORT/EXPORT (DELAR LOCALSTORAGE)
+        // 5. TERMINAL OCH IMPORTFUNKTIONER
         // ==========================================
         const terminalOverlay = document.getElementById('terminal-overlay');
         const terminalInput = document.getElementById('terminal-input');
@@ -952,15 +757,15 @@
 
                 const cmd = val.toLowerCase();
                 if (cmd === '/help') {
-                    printTerminal(`Available commands:<br>  <span class="text-accent">/help</span> - Show this message<br>  <span class="text-accent">/export</span> - Export full JSON backup<br>  <span class="text-accent">/import</span> - Import JSON backup<br>  <span class="text-accent">/stats</span> - Show system statistics<br>  <span class="text-accent">/clear</span> - Clear terminal<br>  <span class="text-accent">/exit</span> - Close terminal`);
+                    printTerminal(`Available commands:<br>  <span class="text-accent">/help</span> - Show this message<br>  <span class="text-accent">/export</span> - Export JSON backup<br>  <span class="text-accent">/import</span> - Import JSON backup<br>  <span class="text-accent">/stats</span> - Show system statistics<br>  <span class="text-accent">/clear</span> - Clear terminal<br>  <span class="text-accent">/exit</span> - Close terminal`);
                 } else if (cmd === '/export') {
                     exportData();
                 } else if (cmd === '/import') {
                     document.getElementById('import-file').click();
                 } else if (cmd === '/stats') {
-                    const currentPortfolio = typeof portfolioData !== 'undefined' ? portfolioData.length : JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]').length;
+                    const currentPortfolio = JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]').length;
                     const currentApps = typeof appData !== 'undefined' ? appData.length : JSON.parse(localStorage.getItem('blom_app_data') || '[]').length;
-                    const currentPrivate = typeof privateData !== 'undefined' ? privateData.length : JSON.parse(localStorage.getItem('blom_private_data') || '[]').length;
+                    const currentPrivate = JSON.parse(localStorage.getItem('blom_private_data') || '[]').length;
                     printTerminal(`System Status:<br>- Database entries: ${currentPortfolio}<br>- App entries: ${currentApps}<br>- Private entries: ${currentPrivate}<br>- Memory optimized: True`);
                 } else if (cmd === '/clear') {
                     terminalOutput.innerHTML = '';
@@ -981,9 +786,9 @@
 
         function exportData() {
             try {
-                const currentPortfolio = typeof portfolioData !== 'undefined' && portfolioData.length > 0 ? portfolioData : JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]');
+                const currentPortfolio = JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]');
                 const currentApps = typeof appData !== 'undefined' && appData.length > 0 ? appData : JSON.parse(localStorage.getItem('blom_app_data') || '[]');
-                const currentPrivate = typeof privateData !== 'undefined' && privateData.length > 0 ? privateData : JSON.parse(localStorage.getItem('blom_private_data') || '[]');
+                const currentPrivate = JSON.parse(localStorage.getItem('blom_private_data') || '[]');
 
                 const dataToExport = {
                     portfolio: currentPortfolio,
@@ -1012,27 +817,59 @@
                     const importedData = JSON.parse(e.target.result);
                     let importedSomething = false;
                     
+                    let currentPortfolio = JSON.parse(localStorage.getItem('blom_portfolio_data') || '[]');
+                    let currentApps = JSON.parse(localStorage.getItem('blom_app_data') || '[]');
+                    if (typeof appData !== 'undefined' && appData.length > 0) {
+                        currentApps = appData;
+                    }
+                    
+                    let importPortfolio = [];
+                    let importApps = [];
+
                     if (Array.isArray(importedData)) {
-                        localStorage.setItem('blom_portfolio_data', JSON.stringify(importedData));
-                        importedSomething = true;
-                    } 
-                    else {
-                        if (importedData.portfolio && Array.isArray(importedData.portfolio)) {
-                            localStorage.setItem('blom_portfolio_data', JSON.stringify(importedData.portfolio));
-                            importedSomething = true;
-                        }
-                        if (importedData.apps && Array.isArray(importedData.apps)) {
-                            localStorage.setItem('blom_app_data', JSON.stringify(importedData.apps));
-                            importedSomething = true;
-                        }
+                        importPortfolio = importedData;
+                    } else {
+                        if (importedData.portfolio && Array.isArray(importedData.portfolio)) importPortfolio = importedData.portfolio;
+                        if (importedData.apps && Array.isArray(importedData.apps)) importApps = importedData.apps;
                         if (importedData.private && Array.isArray(importedData.private)) {
                             localStorage.setItem('blom_private_data', JSON.stringify(importedData.private));
                             importedSomething = true;
                         }
                     }
+
+                    // SMART MERGE PORTFOLIO
+                    if (importPortfolio.length > 0) {
+                        const mergedPortfolio = [...currentPortfolio];
+                        importPortfolio.forEach(impItem => {
+                            if (!mergedPortfolio.find(existing => existing.id === impItem.id || existing.mediaUrl === impItem.mediaUrl)) {
+                                mergedPortfolio.push(impItem);
+                            }
+                        });
+                        localStorage.setItem('blom_portfolio_data', JSON.stringify(mergedPortfolio));
+                        importedSomething = true;
+                    }
+
+                    // SMART MERGE APPS
+                    if (importApps.length > 0) {
+                        const mergedApps = [...currentApps];
+                        importApps.forEach(impApp => {
+                            const existingIndex = mergedApps.findIndex(a => a.id === impApp.id || a.title === impApp.title);
+                            if (existingIndex >= 0) {
+                                const existingLength = (mergedApps[existingIndex].fullDesc || '').length;
+                                const importedLength = (impApp.fullDesc || '').length;
+                                if (importedLength > existingLength) {
+                                    mergedApps[existingIndex] = impApp; 
+                                }
+                            } else {
+                                mergedApps.push(impApp); 
+                            }
+                        });
+                        localStorage.setItem('blom_app_data', JSON.stringify(mergedApps));
+                        importedSomething = true;
+                    }
                     
                     if(importedSomething) {
-                        printTerminal(`<span class="text-emerald-400">System backup imported successfully. Reloading OS...</span>`);
+                        printTerminal(`<span class="text-emerald-400">Smart Merge Successful: Vault synchronized. Reloading OS...</span>`);
                         setTimeout(() => location.reload(), 1500);
                     } else {
                         throw new Error("Missing portfolio or apps arrays in JSON.");
@@ -1047,7 +884,7 @@
         }
 
         // ==========================================
-        // 8. BOOT SEQUENCE OCH INITIERING
+        // 8. BOOT SEQUENCE
         // ==========================================
         function runBootSequence() {
             const bootOverlay = document.getElementById('boot-sequence');
